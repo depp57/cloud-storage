@@ -34,7 +34,7 @@ export class RenameDialogComponent extends DialogComponent<Item, OutputRenameDat
 
   onSubmit(): void {
     this.submit$.next(
-      this.inputData.rename(this.name, this.extension).fullPath
+      this.inputData.rename(this.name, this.extension).filePath
     );
     this.closeDialog$.next();
   }

@@ -12,8 +12,8 @@ export class PathService {
     return this._currentPath$;
   }
 
-  updatePath(fullPath: string): void {
-    this._currentPath$.next(PathService.ensureLastDash(fullPath));
+  updatePath(filePath: string): void {
+    this._currentPath$.next(PathService.ensureLastDash(filePath));
   }
 
   getSeparatedFolders(): string[] {

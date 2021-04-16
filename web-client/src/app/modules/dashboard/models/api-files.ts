@@ -1,19 +1,19 @@
 export enum ApiFileType {
-  DIR,
-  FILE
+  DIR = 'dir',
+  FILE = 'file'
 }
 
 export interface ApiFile {
   readonly type: ApiFileType;
-  readonly fullPath: string;
+  readonly filePath: string;
 }
 
 export interface ResponseList {
-  readonly files: ApiFile[];
+  readonly result: ApiFile[];
 }
 
 export interface RequestList {
-  readonly fullPath: string;
+  readonly filePath: string;
 }
 
 export interface ResponseUpdate {
@@ -21,8 +21,8 @@ export interface ResponseUpdate {
 }
 
 export interface RequestUpdate {
-  readonly fullPath: string;
-  readonly newFullPath: string;
+  readonly filePath: string;
+  readonly newFilePath: string;
 }
 
 export interface ResponseDelete {
@@ -30,5 +30,5 @@ export interface ResponseDelete {
 }
 
 export interface RequestDelete {
-  readonly fullPath: string;
+  readonly filePath: string;
 }

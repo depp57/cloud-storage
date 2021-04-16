@@ -1,18 +1,18 @@
 export abstract class Item {
 
-  fullPath: string;
+  filePath: string;
   readonly fullName: string;
 
-  constructor(fullPath: string) {
-    this.fullPath = fullPath;
-    this.fullName = Item.extractName(fullPath);
+  constructor(filePath: string) {
+    this.filePath = filePath;
+    this.fullName = Item.extractName(filePath);
   }
 
   static fromJson(json: string): Item {
     const parsedItem = JSON.parse(json);
     return parsedItem.isFile ?
-      new File(parsedItem.fullPath) :
-      new Folder(parsedItem.fullPath);
+      new File(parsedItem.filePath) :
+      new Folder(parsedItem.filePath);
   }
 
   get name(): string {
@@ -25,17 +25,17 @@ export abstract class Item {
   }
 
   get parentFolderPath(): string {
-    const index = this.fullPath.lastIndexOf('/');
-    return this.fullPath.substring(0, index + 1);
+    const index = this.filePath.lastIndexOf('/');
+    return this.filePath.substring(0, index + 1);
   }
 
   equals(item: Item): boolean {
-    return this.fullPath === item.fullPath && this.isFile() === item.isFile();
+    return this.filePath === item.filePath && this.isFile() === item.isFile();
   }
 
   toJson(): string {
     return JSON.stringify({
-      fullPath: this.fullPath,
+      filePath: this.filePath,
       isFile: this.isFile()
     });
   }
@@ -48,8 +48,8 @@ export abstract class Item {
 
   abstract rename(name: string, extension?: string): Item;
 
-  private static extractName(fullPath: string): string {
-    const split = fullPath.split('/');
+  private static extractName(filePath: string): string {
+    const split = filePath.split('/');
     return split[split.length - 1];
   }
 }
@@ -78,10 +78,10 @@ export class Folder extends Item {
 
   public static readonly ROOT = new Folder('/');
 
-  constructor(fullPath: string) {
-    super(fullPath);
-    if (!fullPath.endsWith('/')) {
-      this.fullPath += '/';
+  constructor(filePath: string) {
+    super(filePath);
+    if (!filePath.endsWith('/')) {
+      this.filePath += '/';
     }
   }
 

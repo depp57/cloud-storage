@@ -22,17 +22,17 @@ export class FilesFakeApiService {
               private loading: LoaderService) {}
 
   listDir(filesNb: number, foldersNumber: number, delayInMs: number = 0): Observable<ResponseList> {
-    const files: ApiFile[] = [];
+    const result: ApiFile[] = [];
 
     for (let i = 0; i < filesNb; i++) {
-      files.push(this.generateRandFile());
+      result.push(this.generateRandFile());
     }
 
     for (let i = 0; i < foldersNumber; i++) {
-      files.push(this.generateRandFolder());
+      result.push(this.generateRandFolder());
     }
 
-    return this.handleLoading(of({files}), delayInMs);
+    return this.handleLoading(of({result}), delayInMs);
   }
 
   rename(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
@@ -91,13 +91,13 @@ export class FilesFakeApiService {
     }
 
     return {
-      fullPath: this.path.currentPath$.value + FilesFakeApiService.generateRandName() + fileType,
+      filePath: this.path.currentPath$.value + FilesFakeApiService.generateRandName() + fileType,
       type: ApiFileType.FILE
     };
   }
 
   private generateRandFolder(): ApiFile {
-    return {fullPath: this.path.currentPath$.value + FilesFakeApiService.generateRandName(), type: ApiFileType.DIR};
+    return {filePath: this.path.currentPath$.value + FilesFakeApiService.generateRandName(), type: ApiFileType.DIR};
   }
 
   private static generateRandName(): string {

@@ -4,7 +4,7 @@
 /******************* T H E M E   C O L O R S *******************/
 /***************************************************************/
 
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '../../node_modules/@angular/material/theming';
 @include mat.core();
 

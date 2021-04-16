@@ -1,8 +1,3 @@
 #!/bin/bash
-cd web-client
-git pull
-ng build
-rm -r /var/www/html/*
-mv ./dist/web-client/* /var/www/html/
-
-echo "done"
+docker run -d -p 80:80 -p 443:443 --restart=always web-client
+echo "done! The wep app is running."

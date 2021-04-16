@@ -36,7 +36,7 @@ export class FolderComponent {
       const itemJson  = event.dataTransfer.getData(DATA_TRANSFER_NAME);
       const movedItem = Item.fromJson(itemJson);
 
-      this.folderLogic.moveItemWithoutDialog(movedItem, this.folder.fullPath + movedItem.fullName);
+      this.folderLogic.moveItemWithoutDialog(movedItem, this.folder.filePath + movedItem.fullName);
     }
   }
 

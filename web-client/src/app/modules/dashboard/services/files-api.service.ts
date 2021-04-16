@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   RequestDelete,
@@ -10,7 +10,7 @@ import {
   ResponseUpdate
 } from '@modules/dashboard/models/api-files';
 import { FilesFakeApiService } from '@modules/dashboard/services/files-fake-api.service';
-import { publishReplay, refCount, take } from 'rxjs/operators';
+import { publishReplay, refCount, take, tap } from 'rxjs/operators';
 import { API_FILES_CACHE_TIME } from '@shared/constants';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class FilesApiService {
               private fakeApi: FilesFakeApiService) {}
 
   listDir(param: RequestList): Observable<ResponseList> {
-    const cache = this._foldersCache.get(param.fullPath);
+    const cache = this._foldersCache.get(param.filePath);
 
     if (cache) {
       console.log('listDir | cached', param);
@@ -33,37 +33,39 @@ export class FilesApiService {
     else {
       console.log('listDir | http request', param);
 
-      // // removes whitespaces
-      // const fullPath = param.fullPath.trim();
-      //
-      // // add URL parameters to the http request
-      // const options = {params: new HttpParams().set('fullPath', fullPath)};
-      //
-      // const observable = this.http.get<ResponseList>('files/list/', options).pipe(
-      //   publishReplay(1, API_FILES_CACHE_TIME),
-      //   refCount(),
-      //   take(1)
-      // );
+      // removes whitespaces
+      const filePath = param.filePath.trim();
 
-      const observable = this.fakeApi.listDir(30, 5, 500).pipe(
+      // add URL parameters to the http request
+      const options = {params: new HttpParams().set('filePath', filePath)};
+
+      const observable = this.http.get<ResponseList>('files/list', options).pipe(
         publishReplay(1, API_FILES_CACHE_TIME),
         refCount(),
         take(1)
       );
-      this._foldersCache.set(param.fullPath, observable);
-      return observable;
+
+      // const observable = this.fakeApi.listDir(30, 5, 500).pipe(
+      //   publishReplay(1, API_FILES_CACHE_TIME),
+      //   refCount(),
+      //   take(1)
+      // );
+      this._foldersCache.set(param.filePath, observable);
+      return observable.pipe(
+        tap(res => console.log(res))
+      );
     }
   }
 
   update(param: RequestUpdate): Observable<ResponseUpdate> {
-    this.invalidateCache(param.fullPath, param.newFullPath);
+    this.invalidateCache(param.filePath, param.newFilePath);
     // return this.http.post<ResponseUpdate>('files/update/', param);
     console.log('update', param);
     return this.fakeApi.rename(param, 500);
   }
 
   delete(param: RequestDelete): Observable<ResponseDelete> {
-    this.invalidateCache(param.fullPath);
+    this.invalidateCache(param.filePath);
     // return this.http.delete<ResponseDelete>('files/update/', param);
 
     console.log('delete', param);
@@ -71,7 +73,7 @@ export class FilesApiService {
   }
 
   move(param: RequestUpdate): Observable<ResponseUpdate> {
-    this.invalidateCache(param.fullPath, param.newFullPath);
+    this.invalidateCache(param.filePath, param.newFilePath);
     // return this.http.post<ResponseUpdate>('files/update/', param);
 
     console.log('move', param);
@@ -79,9 +81,9 @@ export class FilesApiService {
   }
 
   private invalidateCache(...fullPaths: string[]): void {
-    fullPaths.forEach(fullPath => {
-        const index               = fullPath.lastIndexOf('/');
-        const fullPathWithoutFile = fullPath.substring(0, index + 1);
+    fullPaths.forEach(filePath => {
+        const index               = filePath.lastIndexOf('/');
+        const fullPathWithoutFile = filePath.substring(0, index + 1);
 
         this._foldersCache.delete(fullPathWithoutFile);
       }

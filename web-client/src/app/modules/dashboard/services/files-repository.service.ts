@@ -32,19 +32,19 @@ export class FilesRepositoryService {
   }
 
   // the path can be relative (myDocuments) or absolute (/myDocuments)
-  listFolder(fullPath: string): Observable<ResponseList> {
-    this.path.updatePath(fullPath);
+  listFolder(filePath: string): Observable<ResponseList> {
+    this.path.updatePath(filePath);
 
-    return this.filesApi.listDir({fullPath}).pipe(
+    return this.filesApi.listDir({filePath}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
   getSubFolders(folder: Folder): Observable<TreeNode> {
-    return this.filesApi.listDir({fullPath: folder.fullPath}).pipe(
+    return this.filesApi.listDir({filePath: folder.filePath}).pipe(
       map(response => {
-        const responseFolders        = response.files.filter(item => item.type === ApiFileType.DIR);
-        const subFolders: TreeNode[] = responseFolders.map(dir => ({folder: new Folder(dir.fullPath)}));
+        const responseFolders        = response.result.filter(item => item.type === ApiFileType.DIR);
+        const subFolders: TreeNode[] = responseFolders.map(dir => ({folder: new Folder(dir.filePath)}));
         subFolders.sort((a, b) => a.folder.compareTo(b.folder));
 
         // TODO IT DOESNT WORK NOW WITH FULL PATH BECAUSE OF FAKE-API, BUT IT WILL WITH THE REAL ONE
@@ -53,25 +53,25 @@ export class FilesRepositoryService {
     );
   }
 
-  rename(item: Item, newFullPath: string): Observable<ResponseUpdate> {
-    if (item.fullPath === newFullPath) {
+  rename(item: Item, newFilePath: string): Observable<ResponseUpdate> {
+    if (item.filePath === newFilePath) {
       return of({changed: false});
     }
 
     return this.filesApi.update({
-      fullPath: item.fullPath,
-      newFullPath
+      filePath: item.filePath,
+      newFilePath
     }).pipe(
       tap(response => {
         if (response.changed) {
-          this.renameItem(item, newFullPath);
+          this.renameItem(item, newFilePath);
         }
       })
     );
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    return this.filesApi.delete({fullPath: item.fullPath}).pipe(
+    return this.filesApi.delete({filePath: item.filePath}).pipe(
       tap(response => {
         if (response.deleted) {
           this.deleteItem(item);
@@ -80,14 +80,14 @@ export class FilesRepositoryService {
     );
   }
 
-  move(item: Item, newFullPath: string): Observable<ResponseUpdate> {
-    if (item.fullPath === newFullPath) {
+  move(item: Item, newFilePath: string): Observable<ResponseUpdate> {
+    if (item.filePath === newFilePath) {
       return of({changed: false});
     }
 
     return this.filesApi.move({
-      fullPath: item.fullPath,
-      newFullPath
+      filePath: item.filePath,
+      newFilePath
     }).pipe(
       tap(response => {
         if (response.changed) {
@@ -105,12 +105,12 @@ export class FilesRepositoryService {
     const files: File[]     = [];
     const folders: Folder[] = [];
 
-    for (const file of response.files) {
+    for (const file of response.result) {
       if (file.type === ApiFileType.FILE) {
-        files.push(new File(file.fullPath));
+        files.push(new File(file.filePath));
       }
       else {
-        folders.push(new Folder(file.fullPath));
+        folders.push(new Folder(file.filePath));
       }
     }
     FilesRepositoryService.sortByName(files, folders);
@@ -132,17 +132,17 @@ export class FilesRepositoryService {
     item.isFile() ? deleteIn(this._files$) : deleteIn(this._folders$);
   }
 
-  private renameItem(item: Item, newFullPath: string): void {
+  private renameItem(item: Item, newFilePath: string): void {
     function renameIn(subject: BehaviorSubject<any[]>): void {
       const items = subject.value;
 
       const index = items.findIndex(current => current.equals(item));
       if (index !== -1) {
         if (items[index].isFile()) {
-          items[index] = new File(newFullPath);
+          items[index] = new File(newFilePath);
         }
         else {
-          items[index] = new Folder(newFullPath);
+          items[index] = new Folder(newFilePath);
         }
       }
 
