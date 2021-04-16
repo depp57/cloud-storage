@@ -29,7 +29,7 @@ export class MoveItemComponent implements OnInit, OnDestroy {
 
   onMove(): void {
     if (this._selectedFolder) {
-      this.itemLogic.moveItemWithoutDialog(this.item, this._selectedFolder.fullPath + this.item.fullName);
+      this.itemLogic.moveItemWithoutDialog(this.item, this._selectedFolder.filePath + this.item.fullName);
       this.onClose();
     }
   }

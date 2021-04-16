@@ -33,7 +33,7 @@ export class ItemLogic {
   }
 
   listFolder(folder: Folder): void {
-    this.filesRepo.listFolder(folder.fullPath).subscribe();
+    this.filesRepo.listFolder(folder.filePath).subscribe();
   }
 
   dontMoveItem(): void {
@@ -61,9 +61,9 @@ export class ItemLogic {
 
   private renameItem(item: Item): void {
     this.dialog.openRenameDialog(item).subscribe(
-      newFullPath => {
-        if (newFullPath) {
-          this.filesRepo.rename(item, newFullPath).subscribe();
+      newFilePath => {
+        if (newFilePath) {
+          this.filesRepo.rename(item, newFilePath).subscribe();
         }
       }
     );
