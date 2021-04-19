@@ -1,9 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { Router } from '@angular/router';
-import { HTTP_ERROR_CODES } from '@shared/constants';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login-form',
@@ -11,13 +7,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
-  @Output() loading = new EventEmitter<boolean>();
+  @Output() logEvent = new EventEmitter<void>();
   loginForm!: FormGroup;
   hidePassword = true;
 
-  constructor(private router: Router,
-              private authService: AuthService,
-              private snackBar: MatSnackBar) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.initForm();
@@ -51,22 +45,6 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSignIn(): void {
-    this.loading.emit(true);
-
-    this.authService.signIn({username: this.username?.value, password: this.password?.value})
-      .subscribe(
-        _ => this.navigateToDashboard(),
-        err => this.showLoginError(err.status)
-      )
-      .add(() => this.loading.emit(false));
-  }
-
-  private navigateToDashboard(): void {
-    this.router.navigate(['/fichiers']);
-  }
-
-  private showLoginError(httpErrorCode: number): void {
-    const message = HTTP_ERROR_CODES[httpErrorCode];
-    this.snackBar.open(message, 'Fermer', {duration: 3000});
+    this.logEvent.emit();
   }
 }

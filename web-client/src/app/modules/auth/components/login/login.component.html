@@ -9,7 +9,9 @@
     <h1 class="text-important">Connexion</h1>
 
     <mat-card-content>
-      <app-login-form (loading)="setLoading($event)"></app-login-form>
+      <app-login-form #loginForm
+                      (logEvent)="onSignIn(loginForm.username?.value, loginForm.password)">
+      </app-login-form>
     </mat-card-content>
 
     <mat-card-footer *ngIf="loading">
