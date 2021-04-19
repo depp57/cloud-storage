@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -8,10 +9,22 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router) {
-    console.log(`log in login.component, router.state.cause : ${this.router.getCurrentNavigation()?.extras?.state?.cause}`);
+  private redirectCause: string | undefined;
+
+  constructor(private router: Router,
+              private snackBar: MatSnackBar) {
+    this.redirectCause = router.getCurrentNavigation()?.extras?.state?.redirect;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.displayRedirectCause();
+  }
 
+  private displayRedirectCause(): void {
+    if (this.redirectCause !== undefined) {
+      this.snackBar.open(this.redirectCause, 'Fermer', {duration: 3000});
+
+      this.redirectCause = undefined;
+    }
+  }
 }
