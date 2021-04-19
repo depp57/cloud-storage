@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { RedirectReasons } from '@shared/models/redirect-reasons';
+import { RedirectReasons } from '@shared/constants';
 
 @Injectable({providedIn: 'root'})
 export class PageNotFoundGuard implements CanActivate {

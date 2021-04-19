@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
+  loading = false;
   private redirectCause: string | undefined;
 
   constructor(private router: Router,
@@ -17,10 +17,14 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.displayRedirectCause();
+    this.showRedirectCause();
   }
 
-  private displayRedirectCause(): void {
+  setLoading(loading: boolean): void {
+    this.loading = loading;
+  }
+
+  private showRedirectCause(): void {
     if (this.redirectCause !== undefined) {
       this.snackBar.open(this.redirectCause, 'Fermer', {duration: 3000});
 

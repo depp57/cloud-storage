@@ -1,3 +1,5 @@
+@import '~src/styles';
+
 #main-container {
   display: flex;
   justify-content: center;
@@ -32,4 +34,30 @@
 .text-important {
   margin: 4% 0 5% 0;
   font-size: xx-large;
+}
+
+.login-card {
+  @media #{$TABLET} {
+    height: 35vh;
+    width: 85vw;
+  }
+  @media #{$MOBILE} {
+    height: 50vh;
+    width: 80vw;
+    padding: 20px;
+  }
+}
+
+.mat-card{
+  display:flex;
+  flex-direction: column;
+}
+
+.mat-card-header {
+  flex-shrink: 0;
+}
+
+.mat-card-content{
+  flex-grow: 1;
+  overflow: auto;
 }

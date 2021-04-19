@@ -1,2 +1,13 @@
 export const API_ENDPOINT = 'https://sachathommet.fr/api/';
 export const USER_TOKEN_COOKIE_LIFETIME = 1000 * 60 * 60 * 72; // 3 days
+
+export const HTTP_ERROR_CODES: Record<number, string> = {
+  0: 'Vous n\'êtes pas connecté à internet',
+  400: 'Syntaxe de la requête HTTP erronée, veuillez contacter un administrateur',
+  401: 'Identifiants incorrects',
+};
+
+export enum RedirectReasons {
+  UNAUTHENTICATED = 'Vous devez être connecté pour accéder à vos fichiers',
+  PAGE_NOT_FOUND = 'La page n\'a pas été trouvée'
+}

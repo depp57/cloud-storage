@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { Router } from '@angular/router';
+import { HTTP_ERROR_CODES } from '@shared/constants';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login-form',
@@ -8,27 +11,28 @@ import { AuthService } from 'src/app/modules/auth/services/auth.service';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
+  @Output() loading = new EventEmitter<boolean>();
   loginForm!: FormGroup;
-  hide = true;
+  hidePassword = true;
 
-  constructor(private formBuilder: FormBuilder,
-              private authService: AuthService) { }
+  constructor(private router: Router,
+              private authService: AuthService,
+              private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.initForm();
   }
 
   private initForm(): void {
-    this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required, Validators.minLength(4)],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+    this.loginForm = new FormGroup({
+      username: new FormControl('', [Validators.required, Validators.minLength(4)]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)])
     });
   }
 
   get username(): AbstractControl | null { return this.loginForm.get('username'); }
 
   get password(): AbstractControl | null { return this.loginForm.get('password'); }
-
 
   get usernameErrorMessage(): string {
     if (this.username?.hasError('required')) {
@@ -47,10 +51,22 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSignIn(): void {
+    this.loading.emit(true);
+
     this.authService.signIn({username: this.username?.value, password: this.password?.value})
       .subscribe(
-        res => console.log(`works!${res}`),
-        err => console.log(`err${err}`)
-      );
+        _ => this.navigateToDashboard(),
+        err => this.showLoginError(err.status)
+      )
+      .add(() => this.loading.emit(false));
+  }
+
+  private navigateToDashboard(): void {
+    this.router.navigate(['/fichiers']);
+  }
+
+  private showLoginError(httpErrorCode: number): void {
+    const message = HTTP_ERROR_CODES[httpErrorCode];
+    this.snackBar.open(message, 'Fermer', {duration: 3000});
   }
 }

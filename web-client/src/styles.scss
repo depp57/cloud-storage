@@ -1,4 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+/* global style */
+
+/***************************************************************/
+/********************** C O N S T A N T S **********************/
+/***************************************************************/
+
+// Media queries
+$LAPTOP: '(max-width: 1200px)';
+$TABLET: '(max-width: 1025px)';
+$MOBILE: '(max-width: 768px)';
+
+
+/***************************************************************/
+/******************* G L O B A L   S T Y L E *******************/
+/***************************************************************/
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

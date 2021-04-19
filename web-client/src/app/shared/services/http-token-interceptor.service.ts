@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from 'src/app/modules/auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpTokenInterceptor implements HttpInterceptor {
 
-  constructor() { }
+  constructor(private auth: AuthService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const request = req.clone({
-      setHeaders: {
-        Authorization: 'TODO-USER-TOKEN' // TODO
-      }
-    });
+    const authToken = this.auth.getAuthorizationToken();
+
+    let request = req;
+
+    if (authToken) {
+      request = req.clone({setHeaders: { Authorization: authToken } });
+    }
 
     return next.handle(request);
   }
