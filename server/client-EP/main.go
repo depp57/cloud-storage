@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	. "github.com/sventhommet/cloud-storage/server/comports"
+	"github.com/sventhommet/cloud-storage/server/db"
 )
 
 type Server struct {
@@ -13,38 +13,10 @@ type Server struct {
 	PORT    int
 }
 
-var sqlAdapt DbPort
+var sqlAdapt db.DbPort
 
 func init() {
-	sqlAdapt = new(SqlDbPort)
-}
-
-func handleFilesFind(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		response.Write([]byte("{error: must be GET method}"))
-		return
-	}
-
-	param := request.URL.Path[len("/files/find/"):]
-
-	sqlAdapt.GetFilesFromUser("sven", "docs/")
-
-	response.Write([]byte(param))
-
-	return
-}
-
-func handleFilesDL(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		response.Write([]byte("{error: must be GET method}"))
-		return
-	}
-
-	param := request.URL.Path[len("/files/dl/"):]
-
-	response.Write([]byte(param))
-
-	return
+	sqlAdapt = new(db.SqlDbPort)
 }
 
 func main() {
@@ -52,7 +24,7 @@ func main() {
 	server.ADDRESS = "0.0.0.0"
 	server.PORT = 80
 
-	http.HandleFunc("/files/find/", handleFilesFind)
+	http.HandleFunc("/files/list/", handleFilesList)
 	http.HandleFunc("/files/dl/", handleFilesDL)
 
 	log.Fatal(http.ListenAndServe(server.ADDRESS+":"+strconv.Itoa(server.PORT), nil))
