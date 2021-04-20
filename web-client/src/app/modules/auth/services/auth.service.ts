@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_ENDPOINT, AUTH_COOKIE_NAME, USER_TOKEN_COOKIE_LIFETIME } from '@shared/constants';
 import { Observable } from 'rxjs';
-import { ApiAuthParam, ApiAuthResponse } from 'src/app/modules/auth/models/api-auth';
-import { getCookie, setCookie } from '@shared/models/cookies-utils';
+import { ApiAuthParam, ApiAuthResponse, UserCredentials } from 'src/app/modules/auth/models/api-auth';
+import { deleteCookie, getCookie, setCookie } from '@shared/models/cookies-utils';
 import { tap } from 'rxjs/operators';
 
 @Injectable({
@@ -11,33 +11,46 @@ import { tap } from 'rxjs/operators';
 })
 export class AuthService {
 
-  private _authToken: string | undefined;
+  private _userCredentials: UserCredentials | undefined;
 
   constructor(private http: HttpClient) {}
 
   signIn(user: ApiAuthParam): Observable<ApiAuthResponse> {
     return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
-      tap(response => setCookie(AUTH_COOKIE_NAME, response.token, USER_TOKEN_COOKIE_LIFETIME))
+      tap(response => {
+        const userCredentials = new UserCredentials(user.username, response.token);
+        setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, USER_TOKEN_COOKIE_LIFETIME);
+      })
     );
   }
 
+  signOut(): Observable<ApiAuthResponse> {
+    // TODO SIGN OUT WITH REST API + DELETE ONLY IN SUCCESS OBSERVABLE
+    deleteCookie(AUTH_COOKIE_NAME);
+    this._userCredentials = undefined;
+    return new Observable<ApiAuthResponse>((subscriber => subscriber.next({token: 'foo', error: 'foo'})));
+  }
+
   get isAuthenticated(): boolean {
-    if (this._authToken) {
+    if (this._userCredentials) {
       return true;
     }
     else {
-      this._authToken = getCookie(AUTH_COOKIE_NAME);
-      return this._authToken !== undefined;
+      this._userCredentials = this.userCredentials;
+      return this._userCredentials !== undefined;
     }
   }
 
-  get authToken(): string | undefined {
-    if (this._authToken) {
-      return this._authToken;
+  get userCredentials(): UserCredentials | undefined {
+    if (this._userCredentials) {
+      return this._userCredentials;
     }
     else {
-      this._authToken = getCookie(AUTH_COOKIE_NAME);
-      return this._authToken;
+      const cookie = getCookie(AUTH_COOKIE_NAME);
+      if (cookie !== undefined) {
+        this._userCredentials = UserCredentials.fromJson(cookie);
+      }
+      return this._userCredentials;
     }
   }
 }

@@ -57,6 +57,6 @@ export class LoginComponent implements OnInit {
 
   private showLoginError(httpErrorCode: number): void {
     const message = HTTP_ERROR_CODES[httpErrorCode];
-    this.snackBar.open(message, 'Fermer', {duration: 3000});
+    this.snackBar.open(`Erreur de connexion : ${message}`, 'Fermer', {duration: 3000});
   }
 }

@@ -1,6 +1,6 @@
 export const API_ENDPOINT = 'https://sachathommet.fr/api/';
 export const USER_TOKEN_COOKIE_LIFETIME = 1000 * 60 * 60 * 72; // 3 days
-export const AUTH_COOKIE_NAME = 'auth_token';
+export const AUTH_COOKIE_NAME = 'user_credentials';
 
 export const HTTP_ERROR_CODES: Record<number, string> = {
   0: 'Vous n\'êtes pas connecté à internet',
@@ -10,5 +10,6 @@ export const HTTP_ERROR_CODES: Record<number, string> = {
 
 export enum RedirectReasons {
   UNAUTHENTICATED = 'Vous devez être connecté pour accéder à vos fichiers',
+  SIGNED_OUT = 'Vous vous êtes bien déconnecté',
   PAGE_NOT_FOUND = 'La page n\'a pas été trouvée'
 }

@@ -1,1 +1,20 @@
-<p>header works!</p>
+<mat-toolbar color="primary" role="heading">
+
+  <button mat-icon-button class="example-icon" (click)="toggleSideBar()" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-title">Cloud-Storage</span>
+
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button>
+    <mat-icon>settings</mat-icon>
+  </button>
+
+  <button mat-icon-button class="icon-logout" (click)="signOut()">
+    <mat-icon>logout</mat-icon>
+  </button>
+
+</mat-toolbar>
