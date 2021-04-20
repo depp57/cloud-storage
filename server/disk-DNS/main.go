@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 //const MAX_ENTRIES = 10
@@ -90,5 +91,8 @@ func main() {
 	go DiskMLoop()
 	fmt.Println("Starting listening on port " + strconv.Itoa(ANSWER_PORT) + " for ClientEP...")
 	go ClientEPLoop()
-	time.Sleep(10 * 60 * time.Second)
+
+	//Wait for escape character to close
+	reader := bufio.NewReader(os.Stdin)
+	reader.ReadString('\n')
 }
