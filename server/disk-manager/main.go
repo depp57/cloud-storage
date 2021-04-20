@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "github.com/sventhommet/cloud-storage/server/comports"
+	. "github.com/sventhommet/cloud-storage/server/db"
 )
 
 //Port interfaces
@@ -14,16 +14,15 @@ func init() {
 	fsAdapt.init()
 
 	sqlAdapt = new(SqlDbPort)
-	//sqlAdapt.init()
+	sqlAdapt.Init()
 
 	dnsAdapt = new(I_DNSPort)
 	dnsAdapt.init()
 }
 
 func main() {
-	//data, _ := fsAdapt.readFile("test")
-
-	//storeFile("sven", "docs/img/depp.jpg", data)
+	data, _ := fsAdapt.readFile("test")
+	storeFile("sven", "docs/img/depp.jpg", data)
 	//deleteFile("sven", "docs/img/depp.jpg")
 
 	_ = dnsAdapt.addIpToDNS(fsAdapt.getDiskName())

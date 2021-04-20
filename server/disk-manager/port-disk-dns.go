@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/sventhommet/cloud-storage/server/netutils"
+	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
 type DNSPort interface {
@@ -29,7 +29,7 @@ func (this *I_DNSPort) init() {
 	if this.diskManagerIntName == "" {
 		panic("Please set NET_INTERFACE_NAME env var before launching disk-manager service")
 	}
-	this.diskManagerIP, err = netutils.GetMyIP(this.diskManagerIntName)
+	this.diskManagerIP, err = utils.GetMyIP(this.diskManagerIntName)
 	if err != nil {
 		panic(err.Error())
 	}
