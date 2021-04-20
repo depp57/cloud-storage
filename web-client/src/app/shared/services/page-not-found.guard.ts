@@ -10,7 +10,7 @@ export class PageNotFoundGuard implements CanActivate {
               private auth: AuthService) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.auth.isAuthenticated()) {
+    if (this.auth.isAuthenticated) {
       this.router.navigate(['fichiers'], {state: {redirect: RedirectReasons.PAGE_NOT_FOUND}});
     }
     else {

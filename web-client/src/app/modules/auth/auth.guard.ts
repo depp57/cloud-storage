@@ -7,10 +7,10 @@ import { AuthService } from 'src/app/modules/auth/services/auth.service';
 export class AuthGuard implements CanActivate {
 
   constructor(private router: Router,
-              private authService: AuthService) {}
+              private auth: AuthService) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const isAuth = this.authService.isAuthenticated();
+    const isAuth = this.auth.isAuthenticated;
 
     if (!isAuth) {
       this.router.navigate([''], {state: {redirect: RedirectReasons.UNAUTHENTICATED}}); // TODO PROMISE

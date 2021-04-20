@@ -1,5 +1,6 @@
 export const API_ENDPOINT = 'https://sachathommet.fr/api/';
 export const USER_TOKEN_COOKIE_LIFETIME = 1000 * 60 * 60 * 72; // 3 days
+export const AUTH_COOKIE_NAME = 'auth_token';
 
 export const HTTP_ERROR_CODES: Record<number, string> = {
   0: 'Vous n\'êtes pas connecté à internet',
