@@ -1,12 +1,10 @@
-package netutils
+package utils
 
 import (
 	"errors"
-	"math/rand"
 	"net"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func isIPv4Addr(ip string) bool {
@@ -38,20 +36,4 @@ func GetMyIP(netInterface string) (string, error) {
 		}
 	}
 	return "0", errors.New(netInterface + " interface not found")
-}
-
-//// MOVE ////
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-var letterRunes = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
