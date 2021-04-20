@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './modules/auth/auth.guard';
-import { PageNotFoundGuard } from '@shared/services/page-not-found.guard';
-import { LoginComponent } from 'src/app/modules/auth/components/login/login.component';
+import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 const routes: Routes = [
   {
@@ -14,7 +13,8 @@ const routes: Routes = [
     loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
-    path: '**', data: {title: 'Page non trouvée'}, component: LoginComponent, canActivate: [PageNotFoundGuard]
+    path: '**', data: {title: 'Page non trouvée'},
+    component: NotFoundComponent
   } // redirect all 404 pages
 ];
 

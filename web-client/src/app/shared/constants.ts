@@ -10,6 +10,5 @@ export const HTTP_ERROR_CODES: Record<number, string> = {
 
 export enum RedirectReasons {
   UNAUTHENTICATED = 'Vous devez être connecté pour accéder à vos fichiers',
-  SIGNED_OUT = 'Vous vous êtes bien déconnecté',
-  PAGE_NOT_FOUND = 'La page n\'a pas été trouvée'
+  SIGNED_OUT = 'Vous vous êtes bien déconnecté'
 }
