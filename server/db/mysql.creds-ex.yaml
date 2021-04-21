@@ -1,0 +1,5 @@
+mysql_user: <user>
+mysql_password: <password>
+mysql_server_ip: "192.168.0.2"
+mysql_server_port: 3306
+mysql_database_name: <dbname>

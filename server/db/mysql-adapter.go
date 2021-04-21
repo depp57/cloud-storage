@@ -7,40 +7,33 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"gopkg.in/yaml.v2"
 
 	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
-const DB_NAME = "cloud_storage"
+const MYSQL_CONF_FILE = "mysql.conf.yaml"
 
 type SqlDbPort struct {
 	db          *sql.DB
-	DB_USER     string
-	DB_PASSWORD string
-	DB_IP       string
-	DB_PORT     string
-	DB_NAME     string
+	DB_USER     string `yaml:"mysql_user"`
+	DB_PASSWORD string `yaml:"mysql_password"`
+	DB_IP       string `yaml:"mysql_server_ip"`
+	DB_PORT     string `yaml:"mysql_server_port"`
+	DB_NAME     string `yaml:"mysql_database_name"`
 }
 
 func (this *SqlDbPort) Init() {
-	this.DB_USER = os.Getenv("MYSQL_USER")
-	this.DB_PASSWORD = os.Getenv("MYSQL_PASSWORD")
-	this.DB_IP = os.Getenv("MYSQL_SERVER_IP")
-	this.DB_PORT = os.Getenv("MYSQL_SERVER_PORT")
-	if this.DB_USER == "" {
-		panic("Please set MYSQL_USER env var")
+	var data, errYamlFile = os.ReadFile(MYSQL_CONF_FILE)
+	if errYamlFile != nil {
+		panic("Could not read " + MYSQL_CONF_FILE)
 	}
-	if this.DB_PASSWORD == "" {
-		panic("Please set MYSQL_PASSWORD env var")
-	}
-	if this.DB_IP == "" {
-		panic("Please set MYSQL_SERVER_IP env var")
-	}
-	if this.DB_PORT == "" {
-		panic("Please set MYSQL_SERVER_PORT env var")
+	errYamlParse := yaml.Unmarshal([]byte(data), this)
+	if errYamlParse != nil {
+		panic("Could not parse " + MYSQL_CONF_FILE)
 	}
 
-	this.db, _ = sql.Open("mysql", this.DB_USER+":"+this.DB_PASSWORD+"@tcp("+this.DB_IP+":"+this.DB_PORT+")/"+DB_NAME)
+	this.db, _ = sql.Open("mysql", this.DB_USER+":"+this.DB_PASSWORD+"@tcp("+this.DB_IP+":"+this.DB_PORT+")/"+this.DB_NAME)
 	if err := this.db.Ping(); err != nil {
 		panic(err)
 	}

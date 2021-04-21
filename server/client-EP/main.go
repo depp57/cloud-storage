@@ -10,6 +10,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+const SERVER_CONF_FILE = "server.yaml"
+
 type Server struct {
 	BindTo struct {
 		Address string `yaml:"address"`
@@ -35,20 +37,14 @@ func main() {
 	defer sqlAdapt.Close()
 
 	var server Server
-	var data, errYamlFile = os.ReadFile("server.yaml")
+	var data, errYamlFile = os.ReadFile(SERVER_CONF_FILE)
 	if errYamlFile != nil {
-		panic("Could not read server.yaml")
+		panic("Could not read " + SERVER_CONF_FILE)
 	}
 	errYamlParse := yaml.Unmarshal([]byte(data), &server)
 	if errYamlParse != nil {
-		panic("Could not parse server.yaml")
+		panic("Could not parse " + SERVER_CONF_FILE)
 	}
-
-	//TODO make it work
-	server.BindTo.Address = "0.0.0.0"
-	server.BindTo.Port = "8008"
-	server.Ssl.CertPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
-	server.Ssl.KeyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
 
 	router := http.NewServeMux()
 	router.Handle("/", http.HandlerFunc(reqHandler))
