@@ -12,7 +12,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Access-Control-Allow-Origin", "*")
 
 	if request.Method != "POST" {
-		response.WriteHeader(501)
+		response.WriteHeader(405)
 		response.Write([]byte("{error: must be POST method}"))
 		return
 	}
@@ -28,7 +28,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 
 	token, err := auth.Connect(username, password)
 	if err != nil {
-		response.WriteHeader(501)
+		response.WriteHeader(401)
 		response.Write([]byte("{error: " + err.Error() + "}"))
 		return
 	}
@@ -39,7 +39,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 
 func handleFilesList(response http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
-		response.WriteHeader(501)
+		response.WriteHeader(405)
 		//TODO Content-type: json
 		response.Write([]byte("{error: must be GET method}"))
 		return
