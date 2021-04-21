@@ -181,7 +181,7 @@ func (this *SqlDbPort) ChallengeUserPassword(username string, password_hash stri
 	token := utils.RandString(TOKEN_SIZE)
 	token_expiration := strings.Split(token_expiration_t.String(), ".")[0]
 
-	var _, err2 = this.db.Query("UPDATE users SET session_token='" + token + "' AND session_token_expiration='" + token_expiration + "' WHERE id='" + id + "';")
+	var _, err2 = this.db.Query("UPDATE users SET session_token='" + token + "', session_token_expiration='" + token_expiration + "' WHERE id='" + id + "';")
 	//TODO remove panic and implement : log errors
 	if err2 != nil {
 		panic(err.Error())
