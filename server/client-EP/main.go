@@ -51,8 +51,8 @@ func main() {
 	// http.HandleFunc("/files/dl/", handleFilesDL)
 	// http.HandleFunc("/auth/", handleAuth)
 
-	corsMux := http.NewServeMux()
-	corsMux.Handle("/", http.HandlerFunc(corsHandler))
+	router := http.NewServeMux()
+	router.Handle("/", http.HandlerFunc(reqHandler))
 
 	fmt.Println("--- Starting Client-EP component ---")
 
@@ -61,26 +61,28 @@ func main() {
 		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, nil))
 	} else {
 		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
-		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, corsMux))
+		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, router))
 	}
 }
 
-func corsHandler(w http.ResponseWriter, r *http.Request) {
+func reqHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "OPTIONS" {
-		//handle preflight in here
+		//Handle CORS preflight here
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
 		headers.Add("Vary", "Origin")
 		headers.Add("Vary", "Access-Control-Request-Method")
 		headers.Add("Vary", "Access-Control-Request-Headers")
 		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
-		headers.Add("Access-Control-Allow-Methods", "GET, POST,OPTIONS")
+		headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		return
 	} else {
+		//For any other requests use restAPI multiplexer
 		restAPI := http.NewServeMux()
 		restAPI.HandleFunc("/files/list/", handleFilesList)
 		restAPI.HandleFunc("/files/dl/", handleFilesDL)
 		restAPI.HandleFunc("/auth/", handleAuth)
+		w.Header().Add("Content-Type", "application/json")
 		restAPI.ServeHTTP(w, r)
 	}
 }
