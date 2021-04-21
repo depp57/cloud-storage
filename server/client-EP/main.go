@@ -15,6 +15,10 @@ type Server struct {
 		address string
 		port    string
 	}
+	ssl struct {
+		certPath string
+		keyPath  string
+	}
 }
 
 var sqlAdapt db.DbPort
@@ -40,13 +44,20 @@ func main() {
 	//TODO make it work
 	server.bindTo.address = "0.0.0.0"
 	server.bindTo.port = "8008"
+	server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
+	server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
 
 	http.HandleFunc("/files/list/", handleFilesList)
 	http.HandleFunc("/files/dl/", handleFilesDL)
 	http.HandleFunc("/auth/", handleAuth)
 
 	fmt.Println("--- Starting Client-EP component ---")
-	fmt.Println("HTTP server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
 
-	log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, nil))
+	if server.ssl.certPath != "" && server.ssl.keyPath != "" {
+		fmt.Println("HTTPS secure server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
+		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, nil))
+	} else {
+		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
+		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, nil))
+	}
 }
