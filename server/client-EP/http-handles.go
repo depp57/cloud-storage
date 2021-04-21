@@ -8,9 +8,11 @@ import (
 )
 
 func handleAuth(response http.ResponseWriter, request *http.Request) {
+	response.Header().Add("Content-Type", "application/json")
+	response.Header().Add("Access-Control-Allow-Origin", "*")
+
 	if request.Method != "POST" {
 		response.WriteHeader(501)
-		response.Header().Add("Content-Type", "application/json")
 		response.Write([]byte("{error: must be POST method}"))
 		return
 	}
@@ -27,12 +29,10 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 	token, err := auth.Connect(username, password)
 	if err != nil {
 		response.WriteHeader(501)
-		response.Header().Add("Content-Type", "application/json")
 		response.Write([]byte("{error: " + err.Error() + "}"))
 		return
 	}
 
-	response.Header().Add("Content-Type", "application/json")
 	response.Write([]byte("{token: " + token + "}"))
 	return
 }
@@ -67,3 +67,8 @@ func handleFilesDL(response http.ResponseWriter, request *http.Request) {
 
 	return
 }
+
+// func addAngularHeaders(response *http.ResponseWriter) {
+// 	response.Add("Content-Type", "application/json")
+// 	response.Add("Access-Control-Allow-Origin", "*")
+// }
