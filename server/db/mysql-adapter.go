@@ -46,6 +46,10 @@ func (this *SqlDbPort) Init() {
 	}
 }
 
+func (this *SqlDbPort) Close() {
+	this.db.Close()
+}
+
 func (this *SqlDbPort) GetFileId(userId string, fullpath string) string {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")

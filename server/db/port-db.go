@@ -21,6 +21,7 @@ type User struct {
 
 type DbPort interface {
 	Init()
+	Close()
 
 	//*** Used by disk-manager ***//
 

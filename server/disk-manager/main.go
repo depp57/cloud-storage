@@ -21,6 +21,8 @@ func init() {
 }
 
 func main() {
+	defer sqlAdapt.Close()
+
 	data, _ := fsAdapt.readFile("test")
 	storeFile("sven", "docs/img/depp.jpg", data)
 	//deleteFile("sven", "docs/img/depp.jpg")
