@@ -1,23 +1,22 @@
 @import '~src/styles';
 
 #main-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  place-items: center;
   height: 100%;
   background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+}
+
+.login-card {
+  width: clamp(25rem, 70%, 35rem);
+  height: clamp(20rem, 35%, 80%);
+  padding: 40px;
 }
 
 .login-header-image {
   background-image: url(~src/assets/favicon/favicon.ico);
   background-size: cover;
   border-radius: 0;
-}
-
-.login-card {
-  width: 25vw;
-  height: 33vh;
-  padding: 40px;
 }
 
 .center-text {
@@ -36,18 +35,6 @@
   font-size: xx-large;
 }
 
-.login-card {
-  @media #{$TABLET} {
-    height: 35vh;
-    width: 85vw;
-  }
-  @media #{$MOBILE} {
-    height: 50vh;
-    width: 80vw;
-    padding: 20px;
-  }
-}
-
 .mat-card{
   display:flex;
   flex-direction: column;
@@ -60,4 +47,12 @@
 .mat-card-content{
   flex-grow: 1;
   overflow: auto;
+}
+
+@media #{$MOBILE} {
+  .login-card {
+    width: clamp(18rem, 35%, 100%);
+    height: clamp(18rem, 45%, 100%);
+    padding: 20px;
+  }
 }
