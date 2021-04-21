@@ -5,15 +5,19 @@ import (
 	"time"
 
 	"github.com/sventhommet/cloud-storage/server/db"
+	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
-const TOKEN_TTL_SECONDS = 120
+const TOKEN_TTL_SECONDS = 300
 
 type Auth interface {
-	Connect(username string, password_hash string)
+	//Must be called at beggining to connect the database to auth component
+	Init(db db.DbPort)
+	//Try to connect user and returns a session token if authentication succeed
+	Connect(username string, password_hash string) (string, error)
 	GetUser(token string) (db.User, error)
-	Revoke(token string)
-	ReloadTTL(token string, seconds int)
+	Revoke(token string) error
+	ReloadTTL(token string, seconds int) error
 }
 
 type AuthStruct struct {
@@ -22,21 +26,26 @@ type AuthStruct struct {
 	users map[string]db.User
 }
 
-func (this *AuthStruct) Connect(username string, password_hash string) error {
+func (this *AuthStruct) Init(dbPort db.DbPort) {
+	this.db = dbPort
+	this.users = make(map[string]db.User)
+}
+
+func (this *AuthStruct) Connect(username string, password string) (string, error) {
 	if !this.db.UserExist(username) {
-		return errors.New("Le nom d'utilisateur est invalide")
+		return "", errors.New("Le nom d'utilisateur est invalide")
 	}
 
 	now := time.Now()
-	expiration := now.Add(TOKEN_TTL_SECONDS)
-	user, ok := this.db.ChallengeUserPassword(username, password_hash, expiration)
+	expiration := now.Add(time.Second * TOKEN_TTL_SECONDS)
+	user, ok := this.db.ChallengeUserPassword(username, utils.Sha256(password), expiration)
 	if !ok {
-		return errors.New("Mot de passe incorrect")
+		return "", errors.New("Mot de passe incorrect")
 	}
 
 	//Add the authenticated user to the cached list in auth component
 	this.users[user.Token] = user
-	return nil
+	return user.Token, nil
 }
 
 func (this *AuthStruct) GetUser(token string) (db.User, error) {

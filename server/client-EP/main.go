@@ -1,31 +1,52 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	"os"
 
 	"github.com/sventhommet/cloud-storage/server/db"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type Server struct {
-	ADDRESS string
-	PORT    int
+	bindTo struct {
+		address string
+		port    string
+	}
 }
 
 var sqlAdapt db.DbPort
+var auth Auth
 
 func init() {
 	sqlAdapt = new(db.SqlDbPort)
+	sqlAdapt.Init()
+	auth = new(AuthStruct)
+	auth.Init(sqlAdapt)
 }
 
 func main() {
 	var server Server
-	server.ADDRESS = "0.0.0.0"
-	server.PORT = 80
+	var data, errYamlFile = os.ReadFile("server.yaml")
+	if errYamlFile != nil {
+		panic("Could not read server.yaml")
+	}
+	errYamlParse := yaml.Unmarshal([]byte(data), &server)
+	if errYamlParse != nil {
+		panic("Could not parse server.yaml")
+	}
+	//TODO make it work
+	server.bindTo.address = "0.0.0.0"
+	server.bindTo.port = "8008"
 
 	http.HandleFunc("/files/list/", handleFilesList)
 	http.HandleFunc("/files/dl/", handleFilesDL)
+	http.HandleFunc("/auth/", handleAuth)
 
-	log.Fatal(http.ListenAndServe(server.ADDRESS+":"+strconv.Itoa(server.PORT), nil))
+	fmt.Println("--- Starting Client-EP component ---")
+	fmt.Println("HTTP server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
+
+	log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, nil))
 }
