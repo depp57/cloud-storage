@@ -44,8 +44,8 @@ func main() {
 	//TODO make it work
 	server.bindTo.address = "0.0.0.0"
 	server.bindTo.port = "8008"
-	//server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
-	//server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
+	server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
+	server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
 
 	// http.HandleFunc("/files/list/", handleFilesList)
 	// http.HandleFunc("/files/dl/", handleFilesDL)

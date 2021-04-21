@@ -17,7 +17,7 @@ type authCouple struct {
 func handleAuth(response http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		response.WriteHeader(405)
-		response.Write([]byte("{error: must be POST method}"))
+		response.Write([]byte("{\"error\": \"must be POST method\"}"))
 		return
 	}
 
@@ -27,7 +27,13 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 
 	var authC authCouple
 	result, err := ioutil.ReadAll(request.Body)
-	json.Unmarshal(result, &authC)
+	if err != nil {
+		panic(err)
+	}
+	err2 := json.Unmarshal(result, &authC)
+	if err2 != nil {
+		panic(err2)
+	}
 
 	fmt.Println("Trying to authenticate...")
 	fmt.Println("user : " + authC.username)
@@ -37,7 +43,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 	token, err := auth.Connect(authC.username, authC.password)
 	if err != nil {
 		response.WriteHeader(401)
-		response.Write([]byte("{error: " + err.Error() + "}"))
+		response.Write([]byte("{\"error\": \"" + err.Error() + "\"}"))
 		return
 	}
 
