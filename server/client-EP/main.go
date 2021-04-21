@@ -54,10 +54,10 @@ func main() {
 	fmt.Println("--- Starting Client-EP component ---")
 
 	if server.ssl.certPath != "" && server.ssl.keyPath != "" {
-		fmt.Println("HTTPS secure server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
+		fmt.Println("HTTPS secure server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
 		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, nil))
 	} else {
-		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.address + " ...")
+		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
 		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, nil))
 	}
 }
