@@ -1,0 +1,58 @@
+@import '~src/styles';
+
+#main-container {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+}
+
+.login-card {
+  width: clamp(25rem, 70%, 35rem);
+  height: clamp(20rem, 35%, 80%);
+  padding: 40px;
+}
+
+.login-header-image {
+  background-image: url(~src/assets/favicon/favicon.ico);
+  background-size: cover;
+  border-radius: 0;
+}
+
+.center-text {
+  display: flex;
+  align-items: center;
+}
+
+.app-name {
+  color: gray;
+  font-size: 1.6em;
+  margin-bottom: unset !important;
+}
+
+.text-important {
+  margin: 4% 0 5% 0;
+  font-size: xx-large;
+}
+
+.mat-card{
+  display:flex;
+  flex-direction: column;
+}
+
+.mat-card-header {
+  flex-shrink: 0;
+}
+
+.mat-card-content{
+  flex-grow: 1;
+  overflow: auto;
+}
+
+@media #{$MOBILE} {
+  .login-card {
+    width: clamp(18rem, 35%, 100%);
+    height: clamp(18rem, 45%, 100%);
+    padding: 20px;
+  }
+}
