@@ -58,7 +58,7 @@ func main() {
 
 	if server.ssl.certPath != "" && server.ssl.keyPath != "" {
 		fmt.Println("HTTPS secure server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
-		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, nil))
+		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, router))
 	} else {
 		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
 		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, router))
