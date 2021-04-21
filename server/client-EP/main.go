@@ -11,14 +11,14 @@ import (
 )
 
 type Server struct {
-	bindTo struct {
-		address string
-		port    string
-	}
-	ssl struct {
-		certPath string
-		keyPath  string
-	}
+	BindTo struct {
+		Address string `yaml:"address"`
+		Port    string `yaml:"port"`
+	} `yaml:"bindTo"`
+	Ssl struct {
+		CertPath string `yaml:"certPath"`
+		KeyPath  string `yaml:"keyPath"`
+	} `yaml:"ssl"`
 }
 
 var sqlAdapt db.DbPort
@@ -32,6 +32,8 @@ func init() {
 }
 
 func main() {
+	defer sqlAdapt.Close()
+
 	var server Server
 	var data, errYamlFile = os.ReadFile("server.yaml")
 	if errYamlFile != nil {
@@ -41,15 +43,12 @@ func main() {
 	if errYamlParse != nil {
 		panic("Could not parse server.yaml")
 	}
+
 	//TODO make it work
 	server.bindTo.address = "0.0.0.0"
 	server.bindTo.port = "8008"
 	server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
 	server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
-
-	// http.HandleFunc("/files/list/", handleFilesList)
-	// http.HandleFunc("/files/dl/", handleFilesDL)
-	// http.HandleFunc("/auth/", handleAuth)
 
 	router := http.NewServeMux()
 	router.Handle("/", http.HandlerFunc(reqHandler))
@@ -70,11 +69,11 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		//Handle CORS preflight here
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
+		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
+		headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		headers.Add("Vary", "Origin")
 		headers.Add("Vary", "Access-Control-Request-Method")
 		headers.Add("Vary", "Access-Control-Request-Headers")
-		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
-		headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		return
 	} else {
 		//For any other requests use restAPI multiplexer
@@ -83,6 +82,7 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		restAPI.HandleFunc("/files/dl/", handleFilesDL)
 		restAPI.HandleFunc("/auth/", handleAuth)
 		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("Access-Control-Allow-Origin", "*")
 		restAPI.ServeHTTP(w, r)
 	}
 }
