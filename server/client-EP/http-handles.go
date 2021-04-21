@@ -48,7 +48,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	response.Write([]byte("{token: " + token + "}"))
+	response.Write([]byte("{\"token\": \"" + token + "\"}"))
 	return
 }
 
