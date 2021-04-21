@@ -45,22 +45,22 @@ func main() {
 	}
 
 	//TODO make it work
-	server.bindTo.address = "0.0.0.0"
-	server.bindTo.port = "8008"
-	server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
-	server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
+	server.BindTo.Address = "0.0.0.0"
+	server.BindTo.Port = "8008"
+	server.Ssl.CertPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
+	server.Ssl.KeyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
 
 	router := http.NewServeMux()
 	router.Handle("/", http.HandlerFunc(reqHandler))
 
 	fmt.Println("--- Starting Client-EP component ---")
 
-	if server.ssl.certPath != "" && server.ssl.keyPath != "" {
-		fmt.Println("HTTPS secure server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
-		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, router))
+	if server.Ssl.CertPath != "" && server.Ssl.KeyPath != "" {
+		fmt.Println("HTTPS secure server configured to listen on " + server.BindTo.Address + ":" + server.BindTo.Port + " ...")
+		log.Fatal(http.ListenAndServeTLS(server.BindTo.Address+":"+server.BindTo.Port, server.Ssl.CertPath, server.Ssl.KeyPath, router))
 	} else {
-		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
-		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, router))
+		fmt.Println("HTTP unsafe server configured to listen on " + server.BindTo.Address + ":" + server.BindTo.Port + " ...")
+		log.Fatal(http.ListenAndServe(server.BindTo.Address+":"+server.BindTo.Port, router))
 	}
 }
 
