@@ -47,9 +47,12 @@ func main() {
 	//server.ssl.certPath = "/etc/letsencrypt/archive/iofactory.fr/cert1.pem"
 	//server.ssl.keyPath = "/etc/letsencrypt/archive/iofactory.fr/privkey1.pem"
 
-	http.HandleFunc("/files/list/", handleFilesList)
-	http.HandleFunc("/files/dl/", handleFilesDL)
-	http.HandleFunc("/auth/", handleAuth)
+	// http.HandleFunc("/files/list/", handleFilesList)
+	// http.HandleFunc("/files/dl/", handleFilesDL)
+	// http.HandleFunc("/auth/", handleAuth)
+
+	corsMux := http.NewServeMux()
+	corsMux.Handle("/", http.HandlerFunc(corsHandler))
 
 	fmt.Println("--- Starting Client-EP component ---")
 
@@ -58,6 +61,26 @@ func main() {
 		log.Fatal(http.ListenAndServeTLS(server.bindTo.address+":"+server.bindTo.port, server.ssl.certPath, server.ssl.keyPath, nil))
 	} else {
 		fmt.Println("HTTP unsafe server configured to listen on " + server.bindTo.address + ":" + server.bindTo.port + " ...")
-		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, nil))
+		log.Fatal(http.ListenAndServe(server.bindTo.address+":"+server.bindTo.port, corsMux))
+	}
+}
+
+func corsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		//handle preflight in here
+		headers := w.Header()
+		headers.Add("Access-Control-Allow-Origin", "*")
+		headers.Add("Vary", "Origin")
+		headers.Add("Vary", "Access-Control-Request-Method")
+		headers.Add("Vary", "Access-Control-Request-Headers")
+		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
+		headers.Add("Access-Control-Allow-Methods", "GET, POST,OPTIONS")
+		return
+	} else {
+		restAPI := http.NewServeMux()
+		restAPI.HandleFunc("/files/list/", handleFilesList)
+		restAPI.HandleFunc("/files/dl/", handleFilesDL)
+		restAPI.HandleFunc("/auth/", handleAuth)
+		restAPI.ServeHTTP(w, r)
 	}
 }
