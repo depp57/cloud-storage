@@ -9,9 +9,9 @@ import (
 	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
-type authCouple struct {
-	username string
-	password string
+type AuthCouple struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func handleAuth(response http.ResponseWriter, request *http.Request) {
@@ -25,22 +25,23 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 	// var username = request.PostFormValue("username")
 	// var password = request.PostFormValue("password")
 
-	var authC authCouple
+	var authC AuthCouple
 	result, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(string(result))
 	err2 := json.Unmarshal(result, &authC)
 	if err2 != nil {
 		panic(err2)
 	}
 
 	fmt.Println("Trying to authenticate...")
-	fmt.Println("user : " + authC.username)
-	fmt.Println("password : " + authC.password)
-	fmt.Println("password_sha256 : " + utils.Sha256(authC.password) + "\n")
+	fmt.Println("user : " + authC.Username)
+	fmt.Println("password : " + authC.Password)
+	fmt.Println("password_sha256 : " + utils.Sha256(authC.Password) + "\n")
 
-	token, err := auth.Connect(authC.username, authC.password)
+	token, err := auth.Connect(authC.Username, authC.Password)
 	if err != nil {
 		response.WriteHeader(401)
 		response.Write([]byte("{\"error\": \"" + err.Error() + "\"}"))
