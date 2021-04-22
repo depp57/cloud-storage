@@ -53,7 +53,7 @@ func closure(handler http.HandlerFunc, a Auth) http.HandlerFunc {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
-		if strings.Split(authorization_h, " ")[0] != "Baerer" {
+		if strings.Split(authorization_h, " ")[0] != "Bearer" {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
