@@ -1,7 +1,7 @@
 // The color that will be at the beginning and the end of the loop.
 $firstColor: #3f51b5;
 
-// The list of all the used colors. You can add or remove colors, the animation stays fluid. The $first-color must remain at the end of the list though.
+// The list of all the used colors. The $first-color must remain at the end of the list.
 $listColors: #ff4081, #f44336, #dcdcdc, #ff4081, #3f51b5, $firstColor;
 
 $delayCoeff: 0.04s;
@@ -33,12 +33,6 @@ $delayCoeff: 0.04s;
       animation: pweek 5s linear infinite;
       -webkit-animation-delay: $i*$delayCoeff;
       animation-delay: $i*$delayCoeff;
-
-      &:hover {
-        -webkit-animation-play-state: paused; /* Chrome, Safari, Opera */
-        animation-play-state: paused;
-
-      }
     }
   }
 }

@@ -4,7 +4,7 @@
 /******************* T H E M E   C O L O R S *******************/
 /***************************************************************/
 
-@import '~@angular/material/theming';
+@import '../../node_modules/@angular/material/theming';
 @include mat-core();
 
 $light-app-primary: mat-palette($mat-blue, 700, 300, 900);
@@ -18,16 +18,6 @@ $light-app-theme: mat-light-theme((
 ));
 
 @include angular-material-theme($light-app-theme);
-
-/***************************************************************/
-/********************** C O N S T A N T S **********************/
-/***************************************************************/
-
-// Media queries
-$LAPTOP: '(max-width: 1500px)';
-$TABLET: '(max-width: 1025px)';
-$MOBILE: '(max-width: 813px)';
-
 
 /***************************************************************/
 /******************* G L O B A L   S T Y L E *******************/
