@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
     const isAuth = this.auth.isAuthenticated;
 
     if (!isAuth) {
-      this.router.navigate([''], {state: {redirect: RedirectReasons.UNAUTHENTICATED}}); // TODO PROMISE
+      this.router.navigate([''], {state: {redirect: RedirectReasons.UNAUTHENTICATED}});
     }
 
     return isAuth;

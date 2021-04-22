@@ -7,21 +7,16 @@
   background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
 }
 
-.login-card {
+.card {
   width: clamp(25rem, 70%, 35rem);
   height: clamp(20rem, 35%, 80%);
   padding: 40px;
 }
 
-.login-header-image {
+.header-image {
   background-image: url(~src/assets/favicon/favicon.ico);
   background-size: cover;
   border-radius: 0;
-}
-
-.center-text {
-  display: flex;
-  align-items: center;
 }
 
 .app-name {
@@ -30,27 +25,29 @@
   margin-bottom: unset !important;
 }
 
-.text-important {
-  margin: 4% 0 5% 0;
-  font-size: xx-large;
-}
-
 .mat-card{
   display:flex;
+  justify-content: space-between;
   flex-direction: column;
 }
 
-.mat-card-header {
-  flex-shrink: 0;
+mat-card-footer {
+  margin-left: unset;
+  margin-right: unset;
+  height: 4px;
 }
 
-.mat-card-content{
-  flex-grow: 1;
-  overflow: auto;
+::ng-deep #auth-title {
+  font-size: xx-large;
+}
+
+.center-text {
+  display: flex;
+  align-items: center;
 }
 
 @media #{$MOBILE} {
-  .login-card {
+  .card {
     width: clamp(18rem, 35%, 100%);
     height: clamp(18rem, 45%, 100%);
     padding: 20px;

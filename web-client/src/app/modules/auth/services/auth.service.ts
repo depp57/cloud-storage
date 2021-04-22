@@ -17,18 +17,20 @@ export class AuthService {
 
   signIn(user: ApiAuthParam): Observable<ApiAuthResponse> {
     return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
-      tap(response => {
-        const userCredentials = new UserCredentials(user.username, response.token);
-        setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, USER_TOKEN_COOKIE_LIFETIME);
-      })
+      tap(response => this.saveUserCredentials(user.username, response.token))
+    );
+  }
+
+  signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
+      tap(response => this.saveUserCredentials(user.username, response.token))
     );
   }
 
   signOut(): Observable<ApiAuthResponse> {
-    // TODO SIGN OUT WITH REST API + DELETE ONLY IN SUCCESS OBSERVABLE
-    deleteCookie(AUTH_COOKIE_NAME);
-    this._userCredentials = undefined;
-    return new Observable<ApiAuthResponse>((subscriber => subscriber.next({token: 'foo', error: 'foo'})));
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', null).pipe(
+      tap(_ => this.deleteUserCredentials())
+    );
   }
 
   get isAuthenticated(): boolean {
@@ -52,5 +54,16 @@ export class AuthService {
       }
       return this._userCredentials;
     }
+  }
+
+  private saveUserCredentials(username: string, token: string): void {
+    const userCredentials = new UserCredentials(username, token);
+    setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, USER_TOKEN_COOKIE_LIFETIME);
+    this._userCredentials = userCredentials;
+  }
+
+  private deleteUserCredentials(): void {
+    deleteCookie(AUTH_COOKIE_NAME);
+    this._userCredentials = undefined;
   }
 }

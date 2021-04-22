@@ -5,11 +5,11 @@ import { NotFoundComponent } from '@shared/components/not-found/not-found.compon
 
 const routes: Routes = [
   {
-    path: '', pathMatch: 'full', data: {title: 'Connexion'},
+    path: '', data: {title: 'Connexion'},
     loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'fichiers', data: {title: 'Stockage'}, canActivate: [AuthGuard],
+    path: 'fichiers', data: {title: 'Mes fichiers'}, canActivate: [AuthGuard],
     loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
@@ -22,4 +22,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

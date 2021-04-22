@@ -1,0 +1,12 @@
+<h1 id="auth-title">Connexion</h1>
+
+<mat-card-content>
+  <app-auth-form [isSignIn]=true
+                 (submitForm)="onSignIn($event.username, $event.password)">
+  </app-auth-form>
+</mat-card-content>
+
+<div>
+  <span>Vous n’avez pas encore de compte ? </span>
+  <a routerLink="/inscription">Créez-en un !</a>
+</div>

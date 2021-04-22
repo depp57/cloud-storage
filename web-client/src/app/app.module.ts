@@ -3,10 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { HttpTokenInterceptor } from '@shared/services/http-token-interceptor.service';
+import { HttpAuthInterceptor } from '@shared/services/http-auth-interceptor.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { MaterialModule } from 'src/app/modules/material/material.module';
+import { HttpLoadingInterceptor } from '@shared/services/http-loading-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -23,10 +24,15 @@ import { MaterialModule } from 'src/app/modules/material/material.module';
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttpTokenInterceptor,
+      useClass: HttpLoadingInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpAuthInterceptor,
       multi: true
     }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

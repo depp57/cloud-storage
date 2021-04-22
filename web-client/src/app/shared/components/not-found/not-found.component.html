@@ -65,11 +65,11 @@
 
   <h1>Page introuvable</h1>
 
-  <div *ngIf="isAuth else elseBlock">
+  <div *ngIf="isAuth else elseTemplate">
     <a mat-raised-button color="primary" routerLink="/fichiers">Accéder à mon espace Cloud-Storage</a>
   </div>
 
-  <ng-template #elseBlock>
+  <ng-template #elseTemplate>
     <a mat-raised-button color="primary" routerLink="/">Me connecter à mon espace Cloud-Storage</a>
   </ng-template>
 </div>

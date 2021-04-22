@@ -6,7 +6,7 @@ import { AuthService } from 'src/app/modules/auth/services/auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class HttpTokenInterceptor implements HttpInterceptor {
+export class HttpAuthInterceptor implements HttpInterceptor {
 
   constructor(private auth: AuthService) { }
 
@@ -16,7 +16,7 @@ export class HttpTokenInterceptor implements HttpInterceptor {
     let request = req;
 
     if (authToken) {
-      request = req.clone({setHeaders: { Authorization: authToken } });
+      request = req.clone({setHeaders: {Authorization: `Bearer ${authToken}`}});
     }
 
     return next.handle(request);
