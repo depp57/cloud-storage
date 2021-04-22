@@ -61,6 +61,7 @@ func closure(handler http.HandlerFunc, a Auth) http.HandlerFunc {
 
 		if _, err := a.GetUser(token); err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("{\"error\": \"" + err.Error() + "\"}"))
 			return
 		}
 
