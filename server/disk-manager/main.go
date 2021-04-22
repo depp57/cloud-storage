@@ -30,6 +30,10 @@ func main() {
 	_ = dnsAdapt.addIpToDNS(fsAdapt.getDiskName())
 }
 
+func mkdir(userId string, fullpath string) {
+
+}
+
 func storeFile(userId string, fullpath string, data []byte) {
 	var fileId = sqlAdapt.RegisterFile(userId, fullpath, fsAdapt.getDiskName())
 
@@ -40,6 +44,8 @@ func storeFile(userId string, fullpath string, data []byte) {
 		sqlAdapt.UnRegisterFile(userId, fullpath)
 		panic(err.Error())
 	}
+
+	//TODO disk table in db : diskLeftSpace() ?
 }
 
 func deleteFile(userId string, fullpath string) {
@@ -51,4 +57,6 @@ func deleteFile(userId string, fullpath string) {
 	}
 
 	sqlAdapt.UnRegisterFile(userId, fullpath)
+
+	//TODO disk table in db : diskLeftSpace() ?
 }
