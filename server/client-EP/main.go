@@ -72,13 +72,27 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		headers.Add("Vary", "Access-Control-Request-Headers")
 		return
 	} else {
+		// //For any other requests use restAPI multiplexer
+		// restAPI := http.NewServeMux()
+		// //First of all : add headers
+		// w.Header().Add("Content-Type", "application/json")
+		// w.Header().Add("Access-Control-Allow-Origin", "*")
+
+		// restAPI.HandleFunc("/files/list/", handleFilesList)
+		// restAPI.HandleFunc("/files/dl/", handleFilesDL)
+		// restAPI.HandleFunc("/auth/", handleAuth)
+
+		// restAPI.ServeHTTP(w, r)
 		//For any other requests use restAPI multiplexer
-		restAPI := http.NewServeMux()
-		restAPI.HandleFunc("/files/list/", handleFilesList)
-		restAPI.HandleFunc("/files/dl/", handleFilesDL)
-		restAPI.HandleFunc("/auth/", handleAuth)
+		restAPI := NewRestAPIMux(auth)
+		//First of all : add headers
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Access-Control-Allow-Origin", "*")
+
+		restAPI.Route("/files/list/", handleFilesList)
+		restAPI.Route("/files/dl/", handleFilesDL)
+		restAPI.HandleFunc("/auth/", handleAuth)
+
 		restAPI.ServeHTTP(w, r)
 	}
 }
