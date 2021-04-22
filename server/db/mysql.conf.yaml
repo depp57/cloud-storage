@@ -1,5 +1,5 @@
-mysql_user: cloud-storage
-mysql_password: Mysql-gros-depp
+mysql_user: <user>
+mysql_password: <password>
 mysql_server_ip: iofactory.fr
 mysql_server_port: 3306
-mysql_database_name: cloud-storage
+mysql_database_name: cloud_storage
