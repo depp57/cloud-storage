@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/sventhommet/cloud-storage/server/db"
@@ -58,7 +59,7 @@ func (this *AuthStruct) GetUser(token string) (db.User, error) {
 
 		return user, nil
 	}
-
+	fmt.Println("\nchallenge...")
 	//Now we must lookup in database
 	if user, ok := this.db.ChallengeUserToken(token); ok {
 		//User can be (re)set to the cached list in auth component
