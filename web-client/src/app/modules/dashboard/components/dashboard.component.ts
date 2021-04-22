@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { LoaderService } from '@shared/services/loader.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,7 +9,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private loader: LoaderService) { }
+
+  get isLoading(): BehaviorSubject<boolean> {
+    return this.loader.isLoading;
+  }
 
   ngOnInit(): void {
   }

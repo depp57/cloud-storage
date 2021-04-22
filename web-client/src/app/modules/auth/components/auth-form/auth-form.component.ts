@@ -13,8 +13,7 @@ export class AuthFormComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.initForm();

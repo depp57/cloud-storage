@@ -16,12 +16,12 @@ export class AuthComponent implements OnInit {
   constructor(private router: Router,
               private snackBar: MatSnackBar,
               private auth: AuthService,
-              private loaderService: LoaderService) {
+              private loader: LoaderService) {
     this.redirectCause = router.getCurrentNavigation()?.extras?.state?.redirect;
   }
 
   get isLoading(): BehaviorSubject<boolean> {
-    return this.loaderService.isLoading;
+    return this.loader.isLoading;
   }
 
   ngOnInit(): void {

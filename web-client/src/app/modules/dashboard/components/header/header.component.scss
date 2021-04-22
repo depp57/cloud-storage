@@ -25,7 +25,11 @@
 .search-input {
   width: 100%;
   height: 100%;
-  background-color: #6f81e5;
+  background-color: #e1dfdd;
   border-radius: 6px;
   padding-left: .3em;
+}
+
+.placeholder, .search-icon {
+  color: black;
 }

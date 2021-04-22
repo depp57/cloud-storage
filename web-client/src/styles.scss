@@ -1,6 +1,25 @@
 /* global style */
 
 /***************************************************************/
+/******************* T H E M E   C O L O R S *******************/
+/***************************************************************/
+
+@import '~@angular/material/theming';
+@include mat-core();
+
+$light-app-primary: mat-palette($mat-blue, 700, 300, 900);
+$light-app-accent: mat-palette($mat-pink, 300, 100, 700);
+
+$light-app-theme: mat-light-theme((
+  color: (
+    primary: $light-app-primary,
+    accent: $light-app-accent
+  )
+));
+
+@include angular-material-theme($light-app-theme);
+
+/***************************************************************/
 /********************** C O N S T A N T S **********************/
 /***************************************************************/
 
