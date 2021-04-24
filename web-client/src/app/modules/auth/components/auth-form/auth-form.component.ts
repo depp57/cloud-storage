@@ -15,17 +15,6 @@ export class AuthFormComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-    this.initForm();
-  }
-
-  private initForm(): void {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.minLength(4)]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
-    });
-  }
-
   get username(): AbstractControl | null {
     return this.loginForm.get('username');
   }
@@ -50,8 +39,19 @@ export class AuthFormComponent implements OnInit {
     return this.password?.hasError('minlength') ? 'Le mot de passe doit avoir au moins 6 caractères' : '';
   }
 
+  ngOnInit(): void {
+    this.initForm();
+  }
+
   onSubmit(): void {
     this.password?.reset();
     this.submitForm.emit({username: this.username?.value, password: this.password?.value});
+  }
+
+  private initForm(): void {
+    this.loginForm = new FormGroup({
+      username: new FormControl('', [Validators.required, Validators.minLength(4)]),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    });
   }
 }

@@ -24,7 +24,8 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isMobile = window.innerWidth < 599; // not responsive if the user resize the window, but avoid listening to
-                                             // window's resizing event => more performance
+    // not responsive if the user resize the window, but avoid listening to
+    // window's resizing event => more performance
+    this.isMobile = window.innerWidth < 599;
   }
 }

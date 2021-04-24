@@ -5,6 +5,7 @@
 /***************************************************************/
 
 @import '../../node_modules/@angular/material/theming';
+
 @include mat-core();
 
 $light-app-primary: mat-palette($mat-blue, 700, 300, 900);
@@ -37,11 +38,18 @@ $dark-app-theme: mat-dark-theme((
 /******************* G L O B A L   S T Y L E *******************/
 /***************************************************************/
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 a {
   text-decoration: none;
+
   &:hover {
     text-decoration: underline #6f81e5;
   }

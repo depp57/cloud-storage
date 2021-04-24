@@ -6,12 +6,14 @@ import { RecentFilesComponent } from './components/recent-files/recent-files.com
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 
 const routes: Routes = [
-  {path: '', component: DashboardComponent, children:
-  [
-    {path: '', pathMatch: 'full', component: FilesExplorerComponent},
-    {path: 'recents', data: {title: 'Récents'}, component: RecentFilesComponent},
-    {path: '**', data: {title: 'Page non trouvée'}, component: NotFoundComponent} // redirect all 404 pages
-  ]}
+  {
+    path: '', component: DashboardComponent, children:
+      [
+        {path: '', pathMatch: 'full', component: FilesExplorerComponent},
+        {path: 'recents', data: {title: 'Récents'}, component: RecentFilesComponent},
+        {path: '**', data: {title: 'Page non trouvée'}, component: NotFoundComponent} // redirect all 404 pages
+      ]
+  }
 ];
 
 @NgModule({

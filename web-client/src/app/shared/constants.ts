@@ -13,7 +13,6 @@ export enum RedirectReasons {
   SIGNED_OUT = 'Vous vous êtes bien déconnecté'
 }
 
-
 /*
 401 : Quand login/password
 {

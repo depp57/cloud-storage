@@ -15,24 +15,6 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  signIn(user: ApiAuthParam): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
-      tap(response => this.saveUserCredentials(user.username, response.token))
-    );
-  }
-
-  signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
-      tap(response => this.saveUserCredentials(user.username, response.token))
-    );
-  }
-
-  signOut(): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', null).pipe(
-      tap(_ => this.deleteUserCredentials())
-    );
-  }
-
   get isAuthenticated(): boolean {
     if (this._userCredentials) {
       return true;
@@ -54,6 +36,24 @@ export class AuthService {
       }
       return this._userCredentials;
     }
+  }
+
+  signIn(user: ApiAuthParam): Observable<ApiAuthResponse> {
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
+      tap(response => this.saveUserCredentials(user.username, response.token))
+    );
+  }
+
+  signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
+      tap(response => this.saveUserCredentials(user.username, response.token))
+    );
+  }
+
+  signOut(): Observable<ApiAuthResponse> {
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', null).pipe(
+      tap(_ => this.deleteUserCredentials())
+    );
   }
 
   private saveUserCredentials(username: string, token: string): void {
