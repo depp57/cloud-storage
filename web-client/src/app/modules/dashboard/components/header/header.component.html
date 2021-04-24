@@ -1,29 +1,27 @@
 <mat-toolbar color="primary" role="heading" class="main-container">
 
-  <div>
-    <button mat-icon-button class="example-icon" (click)="toggleSideBar()" aria-label="Example icon-button with menu icon">
+  <div class="flex-center">
+    <button mat-icon-button class="example-icon" (click)="toggleSideBar()" appHighlight="#004d88">
       <mat-icon>menu</mat-icon>
     </button>
 
     <a class="app-title" routerLink="/fichiers">Cloud-Storage</a>
   </div>
 
-  <div class="search-bar">
-    <form class="search-input">
-      <mat-form-field class="search-input">
-        <mat-icon matPrefix inline="true" class="search-icon">search</mat-icon>
-        <input type="search" matInput>
-        <mat-placeholder class="placeholder">Rechercher</mat-placeholder>
-      </mat-form-field>
-    </form>
-  </div>
+  <form class="search-form">
+    <mat-form-field>
+      <mat-icon matPrefix inline="true" class="search-icon">search</mat-icon>
+      <input type="search" matInput class="search-input" (input)="onSearch($event)">
+      <mat-placeholder>Rechercher</mat-placeholder>
+    </mat-form-field>
+  </form>
 
   <div>
-    <button mat-icon-button>
+    <button mat-icon-button appHighlight="#004d88">
       <mat-icon>settings</mat-icon>
     </button>
 
-    <button mat-icon-button class="icon-logout" (click)="signOut()">
+    <button mat-icon-button class="icon-logout" (click)="signOut()" appHighlight="#004d88">
       <mat-icon>logout</mat-icon>
     </button>
   </div>

@@ -8,6 +8,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
 
 const MaterialComponents = [
   MatInputModule,
@@ -18,7 +19,8 @@ const MaterialComponents = [
   MatSnackBarModule,
   MatProgressBarModule,
   MatSidenavModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatListModule
 ];
 
 @NgModule({

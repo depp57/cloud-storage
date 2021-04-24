@@ -2,10 +2,11 @@
 
 <mat-progress-bar mode="indeterminate" *ngIf="isLoading | async"></mat-progress-bar>
 
-<mat-sidenav-container class="main-container">
+<mat-sidenav-container class="main-container"
+                       [style.top]="isMobile ? '56px' : '64px'">
 
-  <mat-sidenav #sidenav mode="side" opened class="sidenav">
-    <p>TEST SIDENAV !</p>
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" class="sidenav">
+    <app-sidenav [username]="username"></app-sidenav>
   </mat-sidenav>
 
   <mat-sidenav-content>

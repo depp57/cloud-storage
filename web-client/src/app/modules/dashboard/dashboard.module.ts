@@ -6,13 +6,17 @@ import { FilesExplorerComponent } from './components/files-explorer/files-explor
 import { RecentFilesComponent } from './components/recent-files/recent-files.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { MaterialModule } from 'src/app/modules/material/material.module';
+import { SidenavComponent } from './components/sidenav/sidenav.component';
+import { HighlightDirective } from '@shared/directives/highlight.directive';
 
 @NgModule({
   declarations: [
     DashboardComponent,
     HeaderComponent,
     FilesExplorerComponent,
-    RecentFilesComponent
+    RecentFilesComponent,
+    SidenavComponent,
+    HighlightDirective
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,33 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  width: clamp(170px, 11vw, 250px);
+  height: 100%;
+  background-color: #f3f2f1;
+}
+
+.bottom-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: auto;
+  padding: 0 5%;
+  margin-top: auto;
+}
+
+.username {
+  display: flex !important;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.link {
+  text-decoration: none;
+}
+
+@media (max-width: 599px) {
+  .main-container {
+    width: 75vw;
+  }
+}

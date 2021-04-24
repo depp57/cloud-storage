@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { HTTP_ERROR_CODES, RedirectReasons } from '@shared/constants';
@@ -9,15 +9,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   @Output() sideBarToggle = new EventEmitter<void>();
+  @Output() fileSearch = new EventEmitter<string>();
 
   constructor(private router: Router,
               private auth: AuthService,
               private snackBar: MatSnackBar) { }
-
-  ngOnInit(): void {
-  }
 
   toggleSideBar(): void {
     this.sideBarToggle.emit();
@@ -26,9 +24,9 @@ export class HeaderComponent implements OnInit {
   signOut(): void {
     this.auth.signOut()
       .subscribe(
-      _ => this.navigateToLogin(),
-      err => this.showLogoutError(err.status)
-    );
+        _ => this.navigateToLogin(),
+        err => this.showLogoutError(err.status)
+      );
   }
 
   private navigateToLogin(): void {
@@ -38,5 +36,9 @@ export class HeaderComponent implements OnInit {
   private showLogoutError(httpErrorCode: number): void {
     const message = HTTP_ERROR_CODES[httpErrorCode];
     this.snackBar.open(`Erreur de déconnexion : ${message}`, 'Fermer', {duration: 3000});
+  }
+
+  onSearch(event: Event): void {
+    this.fileSearch.emit((event.target as HTMLInputElement).value);
   }
 }

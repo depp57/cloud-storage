@@ -9,7 +9,7 @@ const routes: Routes = [
   {path: '', component: DashboardComponent, children:
   [
     {path: '', pathMatch: 'full', component: FilesExplorerComponent},
-    {path: 'recent', data: {title: 'Fichiers récents'}, component: RecentFilesComponent},
+    {path: 'recents', data: {title: 'Récents'}, component: RecentFilesComponent},
     {path: '**', data: {title: 'Page non trouvée'}, component: NotFoundComponent} // redirect all 404 pages
   ]}
 ];

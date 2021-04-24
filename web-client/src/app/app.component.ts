@@ -10,7 +10,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
 
-  private readonly title = 'Cloud-Storage - ';
+  private readonly title = 'Cloud-Storage';
 
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     ).subscribe(() => {
       const lastChild = this.getChild(this.activatedRoute);
       lastChild.data.subscribe(data => {
-        this.titleService.setTitle(this.title + data.title);
+        this.titleService.setTitle(`${data.title} - ${this.title}`);
       });
     });
   }
