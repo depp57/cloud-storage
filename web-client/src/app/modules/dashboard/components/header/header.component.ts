@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { HTTP_ERROR_CODES, RedirectReasons } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CssThemeService } from '@shared/services/css-theme.service';
 
 @Component({
   selector: 'app-header',
@@ -10,12 +11,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
+
   @Output() sideBarToggle = new EventEmitter<void>();
   @Output() fileSearch = new EventEmitter<string>();
 
   constructor(private router: Router,
               private auth: AuthService,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar,
+              private cssTheme: CssThemeService) {}
+
+  get isLightMode(): boolean {
+    return this.cssTheme.getTheme().value === 'light-theme';
+  }
 
   toggleSideBar(): void {
     this.sideBarToggle.emit();
@@ -29,6 +36,14 @@ export class HeaderComponent {
       );
   }
 
+  onSearch(event: Event): void {
+    this.fileSearch.emit((event.target as HTMLInputElement).value);
+  }
+
+  onChangeTheme(theme: string): void {
+    this.cssTheme.setTheme(theme);
+  }
+
   private navigateToLogin(): void {
     this.router.navigate([''], {state: {redirect: RedirectReasons.SIGNED_OUT}});
   }
@@ -36,9 +51,5 @@ export class HeaderComponent {
   private showLogoutError(httpErrorCode: number): void {
     const message = HTTP_ERROR_CODES[httpErrorCode];
     this.snackBar.open(`Erreur de déconnexion : ${message}`, 'Fermer', {duration: 3000});
-  }
-
-  onSearch(event: Event): void {
-    this.fileSearch.emit((event.target as HTMLInputElement).value);
   }
 }

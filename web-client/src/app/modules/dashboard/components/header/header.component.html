@@ -17,8 +17,11 @@
   </form>
 
   <div>
-    <button mat-icon-button appHighlight="#004d88">
-      <mat-icon>settings</mat-icon>
+    <button mat-icon-button appHighlight="#004d88" (click)="onChangeTheme('dark-theme')" *ngIf="isLightMode">
+      <mat-icon>dark_mode</mat-icon>
+    </button>
+    <button mat-icon-button appHighlight="#004d88" (click)="onChangeTheme('light-theme')" *ngIf="!isLightMode">
+      <mat-icon>light_mode</mat-icon>
     </button>
 
     <button mat-icon-button class="icon-logout" (click)="signOut()" appHighlight="#004d88">

@@ -16,8 +16,22 @@ $light-app-theme: mat-light-theme((
     accent: $light-app-accent
   )
 ));
+.light-theme {
+  @include angular-material-theme($light-app-theme);
+}
 
-@include angular-material-theme($light-app-theme);
+$dark-app-primary: mat-palette($mat-amber);
+$dark-app-accent: mat-palette($mat-pink);
+
+$dark-app-theme: mat-dark-theme((
+  color: (
+    primary: $light-app-primary,
+    accent: $light-app-accent
+  )
+));
+.dark-theme {
+  @include angular-material-theme($dark-app-theme);
+}
 
 /***************************************************************/
 /******************* G L O B A L   S T Y L E *******************/
