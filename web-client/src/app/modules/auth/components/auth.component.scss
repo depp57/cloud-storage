@@ -4,7 +4,7 @@
   display: grid;
   place-items: center;
   height: 100%;
-  background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+  background-image: linear-gradient(to top, var(--background-gradient));
 }
 
 .card {
@@ -25,7 +25,7 @@
   margin-bottom: unset !important;
 }
 
-.mat-card {
+mat-card {
   display: flex;
   justify-content: space-between;
   flex-direction: column;

@@ -24,6 +24,10 @@ export class HeaderComponent {
     return this.cssTheme.getTheme().value === 'light-theme';
   }
 
+  get highlightColor(): string {
+    return this.isLightMode ? '#004d88' : '#ff9800';
+  }
+
   toggleSideBar(): void {
     this.sideBarToggle.emit();
   }

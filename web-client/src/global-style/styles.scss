@@ -5,7 +5,6 @@
 /***************************************************************/
 
 @import '../../node_modules/@angular/material/theming';
-
 @include mat-core();
 
 $light-app-primary: mat-palette($mat-blue, 700, 300, 900);
@@ -17,21 +16,35 @@ $light-app-theme: mat-light-theme((
     accent: $light-app-accent
   )
 ));
+
 .light-theme {
-  @include angular-material-theme($light-app-theme);
+  --color-light-gray: #f3f2f1;
+  --text-important: #1976d2;
+  --text-underline: #6f81e5;
+  --background-gradient: #0c3483, #a2b6df;
 }
 
-$dark-app-primary: mat-palette($mat-amber);
+// Light theme is the default theme
+@include angular-material-theme($light-app-theme);
+
+
+// Define an alternate dark theme
+$dark-app-primary: mat-palette($mat-orange, 300, 100, 500);
 $dark-app-accent: mat-palette($mat-pink);
 
 $dark-app-theme: mat-dark-theme((
   color: (
-    primary: $light-app-primary,
-    accent: $light-app-accent
+    primary: $dark-app-primary,
+    accent: $dark-app-accent
   )
 ));
+
+// Any component with this CSS class will be affected by this dark theme instead of the default theme
 .dark-theme {
-  @include angular-material-theme($dark-app-theme);
+  @include angular-material-color($dark-app-theme);
+  --text-important: #ffb74d;
+  --text-underline: #ff9800;
+  --background-gradient: #4b134f, #c94b4b;
 }
 
 /***************************************************************/
@@ -49,8 +62,9 @@ body {
 
 a {
   text-decoration: none;
+  color: var(--text-important);
 
   &:hover {
-    text-decoration: underline #6f81e5;
+    text-decoration: underline var(--text-underline);
   }
 }

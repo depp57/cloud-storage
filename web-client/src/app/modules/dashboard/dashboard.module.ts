@@ -5,7 +5,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FilesExplorerComponent } from './components/files-explorer/files-explorer.component';
 import { RecentFilesComponent } from './components/recent-files/recent-files.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { MaterialModule } from 'src/app/modules/material/material.module';
+import { DashboardMaterialModule } from 'src/app/modules/material/dashboard-material.module';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { HighlightDirective } from '@shared/directives/highlight.directive';
 
@@ -21,7 +21,7 @@ import { HighlightDirective } from '@shared/directives/highlight.directive';
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    MaterialModule
+    DashboardMaterialModule
   ]
 })
 export class DashboardModule {

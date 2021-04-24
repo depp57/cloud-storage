@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
     this.setDynamicPageTitle();
 
     // Unnecessary unsubscription because it is needed as long as the app is living
-    this.cssTheme.getTheme().subscribe(theme => AppComponent.setTheme(theme));
+    this.cssTheme.getTheme().subscribe(theme => this.setTheme(theme));
   }
 
   private setDynamicPageTitle(): void {
@@ -36,10 +36,10 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private static setTheme(theme: string): void {
+  private setTheme(theme: string): void {
     const appRoot = document.getElementById('main-container');
     if (appRoot) {
-      appRoot.className = theme;
+      this.cssTheme.applyTheme(appRoot, theme);
     }
   }
 

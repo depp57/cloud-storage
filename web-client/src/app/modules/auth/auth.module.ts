@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { SignInComponent } from 'src/app/modules/auth/components/sign-in/sign-in.component';
 import { AuthRoutingModule } from './auth-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MaterialModule } from 'src/app/modules/material/material.module';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { AuthComponent } from 'src/app/modules/auth/components/auth.component';
 import { AuthFormComponent } from './components/auth-form/auth-form.component';
+import { AuthMaterialModule } from 'src/app/modules/material/auth-material.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +19,7 @@ import { AuthFormComponent } from './components/auth-form/auth-form.component';
     CommonModule,
     AuthRoutingModule,
     ReactiveFormsModule,
-    MaterialModule
+    AuthMaterialModule
   ]
 })
 export class AuthModule {}

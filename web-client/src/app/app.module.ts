@@ -6,8 +6,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HttpAuthInterceptor } from '@shared/services/http-auth-interceptor.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
-import { MaterialModule } from 'src/app/modules/material/material.module';
 import { HttpLoadingInterceptor } from '@shared/services/http-loading-interceptor.service';
+import { AppMaterialModule } from 'src/app/modules/material/app-material.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +19,7 @@ import { HttpLoadingInterceptor } from '@shared/services/http-loading-intercepto
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MaterialModule
+    AppMaterialModule
   ],
   providers: [
     {

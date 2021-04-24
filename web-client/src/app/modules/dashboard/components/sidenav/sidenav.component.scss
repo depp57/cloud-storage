@@ -3,7 +3,7 @@
   flex-direction: column;
   width: clamp(170px, 11vw, 250px);
   height: 100%;
-  background-color: #f3f2f1;
+  background-color: var(--color-light-gray);
 }
 
 .bottom-container {

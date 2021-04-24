@@ -4,8 +4,8 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
   selector: '[appHighlight]'
 })
 export class HighlightDirective {
-  private static readonly defaultColor = '#e1dfdd';
-  @Input() appHighlight!: string; // default color TODO should be in a constant
+  private static readonly defaultColor = '#e1dfdd'; // default color TODO should be in a constant, in a css file?
+  @Input() appHighlight!: string;
 
   constructor(private element: ElementRef) {}
 
