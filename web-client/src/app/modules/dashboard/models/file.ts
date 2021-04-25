@@ -4,9 +4,8 @@ export interface File {
 }
 
 export enum FileType {
-  TEXT = 'text',
-  FOLDER = 'folder',
   FILE = 'file',
+  TEXT = 'text',
   WORD = 'word',
   EXCEL = 'excel',
   PDF = 'pdf'

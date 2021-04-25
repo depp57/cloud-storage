@@ -1,18 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FileService } from 'src/app/modules/dashboard/services/file.service';
 import { File } from 'src/app/modules/dashboard/models/file';
+import { Folder } from 'src/app/modules/dashboard/models/folder';
 
 @Component({
   selector: 'app-files-explorer',
   templateUrl: './files-explorer.component.html',
   styleUrls: ['./files-explorer.component.scss']
 })
-export class FilesExplorerComponent implements OnInit {
-  files: File[] = this.fileService.getFiles();
+export class FilesExplorerComponent {
+  files: File[] = this.fileService.files;
+  folders: Folder[] = this.fileService.folders;
 
-  constructor(private fileService: FileService) { }
-
-  ngOnInit(): void {
-  }
+  constructor(private fileService: FileService) {}
 
 }

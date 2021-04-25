@@ -30,15 +30,21 @@
   </mat-menu>
 </div>
 
-<mat-divider></mat-divider>
-
 <div class="main-container">
 
   <h1>Mes fichiers</h1>
 
   <div class="files-container">
 
-    <a routerLink="/404" *ngFor="let file of files" class="file-item" appHighlight>
+    <a routerLink="/404-folder" *ngFor="let folder of folders" class="file-item folder" appHighlight>
+      <img src="assets/icons/folder.png" [alt]="folder.name">
+      <span>
+          {{folder.name}}
+        </span>
+    </a>
+
+
+    <a routerLink="/404-file" *ngFor="let file of files" class="file-item file" appHighlight>
       <img [src]="'assets/icons/' + file.type + '.png'" [alt]="file.name">
       <span>
           {{file.name}}

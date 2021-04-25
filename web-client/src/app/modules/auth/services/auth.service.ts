@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { API_ENDPOINT, AUTH_COOKIE_NAME, USER_TOKEN_COOKIE_LIFETIME } from '@shared/constants';
+import { API_ENDPOINT, AUTH_COOKIE_NAME, AUTH_COOKIE_LIFETIME } from '@shared/constants';
 import { Observable } from 'rxjs';
 import { ApiAuthParam, ApiAuthResponse, UserCredentials } from 'src/app/modules/auth/models/api-auth';
 import { deleteCookie, getCookie, setCookie } from '@shared/models/cookies-utils';
@@ -58,7 +58,7 @@ export class AuthService {
 
   private saveUserCredentials(username: string, token: string): void {
     const userCredentials = new UserCredentials(username, token);
-    setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, USER_TOKEN_COOKIE_LIFETIME);
+    setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, AUTH_COOKIE_LIFETIME);
     this._userCredentials = userCredentials;
   }
 
