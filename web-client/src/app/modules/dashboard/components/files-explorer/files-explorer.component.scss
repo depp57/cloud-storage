@@ -1,0 +1,34 @@
+.menu {
+  display: flex;
+  padding-left: 1%;
+  height: 56px;
+}
+
+.main-container {
+  padding: 32px;
+}
+
+.files-container {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, 170px);
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 5%;
+  //background-color: #a2b6df;
+  //border: solid #0c3483;
+}
+
+.files-container {
+  @media (max-width: 1025px) {
+    grid-template-columns: repeat(auto-fit, 150px);
+  }
+
+  @media (max-width: 599px) {
+    grid-template-columns: repeat(auto-fit, 130px);
+  }
+}

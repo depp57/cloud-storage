@@ -8,6 +8,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
 
 const MaterialComponents = [
   MatInputModule,
@@ -18,7 +19,8 @@ const MaterialComponents = [
   MatIconModule,
   MatToolbarModule,
   MatSnackBarModule,
-  MatButtonModule
+  MatButtonModule,
+  MatMenuModule
 ];
 
 @NgModule({
