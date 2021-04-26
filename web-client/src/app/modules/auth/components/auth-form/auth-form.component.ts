@@ -44,8 +44,8 @@ export class AuthFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.password?.reset();
     this.submitForm.emit({username: this.username?.value, password: this.password?.value});
+    this.password?.reset();
   }
 
   private initForm(): void {

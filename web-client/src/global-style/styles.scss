@@ -22,6 +22,7 @@ $light-app-theme: mat-light-theme((
   --text-important: #1976d2;
   --text-underline: #6f81e5;
   --background-gradient: #0c3483, #a2b6df;
+  --background-color: #fafafa;
 }
 
 // Light theme is the default theme
@@ -45,6 +46,7 @@ $dark-app-theme: mat-dark-theme((
   --text-important: #ffb74d;
   --text-underline: #ff9800;
   --background-gradient: #4b134f, #c94b4b;
+  --background-color: #303030;
 }
 
 /***************************************************************/
