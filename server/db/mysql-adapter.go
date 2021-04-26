@@ -12,7 +12,7 @@ import (
 	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
-const MYSQL_CONF_FILE = "mysql.conf.yaml"
+const MYSQL_CONF_FILE = "confs/mysql.conf.yaml"
 
 type SqlDbPort struct {
 	db          *sql.DB

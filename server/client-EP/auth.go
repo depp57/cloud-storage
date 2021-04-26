@@ -9,7 +9,7 @@ import (
 	"github.com/sventhommet/cloud-storage/server/utils"
 )
 
-const TOKEN_TTL_SECONDS = 300
+const TOKEN_TTL_SECONDS = 15 * 60
 
 type Auth interface {
 	//Must be called at beggining to connect the database to auth component

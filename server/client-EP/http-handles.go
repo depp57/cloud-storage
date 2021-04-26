@@ -44,33 +44,53 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 	return
 }
 
-func handleFilesList(response http.ResponseWriter, request *http.Request) {
+func handleDisconnect(response http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
 		response.WriteHeader(405)
-		//TODO Content-type: json
-		response.Write([]byte("{error: must be GET method}"))
+		response.Write([]byte("{\"error\": \"must be GET method\"}"))
 		return
 	}
 
-	param := request.URL.Path[len("/files/find/"):]
+	token := request.Header.Get("Authentified")
 
-	sqlAdapt.GetFilesFromUser("sven", "docs/depp")
+	auth.Revoke(token)
 
-	response.Write([]byte(param))
-
-	return
+	response.WriteHeader(http.Status)
 }
 
-func handleFilesDL(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		response.WriteHeader(405)
-		response.Write([]byte("{error: must be GET method}"))
-		return
-	}
+func handleSubscribe(response http.ResponseWriter, request *http.Request) {
 
-	param := request.URL.Path[len("/files/dl/"):]
-
-	response.Write([]byte(param))
-
-	return
 }
+
+//  TODO...
+
+// func handleFilesList(response http.ResponseWriter, request *http.Request) {
+// 	if request.Method != "GET" {
+// 		response.WriteHeader(405)
+// 		//TODO Content-type: json
+// 		response.Write([]byte("{error: must be GET method}"))
+// 		return
+// 	}
+
+// 	param := request.URL.Path[len("/files/find/"):]
+
+// 	sqlAdapt.GetFilesFromUser("sven", "docs/depp")
+
+// 	response.Write([]byte(param))
+
+// 	return
+// }
+
+// func handleFilesDL(response http.ResponseWriter, request *http.Request) {
+// 	if request.Method != "GET" {
+// 		response.WriteHeader(405)
+// 		response.Write([]byte("{error: must be GET method}"))
+// 		return
+// 	}
+
+// 	param := request.URL.Path[len("/files/dl/"):]
+
+// 	response.Write([]byte(param))
+
+// 	return
+// }

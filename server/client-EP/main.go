@@ -10,7 +10,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-const SERVER_CONF_FILE = "server.conf.yaml"
+const SERVER_CONF_FILE = "confs/server.conf.yaml"
 
 type Server struct {
 	BindTo struct {
@@ -65,8 +65,8 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		//Handle CORS preflight here
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
-		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
-		headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		headers.Add("Access-Control-Allow-Headers", "X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, authorization")
+		headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		headers.Add("Vary", "Origin")
 		headers.Add("Vary", "Access-Control-Request-Method")
 		headers.Add("Vary", "Access-Control-Request-Headers")
@@ -89,9 +89,12 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Access-Control-Allow-Origin", "*")
 
-		restAPI.Route("/files/list/", handleFilesList)
-		restAPI.Route("/files/dl/", handleFilesDL)
+		//  TODO...
+		// restAPI.Route("/files/list/", handleFilesList)
+		// restAPI.Route("/files/dl/", handleFilesDL)
 		restAPI.HandleFunc("/auth/", handleAuth)
+		restAPI.Route("/auth/disconnect", handleDisconnect)
+		restAPI.HandleFunc("/users/subscribe", handleSubscribe)
 
 		restAPI.ServeHTTP(w, r)
 	}

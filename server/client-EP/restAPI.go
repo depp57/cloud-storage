@@ -65,6 +65,10 @@ func closure(handler http.HandlerFunc, a Auth) http.HandlerFunc {
 			return
 		}
 
+		// Add temporar header to the request
+		// --> identify user with token validated by auth
+		r.Header.Set("Authentified", token)
+
 		handler(w, r)
 	}
 }
