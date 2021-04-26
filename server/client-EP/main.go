@@ -10,7 +10,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-const SERVER_CONF_FILE = "server.yaml"
+const SERVER_CONF_FILE = "server.conf.yaml"
 
 type Server struct {
 	BindTo struct {
