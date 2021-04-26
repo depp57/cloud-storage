@@ -14,7 +14,7 @@ type Creds struct {
 
 func handleAuth(response http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
-		response.WriteHeader(405)
+		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte("{\"error\": \"must be POST method\"}"))
 		return
 	}
@@ -35,7 +35,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 
 	token, err := auth.Connect(creds.Username, creds.Password)
 	if err != nil {
-		response.WriteHeader(401)
+		response.WriteHeader(http.StatusUnauthorized)
 		response.Write([]byte("{\"error\": \"" + err.Error() + "\"}"))
 		return
 	}
@@ -46,7 +46,7 @@ func handleAuth(response http.ResponseWriter, request *http.Request) {
 
 func handleDisconnect(response http.ResponseWriter, request *http.Request) {
 	if request.Method != "GET" {
-		response.WriteHeader(405)
+		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte("{\"error\": \"must be GET method\"}"))
 		return
 	}
@@ -55,7 +55,8 @@ func handleDisconnect(response http.ResponseWriter, request *http.Request) {
 
 	auth.Revoke(token)
 
-	response.WriteHeader(http.Status)
+	response.WriteHeader(http.StatusCreated)
+	return
 }
 
 func handleSubscribe(response http.ResponseWriter, request *http.Request) {
@@ -66,7 +67,7 @@ func handleSubscribe(response http.ResponseWriter, request *http.Request) {
 
 // func handleFilesList(response http.ResponseWriter, request *http.Request) {
 // 	if request.Method != "GET" {
-// 		response.WriteHeader(405)
+// 		response.WriteHeader(http.StatusMethodNotAllowed)
 // 		//TODO Content-type: json
 // 		response.Write([]byte("{error: must be GET method}"))
 // 		return
@@ -83,7 +84,7 @@ func handleSubscribe(response http.ResponseWriter, request *http.Request) {
 
 // func handleFilesDL(response http.ResponseWriter, request *http.Request) {
 // 	if request.Method != "GET" {
-// 		response.WriteHeader(405)
+// 		response.WriteHeader(http.StatusMethodNotAllowed)
 // 		response.Write([]byte("{error: must be GET method}"))
 // 		return
 // 	}
