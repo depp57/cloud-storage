@@ -7,7 +7,7 @@ import { HttpAuthInterceptor } from '@shared/services/http-auth-interceptor.serv
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { HttpLoadingInterceptor } from '@shared/services/http-loading-interceptor.service';
-import { AppMaterialModule } from 'src/app/modules/utils/material/app-material.module';
+import { AppMaterialModule } from '@modules/utils/material/app-material.module';
 
 @NgModule({
   declarations: [

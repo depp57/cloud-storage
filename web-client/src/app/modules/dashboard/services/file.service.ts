@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { File, FileType } from 'src/app/modules/dashboard/models/file';
-import { Folder } from 'src/app/modules/dashboard/models/folder';
+import { File, FileType } from '@modules/dashboard/models/file';
+import { Folder } from '@modules/dashboard/models/folder';
 
 @Injectable({
   providedIn: 'root'

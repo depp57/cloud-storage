@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 @Component({
   selector: 'app-not-found',

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { FileService } from 'src/app/modules/dashboard/services/file.service';
-import { File } from 'src/app/modules/dashboard/models/file';
-import { Folder } from 'src/app/modules/dashboard/models/folder';
+import { FileService } from '@modules/dashboard/services/file.service';
+import { File } from '@modules/dashboard/models/file';
+import { Folder } from '@modules/dashboard/models/folder';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 
 @Component({

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { LoaderService } from '@shared/services/loader.service';
 import { BehaviorSubject } from 'rxjs';
-import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { MatSidenavContainer } from '@angular/material/sidenav';
 import { ContextMenuService } from '@modules/utils/context-menu/service/context-menu.service';
 

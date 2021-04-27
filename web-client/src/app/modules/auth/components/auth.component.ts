@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { LoaderService } from '@shared/services/loader.service';
 import { BehaviorSubject } from 'rxjs';
+import { AuthService } from '@modules/auth/services/auth.service';
+import { LoaderService } from '@shared/services/loader.service';
 
 @Component({
   selector: 'app-auth',

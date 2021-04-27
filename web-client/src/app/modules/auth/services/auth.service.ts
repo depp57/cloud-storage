@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_ENDPOINT, AUTH_COOKIE_NAME, AUTH_COOKIE_LIFETIME } from '@shared/constants';
 import { Observable } from 'rxjs';
-import { ApiAuthParam, ApiAuthResponse, UserCredentials } from 'src/app/modules/auth/models/api-auth';
+import { ApiAuthParam, ApiAuthResponse, UserCredentials } from '@modules/auth/models/api-auth';
 import { deleteCookie, getCookie, setCookie } from '@shared/models/cookies-utils';
 import { tap } from 'rxjs/operators';
 

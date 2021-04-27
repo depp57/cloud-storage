@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ApiAuthParam } from 'src/app/modules/auth/models/api-auth';
+import { ApiAuthParam } from '@modules/auth/models/api-auth';
 
 @Component({
   selector: 'app-auth-form',

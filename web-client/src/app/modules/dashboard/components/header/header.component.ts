@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { HTTP_ERROR_CODES, RedirectReasons } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';

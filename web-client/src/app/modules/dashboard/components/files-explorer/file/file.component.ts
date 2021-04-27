@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { File } from 'src/app/modules/dashboard/models/file';
+import { File } from '@modules/dashboard/models/file';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 
 @Component({

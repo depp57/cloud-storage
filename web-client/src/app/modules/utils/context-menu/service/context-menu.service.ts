@@ -1,5 +1,5 @@
 import { ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
-import { ContextMenuComponent } from 'src/app/modules/utils/context-menu/component/context-menu.component';
+import { ContextMenuComponent } from '@modules/utils/context-menu/component/context-menu.component';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 
 @Injectable()
