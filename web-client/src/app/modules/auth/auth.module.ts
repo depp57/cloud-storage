@@ -6,7 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { AuthComponent } from 'src/app/modules/auth/components/auth.component';
 import { AuthFormComponent } from './components/auth-form/auth-form.component';
-import { AuthMaterialModule } from 'src/app/modules/material/auth-material.module';
+import { AuthMaterialModule } from 'src/app/modules/utils/material/auth-material.module';
 
 @NgModule({
   declarations: [

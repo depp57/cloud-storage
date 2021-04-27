@@ -45,13 +45,13 @@ export class AuthService {
   }
 
   signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'subscribe/', user).pipe(
       tap(response => this.saveUserCredentials(user.username, response.token))
     );
   }
 
   signOut(): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', null).pipe(
+    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/disconnect/', null).pipe(
       tap(_ => this.deleteUserCredentials())
     );
   }

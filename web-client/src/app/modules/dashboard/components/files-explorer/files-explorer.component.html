@@ -4,11 +4,11 @@
     <span>Nouveau</span>
   </button>
   <mat-menu #newFileMenu="matMenu">
-    <button mat-menu-item>
+    <button mat-menu-item (click)="onNewFile()">
       <mat-icon>note_add</mat-icon>
       <span>Fichier</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item (click)="onNewFolder()">
       <mat-icon>create_new_folder</mat-icon>
       <span>Dossier</span>
     </button>
@@ -19,39 +19,29 @@
     <span>Charger</span>
   </button>
   <mat-menu #loadFileMenu="matMenu">
-    <button mat-menu-item>
+    <button mat-menu-item (click)="onUploadFile()">
       <mat-icon>upload_file</mat-icon>
       <span>Fichiers</span>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item (click)="onUploadFolder()">
       <mat-icon>drive_folder_upload</mat-icon>
       <span>Dossier</span>
     </button>
   </mat-menu>
 </div>
 
-<div class="main-container">
+<div id="main-container" [appContextMenu]="contextMenuButtons">
 
   <h1>Mes fichiers</h1>
 
   <div class="files-container">
+    <app-folder *ngFor="let folder of folders"
+                [folder]="folder" class="file-item folder" appHighlight>
+    </app-folder>
 
-    <a routerLink="/404-folder" *ngFor="let folder of folders" class="file-item folder" appHighlight>
-      <img src="assets/icons/folder.png" [alt]="folder.name">
-      <span>
-          {{folder.name}}
-        </span>
-    </a>
-
-
-    <a routerLink="/404-file" *ngFor="let file of files" class="file-item file" appHighlight>
-      <img [src]="'assets/icons/' + file.type + '.png'" [alt]="file.name">
-      <span>
-          {{file.name}}
-        </span>
-    </a>
-
+    <app-file *ngFor="let file of files"
+              [file]="file" class="file-item file" appHighlight>
+    </app-file>
   </div>
 
 </div>
-

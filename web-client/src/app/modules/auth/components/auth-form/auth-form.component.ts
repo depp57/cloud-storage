@@ -13,8 +13,6 @@ export class AuthFormComponent implements OnInit {
   loginForm!: FormGroup;
   hidePassword = true;
 
-  constructor() {}
-
   get username(): AbstractControl | null {
     return this.loginForm.get('username');
   }

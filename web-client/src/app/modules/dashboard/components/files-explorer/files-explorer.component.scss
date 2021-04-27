@@ -8,17 +8,17 @@
   height: 56px;
 }
 
-.main-container {
+#main-container {
   padding: 32px;
 }
 
 .files-container {
   display: grid;
-  grid-gap: 1rem;
+  grid-gap: 1.5rem 1rem;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
-.file-item {
+:host ::ng-deep .file-item > a {
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -34,17 +34,19 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .file-item {
-    flex-direction: row;
-    align-items: center;
-    height: 35px;
-    padding: 0;
-  }
+  :host ::ng-deep .file-item {
+    & > a {
+      flex-direction: row;
+      align-items: center;
+      height: 35px;
+      padding: 0;
+    }
 
-  .file-item > img {
-    height: 100%;
-    width: auto;
-    margin-right: 5%;
+    & img {
+      height: 100%;
+      width: auto;
+      margin-right: 5%;
+    }
   }
 }
 
