@@ -4,22 +4,22 @@
 
       <mat-list-item role="listitem" class="username">{{username}}</mat-list-item>
 
-      <a routerLink="/fichiers" class="link">
-        <mat-list-item role="listitem" appHighlight>
+      <a routerLink="/fichiers" class="link" role="listitem">
+        <mat-list-item appHighlight>
           <mat-icon mat-list-icon>folder</mat-icon>
           <div mat-line>Mes fichiers</div>
         </mat-list-item>
       </a>
 
-      <a routerLink="recents" class="link">
-        <mat-list-item role="listitem" appHighlight>
+      <a routerLink="recents" class="link" role="listitem">
+        <mat-list-item appHighlight>
           <mat-icon mat-list-icon>history</mat-icon>
           <div mat-line>Récents</div>
         </mat-list-item>
       </a>
 
-      <a routerLink="photos" class="link">
-        <mat-list-item role="listitem" appHighlight>
+      <a routerLink="photos" class="link" role="listitem">
+        <mat-list-item appHighlight>
           <mat-icon mat-list-icon>photo</mat-icon>
           <div mat-line>Photos</div>
         </mat-list-item>
@@ -29,7 +29,7 @@
   </div>
 
   <div class="bottom-container">
-    <mat-progress-bar mode="determinate" [value]="quotaPercentage"></mat-progress-bar>
+    <mat-progress-bar mode="determinate" [value]="quotaPercentage" aria-valuemin="0" aria-valuemax="100"></mat-progress-bar>
     <p>{{diskQuota}} Mo utilisé(s)</p>
   </div>
 </div>

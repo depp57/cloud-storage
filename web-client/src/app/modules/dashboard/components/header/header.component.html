@@ -1,7 +1,8 @@
-<mat-toolbar color="primary" role="heading" class="main-container">
+<mat-toolbar color="primary" role="heading" class="main-container" aria-level="1">
 
   <div class="flex-center">
-    <button mat-icon-button class="example-icon" (click)="toggleSideBar()" [appHighlight]="highlightColor">
+    <button mat-icon-button class="example-icon" aria-label="Toggle side bar"
+            (click)="toggleSideBar()" [appHighlight]="highlightColor">
       <mat-icon>menu</mat-icon>
     </button>
 
@@ -17,16 +18,17 @@
   </form>
 
   <div>
-    <button mat-icon-button [appHighlight]="highlightColor"
+    <button mat-icon-button [appHighlight]="highlightColor" aria-label="Toggle dark theme"
             (click)="onChangeTheme('dark-theme')" *ngIf="isLightMode">
       <mat-icon>dark_mode</mat-icon>
     </button>
-    <button mat-icon-button [appHighlight]="highlightColor"
+    <button mat-icon-button [appHighlight]="highlightColor" aria-label="Toggle light theme"
             (click)="onChangeTheme('light-theme')" *ngIf="!isLightMode">
       <mat-icon>light_mode</mat-icon>
     </button>
 
-    <button mat-icon-button class="icon-logout" (click)="signOut()" [appHighlight]="highlightColor">
+    <button mat-icon-button class="icon-logout" aria-label="Sign out"
+            (click)="signOut()" [appHighlight]="highlightColor">
       <mat-icon>logout</mat-icon>
     </button>
   </div>
