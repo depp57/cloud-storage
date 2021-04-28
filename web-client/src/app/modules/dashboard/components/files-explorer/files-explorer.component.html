@@ -35,13 +35,31 @@
   <h1>Mes fichiers</h1>
 
   <div class="files-container">
-    <app-folder *ngFor="let folder of folders"
-                [folder]="folder" class="file-item folder" appHighlight>
-    </app-folder>
+    <div style="display: contents" *ngIf="!loading else loadingTemplate">
+      <app-folder *ngFor="let folder of folders"
+                  [folder]="folder" class="file-item folder" appHighlight>
+      </app-folder>
 
-    <app-file *ngFor="let file of files"
-              [file]="file" class="file-item file" appHighlight>
-    </app-file>
+      <app-file *ngFor="let file of files"
+                [file]="file" class="file-item file" appHighlight>
+      </app-file>
+    </div>
   </div>
+
+  <ng-template #loadingTemplate>
+    <div class="placeholder file-item folder" *ngFor="let _ of createArrayForPlaceholder(3)">
+      <div>
+        <img src="assets/icons/folder.png" width="128" height="128" alt="loading-placeholder">
+        <span>&zwnj;</span>
+      </div>
+    </div>
+
+    <div class="placeholder file-item file" *ngFor="let _ of createArrayForPlaceholder(5)">
+      <div>
+        <img [src]="'assets/icons/file.png'" width="128" height="128" alt="loading-placeholder">
+        <span>&zwnj;</span>
+      </div>
+    </div>
+  </ng-template>
 
 </div>

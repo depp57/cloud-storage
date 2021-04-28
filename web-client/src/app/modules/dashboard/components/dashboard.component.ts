@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ViewChild } from '@angular/core';
 import { LoaderService } from '@shared/services/loader.service';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '@modules/auth/services/auth.service';
@@ -10,7 +10,7 @@ import { ContextMenuService } from '@modules/utils/context-menu/service/context-
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterContentInit, AfterViewInit {
   @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
   isMobile!: boolean;
 
@@ -27,11 +27,13 @@ export class DashboardComponent implements AfterViewInit {
     return username ? username : '';
   }
 
-  ngAfterViewInit(): void {
+  ngAfterContentInit(): void {
     // not responsive if the user resize the window, but avoid listening to
     // window's resizing event => more performance
     this.isMobile = window.innerWidth < 599;
+  }
 
+  ngAfterViewInit(): void {
     this.sidenavContainer.scrollable.elementScrolled().subscribe(
       () => this.contextMenu.deleteMenu()
     );

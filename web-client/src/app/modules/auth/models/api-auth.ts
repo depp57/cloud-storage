@@ -17,11 +17,11 @@ export class UserCredentials {
     this.token = token;
   }
 
-  static fromJson(json: string): UserCredentials {
-    return JSON.parse(json);
-  }
-
   get asJson(): string {
     return JSON.stringify(this);
+  }
+
+  static fromJson(json: string): UserCredentials {
+    return JSON.parse(json);
   }
 }

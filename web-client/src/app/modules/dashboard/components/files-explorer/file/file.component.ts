@@ -23,19 +23,19 @@ export class FileComponent {
   }
 
   onDownload(): void {
-    console.log(`Télécharger le fichier : ${this.file.name} (${this.file.type})`);
+    console.log(`Télécharger le fichier : ${this.file.name} (${this.file.extension})`);
   }
 
   onDelete(): void {
-    console.log(`Supprimer le fichier : ${this.file.name} (${this.file.type})`);
+    console.log(`Supprimer le fichier : ${this.file.name} (${this.file.extension})`);
   }
 
   onMove(): void {
-    console.log(`Déplacer le fichier : ${this.file.name} (${this.file.type})`);
+    console.log(`Déplacer le fichier : ${this.file.name} (${this.file.extension})`);
   }
 
   onRename(): void {
-    console.log(`Renommer le fichier : ${this.file.name} (${this.file.type})`);
+    console.log(`Renommer le fichier : ${this.file.name} (${this.file.extension})`);
   }
 
   onDragStart(event: DragEvent): void {

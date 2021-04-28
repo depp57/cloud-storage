@@ -18,15 +18,28 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
-:host ::ng-deep .file-item > a {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 5%;
+:host ::ng-deep .file-item {
+  & > :first-child {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 5%;
+  }
+
+  & img {
+    height: 100%;
+    width: auto;
+  }
 }
 
 .folder + .file {
   grid-column-start: 1;
+}
+
+.placeholder {
+  filter: grayscale(1);
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 599px) {
@@ -35,7 +48,7 @@
   }
 
   :host ::ng-deep .file-item {
-    & > a {
+    & > :first-child {
       flex-direction: row;
       align-items: center;
       height: 35px;
@@ -43,8 +56,6 @@
     }
 
     & img {
-      height: 100%;
-      width: auto;
       margin-right: 5%;
     }
   }
