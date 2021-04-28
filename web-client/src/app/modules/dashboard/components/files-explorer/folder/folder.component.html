@@ -1,4 +1,6 @@
-<a routerLink="/404-folder" [appContextMenu]="contextMenuButtons">
+<a routerLink="/404-folder" [appContextMenu]="contextMenuButtons"
+   draggable="true" (dragstart)="onDragStart($event)" (dragover)="onDragOver($event)" (drop)="onDragDrop($event)">
+
   <img src="assets/icons/folder.png" [alt]="folder.name">
   <span>{{folder.name}}</span>
 </a>

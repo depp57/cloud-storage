@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { File } from '@modules/dashboard/models/file';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
+import { DATA_TRANSFER_FILE, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
 
 @Component({
   selector: 'app-file',
@@ -35,5 +36,12 @@ export class FileComponent {
 
   onRename(): void {
     console.log(`Renommer le fichier : ${this.file.name} (${this.file.type})`);
+  }
+
+  onDragStart(event: DragEvent): void {
+    if (event.dataTransfer) {
+      event.dataTransfer.setData(DATA_TRANSFER_TYPE, DATA_TRANSFER_FILE);
+      event.dataTransfer.setData(DATA_TRANSFER_NAME, this.file.name);
+    }
   }
 }

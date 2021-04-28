@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Folder } from '@modules/dashboard/models/folder';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
+import { DATA_TRANSFER_FOLDER, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
 
 @Component({
   selector: 'app-folder',
@@ -33,5 +34,26 @@ export class FolderComponent {
 
   onRename(): void {
     console.log(`Renommer le dossier : ${this.folder.name}`);
+  }
+
+  onDragStart(event: DragEvent): void {
+    event.dataTransfer?.setData(DATA_TRANSFER_TYPE, DATA_TRANSFER_FOLDER);
+    event.dataTransfer?.setData(DATA_TRANSFER_NAME, this.folder.name);
+  }
+
+  onDragOver(event: DragEvent): void {
+    // Tell the browser to let the user drops here
+    event.preventDefault();
+  }
+
+  onDragDrop(event: DragEvent): void {
+    if (event.dataTransfer?.getData(DATA_TRANSFER_TYPE)) {
+      event.preventDefault();
+
+      const sourceName = event.dataTransfer.getData(DATA_TRANSFER_NAME);
+      const sourceType = event.dataTransfer.getData(DATA_TRANSFER_TYPE);
+
+      console.log(`(${sourceType}) ${sourceName} -> ${this.folder.name}`);
+    }
   }
 }
