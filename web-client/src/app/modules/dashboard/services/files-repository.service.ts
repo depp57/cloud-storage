@@ -32,15 +32,6 @@ export class FilesRepositoryService {
     return this._searchText;
   }
 
-  // private sortByName(): void {
-  //   const compareFn = (a: File | Folder, b: File | Folder) => {
-  //     return a.name > b.name ? 1 : -1;
-  //   };
-  //
-  //   this._files.sort(compareFn);
-  //   this._folders.sort(compareFn);
-  // }
-
   searchByText(text?: string): void {
     this._searchText = text;
   }
@@ -66,6 +57,15 @@ export class FilesRepositoryService {
         this._folders.push({name: fileName});
       }
     }
+
+    this.sortByName();
+  }
+
+  private sortByName(): void {
+    const compareFn = (a: File | Folder, b: File | Folder) => a.name > b.name ? 1 : -1;
+
+    this._files.sort(compareFn);
+    this._folders.sort(compareFn);
   }
 
   private static extractFileName(fullPath: string): string {
