@@ -11,6 +11,7 @@ import { FileComponent } from './components/files-explorer/file/file.component';
 import { FolderComponent } from './components/files-explorer/folder/folder.component';
 import { ContextMenuModule } from '@modules/utils/context-menu/context-menu.module';
 import { SharedModule } from '@shared/shared.module';
+import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SharedModule } from '@shared/shared.module';
     RecentFilesComponent,
     SidenavComponent,
     FileComponent,
-    FolderComponent
+    FolderComponent,
+    FilterPipe
   ],
   imports: [
     CommonModule,

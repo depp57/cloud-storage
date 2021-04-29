@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { File } from '@modules/dashboard/models/file';
-import { Folder } from '@modules/dashboard/models/folder';
+import { File, Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -26,6 +25,10 @@ export class FilesExplorerComponent implements OnInit {
       {text: 'Charger un fichier(s)', icon: 'upload', onClick: () => this.onUploadFile()},
       {text: 'Charger un dossier', icon: 'upload', onClick: () => this.onUploadFolder()},
     ];
+  }
+
+  get searchText(): string | undefined {
+    return this.fileRepo.searchText;
   }
 
   ngOnInit(): void {

@@ -1,4 +1,4 @@
-export class File {
+export class File implements Item {
   readonly name: string;
   readonly extension: string;
 
@@ -33,3 +33,10 @@ const mapExtensionToIconAsset: Record<string, string> = {
   '.pdf': 'pdf.png',
   '.docx': 'word.png'
 };
+
+// Create a new name for a type (alias)
+export type Folder = Item;
+
+export interface Item {
+  readonly name: string;
+}

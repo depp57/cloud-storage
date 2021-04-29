@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { File } from '@modules/dashboard/models/file';
-import { Folder } from '@modules/dashboard/models/folder';
+import { File, Folder } from '@modules/dashboard/models/items';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { ApiFilesResponse, ApiFileType } from '@modules/dashboard/models/api-files';
@@ -15,6 +14,7 @@ export class FilesRepositoryService {
 
   private _files: File[] = [];
   private _folders: Folder[] = [];
+  private _searchText?: string;
 
   constructor(private auth: AuthService,
               private http: HttpClient,
@@ -28,6 +28,10 @@ export class FilesRepositoryService {
     return this._folders;
   }
 
+  get searchText(): string | undefined {
+    return this._searchText;
+  }
+
   // private sortByName(): void {
   //   const compareFn = (a: File | Folder, b: File | Folder) => {
   //     return a.name > b.name ? 1 : -1;
@@ -36,6 +40,10 @@ export class FilesRepositoryService {
   //   this._files.sort(compareFn);
   //   this._folders.sort(compareFn);
   // }
+
+  searchByText(text?: string): void {
+    this._searchText = text;
+  }
 
   listDir(path: { path: string }): Observable<ApiFilesResponse> {
     // return this.http.get<ApiFilesResponse>(API_ENDPOINT + 'files/list/', this.auth.requestWithAuth(path)).pipe(

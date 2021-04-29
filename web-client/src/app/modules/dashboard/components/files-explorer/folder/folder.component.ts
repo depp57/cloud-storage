@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Folder } from '@modules/dashboard/models/folder';
+import { Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_FOLDER, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
 
