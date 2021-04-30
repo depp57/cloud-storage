@@ -1,4 +1,6 @@
-<a routerLink="/404-file" [appContextMenu]="contextMenuButtons" draggable="true" (dragstart)="onDragStart($event)">
+<a routerLink="/404-file" [appContextMenu]="contextMenuButtons" appHighlight
+   draggable="true" (dragstart)="onDragStart($event)">
+
   <img [src]="'assets/icons/' + file.iconAsset" width="128" height="128" [alt]="file.name">
   <span>{{file.name}}</span>
 </a>
