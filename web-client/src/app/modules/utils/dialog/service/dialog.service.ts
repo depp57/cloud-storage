@@ -6,7 +6,9 @@ import { RenameData } from '@modules/utils/dialog/model/dialog-data';
 import { first } from 'rxjs/operators';
 import { Item } from '@modules/dashboard/models/items';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DialogService {
 
   private openedDialog!: ComponentRef<DialogComponent<any>>;

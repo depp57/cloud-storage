@@ -2,8 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_FOLDER, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
-import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { DialogService } from '@modules/utils/dialog/service/dialog.service';
+import { FilesExplorerLogic } from '@modules/dashboard/services/files-explorer-logic';
 
 @Component({
   selector: 'app-folder',
@@ -14,36 +13,10 @@ export class FolderComponent {
 
   @Input() folder!: Folder;
 
-  constructor(private filesRepo: FilesRepositoryService,
-              private dialog: DialogService) {}
+  constructor(private folderLogic: FilesExplorerLogic) {}
 
   get contextMenuButtons(): MenuButton[] {
-    return [
-      {text: 'Télécharger', icon: 'download', onClick: () => this.onDownload()},
-      {text: 'Supprimer', icon: 'delete', onClick: () => this.onDelete()},
-      {text: 'Déplacer', icon: 'open_with', onClick: () => this.onMove()},
-      {text: 'Renommer', icon: 'edit', onClick: () => this.onRename()},
-    ];
-  }
-
-  onDownload(): void {
-    console.log(`Télécharger le dossier : ${this.folder.name}`);
-  }
-
-  onDelete(): void {
-    console.log(`Supprimer le dossier : ${this.folder.name}`);
-    this.filesRepo.delete(this.folder).subscribe();
-  }
-
-  onMove(): void {
-    console.log(`Déplacer le dossier : ${this.folder.name}`);
-  }
-
-  onRename(): void {
-    console.log(`Renommer le dossier : ${this.folder.name}`);
-    this.dialog.openRenameDialog(this.folder).subscribe(
-      newName => this.filesRepo.rename(this.folder, newName).subscribe()
-    );
+    return this.folderLogic.getItemsContextMenu(this.folder);
   }
 
   onDragStart(event: DragEvent): void {
