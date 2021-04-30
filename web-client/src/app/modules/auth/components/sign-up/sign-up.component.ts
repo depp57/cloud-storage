@@ -18,11 +18,10 @@ export class SignUpComponent {
               private router: Router) { }
 
   onSignUp(username: string, password: string): void {
-    this.auth.signUp({username, password})
-      .subscribe(
-        _ => this.navigateToDashboard(),
-        err => this.showSignUpError(err.status)
-      );
+    this.auth.signUp({username, password}).subscribe(
+      _ => this.navigateToDashboard(),
+      err => this.showSignUpError(err.status)
+    );
   }
 
   private showSignUpError(httpErrorCode: number): void {

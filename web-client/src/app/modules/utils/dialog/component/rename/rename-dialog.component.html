@@ -1,0 +1,37 @@
+<div class="fullscreen modal-overlay" (click)="onClose()"></div>
+
+<div class="fullscreen center-content">
+  <div class="modal-dialog">
+
+    <div class="dialog-header">
+      <h2 class="dialog-title">
+        Renommer
+      </h2>
+
+      <button mat-icon-button (click)="onClose()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="renameForm" (ngSubmit)="onSubmit()">
+      <div class="dialog-content">
+        <mat-form-field class="input-name">
+          <input matInput type="text" formControlName="name" placeholder="Entrer le nouveau nom" appAutoFocus>
+        </mat-form-field>
+
+        <mat-form-field class="input-extension" *ngIf="inputData.extension">
+          <input matInput type="text" formControlName="extension" placeholder="Extension">
+          <span matPrefix style="font-weight: 500">.</span>
+        </mat-form-field>
+      </div>
+
+      <div class="dialog-footer">
+        <button mat-raised-button aria-label="Rename item" color="primary" type="submit"
+                [disabled]="renameForm.invalid">
+          Enregister
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

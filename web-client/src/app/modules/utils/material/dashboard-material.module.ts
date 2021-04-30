@@ -9,7 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 
-const MaterialComponents = [
+const MaterialModules = [
   MatInputModule,
   MatSidenavModule,
   MatListModule,
@@ -22,7 +22,7 @@ const MaterialComponents = [
 ];
 
 @NgModule({
-  imports: [MaterialComponents],
-  exports: [MaterialComponents]
+  imports: [MaterialModules],
+  exports: [MaterialModules]
 })
-export class DashboardMaterialModule { }
+export class DashboardMaterialModule {}

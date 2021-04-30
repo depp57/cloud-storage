@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { ApiFile, ApiFilesResponse, ApiFileType } from '@modules/dashboard/models/api-files';
+import { ApiFile, ApiFileType, RequestDelete, RequestUpdate, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
 import { delay } from 'rxjs/operators';
 
 @Injectable({
@@ -8,9 +8,7 @@ import { delay } from 'rxjs/operators';
 })
 export class FilesFakeApiService {
 
-  constructor() { }
-
-  generateFiles(filesNb: number, foldersNumber: number, delayInMs: number = 0): Observable<ApiFilesResponse> {
+  listDir(filesNb: number, foldersNumber: number, delayInMs: number = 0): Observable<ResponseList> {
     const files: ApiFile[] = [];
 
     for (let i = 0; i < filesNb; i++) {
@@ -22,6 +20,18 @@ export class FilesFakeApiService {
     }
 
     return of({files}).pipe(delay(delayInMs));
+  }
+
+  rename(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
+    const response: ResponseUpdate = {changed: true};
+
+    return of(response).pipe(delay(delayInMs));
+  }
+
+  delete(param: RequestDelete, delayInMs: number = 0): Observable<ResponseDelete> {
+    const response: ResponseDelete = {deleted: true};
+
+    return of(response).pipe(delay(delayInMs));
   }
 
   private static generateRandFile(): ApiFile {
@@ -44,7 +54,7 @@ export class FilesFakeApiService {
       fileType = '.pdf';
     }
 
-    return {fullPath: `${this.generateRandName()}${fileType}`, type: ApiFileType.FILE};
+    return {fullPath: this.generateRandName() + fileType, type: ApiFileType.FILE};
   }
 
   private static generateRandFolder(): ApiFile {

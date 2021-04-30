@@ -12,6 +12,8 @@ import { FolderComponent } from './components/files-explorer/folder/folder.compo
 import { ContextMenuModule } from '@modules/utils/context-menu/context-menu.module';
 import { SharedModule } from '@shared/shared.module';
 import { FilterPipe } from './pipes/filter.pipe';
+import { FormsModule } from '@angular/forms';
+import { DialogModule } from '@modules/utils/dialog/dialog.module';
 
 @NgModule({
   declarations: [
@@ -29,8 +31,9 @@ import { FilterPipe } from './pipes/filter.pipe';
     DashboardRoutingModule,
     DashboardMaterialModule,
     ContextMenuModule,
-    SharedModule
+    DialogModule,
+    SharedModule,
+    FormsModule
   ]
 })
-export class DashboardModule {
-}
+export class DashboardModule {}

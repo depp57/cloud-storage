@@ -56,11 +56,6 @@ export class AuthService {
     );
   }
 
-  requestWithAuth(requestParam: object): object {
-    // simply add the user_token to the actual request parameters
-    return {...requestParam, ...{user_token: this._userCredentials?.token}};
-  }
-
   private saveUserCredentials(username: string, token: string): void {
     const userCredentials = new UserCredentials(username, token);
     setCookie(AUTH_COOKIE_NAME, userCredentials.asJson, AUTH_COOKIE_LIFETIME);

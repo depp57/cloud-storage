@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { File, Folder } from '@modules/dashboard/models/items';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '@modules/auth/services/auth.service';
-import { ApiFilesResponse, ApiFileType } from '@modules/dashboard/models/api-files';
+import { File, Folder, Item } from '@modules/dashboard/models/items';
+import { ResponseDelete, ResponseList, ResponseUpdate, ApiFileType } from '@modules/dashboard/models/api-files';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { FilesFakeApiService } from '@modules/dashboard/services/files-fake-api.service';
+import { FilesApiService } from '@modules/dashboard/services/files-api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +14,7 @@ export class FilesRepositoryService {
   private _folders: Folder[] = [];
   private _searchText?: string;
 
-  constructor(private auth: AuthService,
-              private http: HttpClient,
-              private fakeApi: FilesFakeApiService) {}
+  constructor(private filesApi: FilesApiService) {}
 
   get files(): File[] {
     return this._files;
@@ -32,21 +28,37 @@ export class FilesRepositoryService {
     return this._searchText;
   }
 
-  searchByText(text?: string): void {
-    this._searchText = text;
-  }
-
-  listDir(path: { path: string }): Observable<ApiFilesResponse> {
-    // return this.http.get<ApiFilesResponse>(API_ENDPOINT + 'files/list/', this.auth.requestWithAuth(path)).pipe(
-    //   tap(response => this.saveFiles(response))
-    // );
-
-    return this.fakeApi.generateFiles(40, 20, 500).pipe(
+  listFolder(folderName: string): Observable<ResponseList> {
+    return this.filesApi.listDir({path: folderName}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
-  private saveFiles(response: ApiFilesResponse): void {
+  rename(item: Item, newName: {name: string, extension?: string}): Observable<ResponseUpdate> {
+    return this.filesApi.update({fullPath: item.name, newFullPath: newName.name + newName.extension}).pipe(
+      tap(response => {
+        if (response.changed) {
+          this.renameItem(item, newName);
+        }
+      })
+    );
+  }
+
+  delete(item: Item): Observable<ResponseDelete> {
+    return this.filesApi.delete({fullPath: item.name}).pipe(
+      tap(response => {
+        if (response.deleted) {
+          this.deleteItem(item);
+        }
+      })
+    );
+  }
+
+  searchByText(text?: string): void {
+    this._searchText = text;
+  }
+
+  private saveFiles(response: ResponseList): void {
     for (const file of response.files) {
       const fileName = FilesRepositoryService.extractFileName(file.fullPath);
 
@@ -54,7 +66,7 @@ export class FilesRepositoryService {
         this._files.push(File.fromNameWithExtension(fileName));
       }
       else {
-        this._folders.push({name: fileName});
+        this._folders.push(new Folder(fileName));
       }
     }
 
@@ -62,10 +74,35 @@ export class FilesRepositoryService {
   }
 
   private sortByName(): void {
-    const compareFn = (a: File | Folder, b: File | Folder) => a.name > b.name ? 1 : -1;
+    this._files.sort((a, b) => a.compareTo(b));
+    this._folders.sort((a, b) => a.compareTo(b));
+  }
 
-    this._files.sort(compareFn);
-    this._folders.sort(compareFn);
+  private deleteItem(item: Item): void {
+    function deleteIn<T extends Item>(items: T[]): void {
+      const index = FilesRepositoryService.findItem(items, item);
+
+      // delete the element
+      if (index !== -1) { items.splice(index, 1); }
+    }
+
+    item.isFile() ? deleteIn(this._files) : deleteIn(this._folders);
+  }
+
+  private renameItem(item: Item, newName: { name: string, extension?: string }): void {
+    function renameIn<T extends Item>(items: T[]): void {
+      const index = FilesRepositoryService.findItem(items, item);
+
+      if (index !== -1) { items[index].rename(newName.name, newName.extension); }
+    }
+
+    item.isFile() ? renameIn(this._files) : renameIn(this._folders);
+  }
+
+  private static findItem<T extends Item>(items: T[], item: T): number {
+    // although the array is sorted, it is faster to use Array.findIndex() that
+    // a custom binary search (I tested it with multiple array's sizes)
+    return items.findIndex((value) => value.equals(item));
   }
 
   private static extractFileName(fullPath: string): string {

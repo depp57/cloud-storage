@@ -1,9 +1,31 @@
-export class File implements Item {
-  readonly name: string;
-  readonly extension: string;
+export abstract class Item {
+  name: string;
+  extension?: string;
+
+  constructor(name: string, extension?: string) {
+    this.name = name;
+    this.extension = extension;
+  }
+
+  isFile(): boolean {
+    return this.extension !== undefined;
+  }
+
+  rename(newName: string, newExtension?: string): void {
+    this.name = newName;
+    this.extension = newExtension;
+  }
+
+  equals(item: Item): boolean {
+    return item.name === this.name && this.extension === item.extension;
+  }
+}
+
+export class File extends Item {
+  extension: string;
 
   constructor(name: string, extension: string) {
-    this.name = name;
+    super(name, extension);
     this.extension = extension;
   }
 
@@ -14,10 +36,23 @@ export class File implements Item {
     return asset !== undefined ? asset : 'file.png';
   }
 
+  compareTo(file: File): number {
+    if (this.name !== file.name) {
+      return this.name > file.name ? 1 : -1;
+    }
+
+    return this.extension > file.extension ? 1 : this.extension === file.extension ? 0 : -1;
+  }
+
+  rename(newName: string, newExtension?: string): void {
+    super.rename(newName, newExtension);
+    if (!newExtension) { this.extension = '.'; }
+  }
+
   static fromNameWithExtension(nameWithExtension: string): File {
     const index = nameWithExtension.lastIndexOf('.');
     if (index === -1) {
-      return new File(nameWithExtension, '');
+      return new File(nameWithExtension, '.');
     }
 
     const extension = nameWithExtension.substring(index);
@@ -26,17 +61,17 @@ export class File implements Item {
   }
 }
 
+export class Folder extends Item {
+
+  compareTo(folder: Folder): number {
+    return this.name > folder.name ? 1 : this.name === folder.name ? 0 : -1;
+  }
+}
+
 const mapExtensionToIconAsset: Record<string, string> = {
-  '': 'file.png',
+  '.': 'file.png',
   '.txt': 'text.png',
   '.xlsx': 'excel.png',
   '.pdf': 'pdf.png',
   '.docx': 'word.png'
 };
-
-// Create a new name for a type (alias)
-export type Folder = Item;
-
-export interface Item {
-  readonly name: string;
-}

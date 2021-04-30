@@ -8,6 +8,27 @@ export interface ApiFile {
   readonly fullPath: string;
 }
 
-export interface ApiFilesResponse {
+export interface ResponseList {
   readonly files: ApiFile[];
+}
+
+export interface RequestList {
+  readonly path: string;
+}
+
+export interface ResponseUpdate {
+  readonly changed: boolean;
+}
+
+export interface RequestUpdate {
+  readonly fullPath: string;
+  readonly newFullPath: string;
+}
+
+export interface ResponseDelete {
+  readonly deleted: boolean;
+}
+
+export interface RequestDelete {
+  readonly fullPath: string;
 }

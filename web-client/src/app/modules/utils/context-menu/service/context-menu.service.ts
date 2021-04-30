@@ -9,7 +9,7 @@ export class ContextMenuService {
 
   constructor(private resolver: ComponentFactoryResolver) {}
 
-  createMenu(anchor: ViewContainerRef, buttons: MenuButton[], posX: number, posY: number): void {
+  openMenu(anchor: ViewContainerRef, buttons: MenuButton[], posX: number, posY: number): void {
     // prevent from opening two context menues
     if (this.openedMenu) { this.deleteMenu(); }
 

@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { File } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_FILE, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
+import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
+import { DialogService } from '@modules/utils/dialog/service/dialog.service';
 
 @Component({
   selector: 'app-file',
@@ -9,7 +11,11 @@ import { DATA_TRANSFER_FILE, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@mod
   styleUrls: ['./file.component.scss']
 })
 export class FileComponent {
+
   @Input() file!: File;
+
+  constructor(private filesRepo: FilesRepositoryService,
+              private dialog: DialogService) {}
 
   // TODO FIND A SOLUTION TO AVOID COPY PASTE FOLLOWING CODE FOR CONTEXT MENU (FILES AND FOLDER)
 
@@ -28,6 +34,7 @@ export class FileComponent {
 
   onDelete(): void {
     console.log(`Supprimer le fichier : ${this.file.name} (${this.file.extension})`);
+    this.filesRepo.delete(this.file).subscribe();
   }
 
   onMove(): void {
@@ -36,6 +43,9 @@ export class FileComponent {
 
   onRename(): void {
     console.log(`Renommer le fichier : ${this.file.name} (${this.file.extension})`);
+    this.dialog.openRenameDialog(this.file).subscribe(
+      newName => this.filesRepo.rename(this.file, newName).subscribe()
+    );
   }
 
   onDragStart(event: DragEvent): void {

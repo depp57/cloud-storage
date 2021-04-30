@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./files-explorer.component.scss']
 })
 export class FilesExplorerComponent implements OnInit {
+
   loading = true;
   files: File[] = this.fileRepo.files;
   folders: Folder[] = this.fileRepo.folders;
@@ -32,11 +33,10 @@ export class FilesExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fileRepo.listDir({path: '/'})
-      .subscribe(
-        _ => this.loading = false,
-        error => this.showLoadingError(error.status)
-      );
+    this.fileRepo.listFolder('/').subscribe(
+      _ => this.loading = false,
+      error => this.showLoadingError(error.status)
+    );
   }
 
   onNewFile(): void {

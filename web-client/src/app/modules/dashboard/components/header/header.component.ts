@@ -34,11 +34,10 @@ export class HeaderComponent {
   }
 
   signOut(): void {
-    this.auth.signOut()
-      .subscribe(
-        _ => this.navigateToLogin(),
-        err => this.showLogoutError(err.status)
-      );
+    this.auth.signOut().subscribe(
+      _ => this.navigateToLogin(),
+      err => this.showLogoutError(err.status)
+    );
   }
 
   onSearch(event: Event): void {

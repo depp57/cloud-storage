@@ -12,7 +12,7 @@ export class ContextMenuDirective {
               private factory: ContextMenuService) {}
 
   @HostListener('contextmenu', ['$event']) onContextMenu(event: MouseEvent): void {
-    this.factory.createMenu(this.elementRef, this.appContextMenu, event.x, event.y);
+    this.factory.openMenu(this.elementRef, this.appContextMenu, event.x, event.y);
 
     // prevent the browser from handling the right click
     event.preventDefault();

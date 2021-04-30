@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_FOLDER, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@modules/dashboard/models/drag-and-drop';
+import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
+import { DialogService } from '@modules/utils/dialog/service/dialog.service';
 
 @Component({
   selector: 'app-folder',
@@ -9,7 +11,11 @@ import { DATA_TRANSFER_FOLDER, DATA_TRANSFER_NAME, DATA_TRANSFER_TYPE } from '@m
   styleUrls: ['./folder.component.scss']
 })
 export class FolderComponent {
+
   @Input() folder!: Folder;
+
+  constructor(private filesRepo: FilesRepositoryService,
+              private dialog: DialogService) {}
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -26,6 +32,7 @@ export class FolderComponent {
 
   onDelete(): void {
     console.log(`Supprimer le dossier : ${this.folder.name}`);
+    this.filesRepo.delete(this.folder).subscribe();
   }
 
   onMove(): void {
@@ -34,6 +41,9 @@ export class FolderComponent {
 
   onRename(): void {
     console.log(`Renommer le dossier : ${this.folder.name}`);
+    this.dialog.openRenameDialog(this.folder).subscribe(
+      newName => this.filesRepo.rename(this.folder, newName).subscribe()
+    );
   }
 
   onDragStart(event: DragEvent): void {
@@ -42,7 +52,7 @@ export class FolderComponent {
   }
 
   onDragOver(event: DragEvent): void {
-    // Tell the browser to let the user drops here
+    // Tell the browser to let the user drop here
     event.preventDefault();
   }
 

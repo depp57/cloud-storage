@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
 
   private setDynamicPageTitle(): void {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
+      filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       const lastChild = AppComponent.getChild(this.activatedRoute);
       lastChild.data.subscribe(data => {
