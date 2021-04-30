@@ -29,7 +29,13 @@ export class FilesExplorerLogic {
   private deleteItem(item: Item): void {
     console.log(`Supprimer : ${item.name} (${item.extension})`);
 
-    this.filesRepo.delete(item).subscribe();
+    this.dialog.openDeleteDialog(item).subscribe(
+      needDelete => {
+        if (needDelete) {
+          this.filesRepo.delete(item).subscribe();
+        }
+      }
+    );
   }
 
   private moveItem(item: Item): void {
@@ -40,7 +46,11 @@ export class FilesExplorerLogic {
     console.log(`Renommer : ${item.name} (${item.extension})`);
 
     this.dialog.openRenameDialog(item).subscribe(
-      newName => this.filesRepo.rename(item, newName).subscribe()
+      newName => {
+        if (newName) {
+          this.filesRepo.rename(item, {name: newName.name, extension: newName.extension}).subscribe();
+        }
+      }
     );
   }
 }

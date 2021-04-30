@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
+import { DeleteDialogComponent } from 'src/app/modules/utils/dialog/component/delete/delete-dialog.component';
+import { BaseDialogComponent } from './component/base-dialog/base-dialog.component';
 
 @NgModule({
   imports: [
@@ -21,7 +23,9 @@ import { SharedModule } from '@shared/shared.module';
     DialogService
   ],
   declarations: [
-    RenameDialogComponent
+    RenameDialogComponent,
+    DeleteDialogComponent,
+    BaseDialogComponent
   ]
 })
 export class DialogModule {}

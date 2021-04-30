@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiFile, ApiFileType, RequestDelete, RequestUpdate, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
-import { delay } from 'rxjs/operators';
+import { delay, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -19,19 +19,19 @@ export class FilesFakeApiService {
       files.push(FilesFakeApiService.generateRandFolder());
     }
 
-    return of({files}).pipe(delay(delayInMs));
+    return of({files}).pipe(delay(delayInMs), take(1));
   }
 
   rename(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
     const response: ResponseUpdate = {changed: true};
 
-    return of(response).pipe(delay(delayInMs));
+    return of(response).pipe(delay(delayInMs), take(1));
   }
 
   delete(param: RequestDelete, delayInMs: number = 0): Observable<ResponseDelete> {
     const response: ResponseDelete = {deleted: true};
 
-    return of(response).pipe(delay(delayInMs));
+    return of(response).pipe(delay(delayInMs), take(1));
   }
 
   private static generateRandFile(): ApiFile {

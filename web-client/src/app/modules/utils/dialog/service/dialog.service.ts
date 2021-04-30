@@ -1,49 +1,67 @@
-import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector, Type } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { RenameDialogComponent } from '@modules/utils/dialog/component/rename/rename-dialog.component';
 import { Observable } from 'rxjs';
-import { RenameData } from '@modules/utils/dialog/model/dialog-data';
-import { first } from 'rxjs/operators';
+import { InputDeleteData, InputRenameData, OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
+import { take } from 'rxjs/operators';
 import { Item } from '@modules/dashboard/models/items';
+import { DeleteDialogComponent } from '@modules/utils/dialog/component/delete/delete-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DialogService {
 
-  private openedDialog!: ComponentRef<DialogComponent<any>>;
+  private openedDialog!: ComponentRef<DialogComponent<any, any>>;
 
   constructor(private resolver: ComponentFactoryResolver,
               private appRef: ApplicationRef,
               private injector: Injector) {}
 
-  openRenameDialog(item: Item): Observable<RenameData> {
+  openRenameDialog(item: Item): Observable<OutputRenameData> {
+    const componentRef = this.openDialog<RenameDialogComponent, InputRenameData, OutputRenameData>
+    (RenameDialogComponent, {name: item.name, extension: item.extension});
+
+    return componentRef.instance.submit.pipe(
+      take(1) // observe only one value, then auto unsubscribe
+    );
+  }
+
+  openDeleteDialog(item: Item): Observable<boolean> {
+    const componentRef = this.openDialog<DeleteDialogComponent, InputDeleteData, boolean>
+    (DeleteDialogComponent, {name: item.name, extension: item.extension});
+
+    return componentRef.instance.submit.pipe(
+      take(1) // observe only one value, then auto unsubscribe
+    );
+  }
+
+  private deleteDialog(): void {
+    this.appRef.detachView(this.openedDialog.hostView);
+    this.openedDialog.destroy();
+  }
+
+  private openDialog<C extends DialogComponent<I, O>, I, O>(component: Type<C>, inputData: I): ComponentRef<DialogComponent<I, O>> {
     // prevent from opening two dialogs
     if (this.openedDialog) { this.deleteDialog(); }
 
-    const factory = this.resolver.resolveComponentFactory(RenameDialogComponent);
+    const factory = this.resolver.resolveComponentFactory(component);
+    const componentRef: ComponentRef<DialogComponent<I, O>> = factory.create(this.injector);
 
-    const componentRef: ComponentRef<DialogComponent<RenameData>> = factory.create(this.injector);
     const hostView = componentRef.hostView;
-
     this.appRef.attachView(hostView);
 
     const domElem = (hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
     document.body.appendChild(domElem);
 
     // listen if the dialog wants to close itself
-    componentRef.instance.delete.subscribe(() => this.deleteDialog());
-    componentRef.instance.inputData = {name: item.name, extension: item.extension};
+    componentRef.instance.closeDialog.subscribe(() => this.deleteDialog());
+
+    // send data to the component
+    componentRef.instance.inputData = inputData;
 
     this.openedDialog = componentRef;
 
-    return componentRef.instance.submit.pipe(
-      first() // observe only one value, then auto unsubscribe
-    );
-  }
-
-  deleteDialog(): void {
-    this.appRef.detachView(this.openedDialog.hostView);
-    this.openedDialog.destroy();
+    return componentRef;
   }
 }

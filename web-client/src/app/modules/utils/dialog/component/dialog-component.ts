@@ -1,8 +1,8 @@
-import { EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
 
-export abstract class DialogComponent<T> {
+export abstract class DialogComponent<I, O> {
 
- delete: EventEmitter<void> = new EventEmitter();
- submit: EventEmitter<T> = new EventEmitter();
- inputData!: T;
+  closeDialog: Subject<void> = new Subject();
+  submit: Subject<O> = new Subject();
+  inputData!: I;
 }

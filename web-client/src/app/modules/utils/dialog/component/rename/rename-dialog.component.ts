@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { RenameData } from '@modules/utils/dialog/model/dialog-data';
+import { InputRenameData, OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
 
 @Component({
   selector: 'app-rename',
   templateUrl: './rename-dialog.component.html',
   styleUrls: ['./rename-dialog.component.scss']
 })
-export class RenameDialogComponent extends DialogComponent<RenameData> implements OnInit {
+export class RenameDialogComponent extends DialogComponent<InputRenameData, OutputRenameData> implements OnInit {
 
   renameForm!: FormGroup;
 
@@ -24,16 +24,17 @@ export class RenameDialogComponent extends DialogComponent<RenameData> implement
     this.initForm();
   }
 
-  onSubmit(): void {
-    this.submit.emit({
-        name: this.name,
-        extension: '.' + this.extension
-    });
-    this.delete.emit();
+  onClose(): void {
+    this.submit.next(null);
+    this.closeDialog.next();
   }
 
-  onClose(): void {
-    this.delete.emit();
+  onSubmit(): void {
+    this.submit.next({
+      name: this.name,
+      extension: '.' + this.extension
+    });
+    this.closeDialog.next();
   }
 
   private initForm(): void {
