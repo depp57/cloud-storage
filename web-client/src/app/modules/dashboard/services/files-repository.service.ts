@@ -28,14 +28,14 @@ export class FilesRepositoryService {
     return this._searchText;
   }
 
-  listFolder(folderName: string): Observable<ResponseList> {
-    return this.filesApi.listDir({path: folderName}).pipe(
+  listFolder(path: string): Observable<ResponseList> {
+    return this.filesApi.listDir({path}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
   rename(item: Item, newName: {name: string, extension?: string}): Observable<ResponseUpdate> {
-    return this.filesApi.update({fullPath: item.name, newFullPath: newName.name + newName.extension}).pipe(
+    return this.filesApi.update({fullPath: item.fullName, newFullPath: newName.name + newName.extension}).pipe(
       tap(response => {
         if (response.changed) {
           this.renameItem(item, newName);
@@ -45,10 +45,20 @@ export class FilesRepositoryService {
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    return this.filesApi.delete({fullPath: item.name}).pipe(
+    return this.filesApi.delete({fullPath: item.fullName}).pipe(
       tap(response => {
         if (response.deleted) {
           this.deleteItem(item);
+        }
+      })
+    );
+  }
+
+  move(item: Item, newPath: string): Observable<ResponseUpdate> {
+    return this.filesApi.move({fullPath: item.fullName, newFullPath: `${newPath}/${item.fullName}`}).pipe(
+      tap(response => {
+        if (response.changed) {
+          this.moveItem(item);
         }
       })
     );
@@ -97,6 +107,11 @@ export class FilesRepositoryService {
     }
 
     item.isFile() ? renameIn(this._files) : renameIn(this._folders);
+  }
+
+  private moveItem(item: Item): void {
+    // because only items in current folder are visible, move an item to another folder is like delete in the front-end
+    this.deleteItem(item);
   }
 
   private static findItem<T extends Item>(items: T[], item: T): number {

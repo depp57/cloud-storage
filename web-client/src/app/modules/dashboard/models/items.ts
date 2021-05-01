@@ -7,6 +7,16 @@ export abstract class Item {
     this.extension = extension;
   }
 
+  get fullName(): string {
+    // if it's a file
+    if (this.extension) {
+      return this.name + (this.extension !== '.' ? this.extension : '');
+    }
+
+    // else it's a directory
+    return this.name;
+  }
+
   isFile(): boolean {
     return this.extension !== undefined;
   }

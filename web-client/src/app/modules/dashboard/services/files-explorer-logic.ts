@@ -21,14 +21,16 @@ export class FilesExplorerLogic {
     ];
   }
 
+  moveItemWithoutDialog(item: Item, newPath: string): void {
+    this.filesRepo.move(item, newPath).subscribe();
+  }
+
   private downloadItem(item: Item): void {
     console.log(`Télécharger : ${item.name} (${item.extension})`);
     return undefined;
   }
 
   private deleteItem(item: Item): void {
-    console.log(`Supprimer : ${item.name} (${item.extension})`);
-
     this.dialog.openDeleteDialog(item).subscribe(
       needDelete => {
         if (needDelete) {
@@ -39,16 +41,17 @@ export class FilesExplorerLogic {
   }
 
   private moveItem(item: Item): void {
-    console.log(`Déplacer : ${item.name} (${item.extension})`);
+    console.warn(`Déplacer : ${item.fullName}
+     -- need le back-end pour lister les items dans les dossiers/sous dossiers`);
+
+    // this.filesRepo.move(item).subscribe();
   }
 
   private renameItem(item: Item): void {
-    console.log(`Renommer : ${item.name} (${item.extension})`);
-
     this.dialog.openRenameDialog(item).subscribe(
       newName => {
         if (newName) {
-          this.filesRepo.rename(item, {name: newName.name, extension: newName.extension}).subscribe();
+          this.filesRepo.rename(item, newName).subscribe();
         }
       }
     );

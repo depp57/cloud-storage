@@ -34,6 +34,12 @@ export class FilesFakeApiService {
     return of(response).pipe(delay(delayInMs), take(1));
   }
 
+  move(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
+    const response: ResponseUpdate = {changed: true};
+
+    return of(response).pipe(delay(delayInMs), take(1));
+  }
+
   private static generateRandFile(): ApiFile {
     const rand = Math.random();
     let fileType: string;
