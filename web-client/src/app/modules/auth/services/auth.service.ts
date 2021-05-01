@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { API_ENDPOINT, AUTH_COOKIE_NAME, AUTH_COOKIE_LIFETIME } from '@shared/constants';
+import { AUTH_COOKIE_NAME, AUTH_COOKIE_LIFETIME } from '@shared/constants';
 import { Observable } from 'rxjs';
 import { ApiAuthParam, ApiAuthResponse, UserCredentials } from '@modules/auth/models/api-auth';
 import { deleteCookie, getCookie, setCookie } from '@shared/models/cookies-utils';
@@ -39,19 +39,19 @@ export class AuthService {
   }
 
   signIn(user: ApiAuthParam): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'auth/', user).pipe(
+    return this.http.post<ApiAuthResponse>('auth/', user).pipe(
       tap(response => this.saveUserCredentials(user.username, response.token))
     );
   }
 
   signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
-    return this.http.post<ApiAuthResponse>(API_ENDPOINT + 'subscribe/', user).pipe(
+    return this.http.post<ApiAuthResponse>('subscribe/', user).pipe(
       tap(response => this.saveUserCredentials(user.username, response.token))
     );
   }
 
   signOut(): Observable<ApiAuthResponse> {
-    return this.http.get<ApiAuthResponse>(API_ENDPOINT + 'auth/disconnect/').pipe(
+    return this.http.get<ApiAuthResponse>('auth/disconnect/').pipe(
       tap(_ => this.deleteUserCredentials())
     );
   }

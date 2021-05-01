@@ -5,7 +5,8 @@ export const AUTH_COOKIE_NAME = 'user_credentials';
 export const HTTP_ERROR_CODES: Record<number, string> = {
   0: 'Vous n\'êtes pas connecté à internet',
   400: 'Syntaxe de la requête HTTP erronée, veuillez contacter un administrateur',
-  401: 'Identifiants incorrects'
+  401: 'Identifiants incorrects',
+  403: 'Vous devez être identifié pour accéder à cette ressource'
 };
 
 export enum RedirectReasons {
@@ -20,8 +21,6 @@ export enum RedirectReasons {
 }
 
 405 : pas censé arriver -> ADMIN
-
-403 : Vous devez être identifié pour accéder à cette ressource
 
 404 : gérée
  */
