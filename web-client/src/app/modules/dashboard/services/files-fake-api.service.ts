@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiFile, ApiFileType, RequestDelete, RequestUpdate, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
-import { delay, take } from 'rxjs/operators';
+import { delay, finalize, take, tap } from 'rxjs/operators';
+import { LoaderService } from '@shared/services/loader.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FilesFakeApiService {
+
+  constructor(private loading: LoaderService) {}
 
   listDir(filesNb: number, foldersNumber: number, delayInMs: number = 0): Observable<ResponseList> {
     const files: ApiFile[] = [];
@@ -19,25 +22,42 @@ export class FilesFakeApiService {
       files.push(FilesFakeApiService.generateRandFolder());
     }
 
-    return of({files}).pipe(delay(delayInMs), take(1));
+    return this.handleLoading(of({files}), delayInMs);
   }
 
   rename(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
     const response: ResponseUpdate = {changed: true};
 
-    return of(response).pipe(delay(delayInMs), take(1));
+    return this.handleLoading(of(response), delayInMs);
   }
 
   delete(param: RequestDelete, delayInMs: number = 0): Observable<ResponseDelete> {
     const response: ResponseDelete = {deleted: true};
 
-    return of(response).pipe(delay(delayInMs), take(1));
+    return this.handleLoading(of(response), delayInMs);
   }
 
   move(param: RequestUpdate, delayInMs: number = 0): Observable<ResponseUpdate> {
     const response: ResponseUpdate = {changed: true};
 
-    return of(response).pipe(delay(delayInMs), take(1));
+    return this.handleLoading(of(response), delayInMs);
+  }
+
+  private handleLoading<T>(response: Observable<T>, delayInMs: number): Observable<T> {
+    return response.pipe(
+      tap(() => this.startLoading()),
+      delay(delayInMs),
+      take(1),
+      finalize(() => this.stopLoading())
+    );
+  }
+
+  private startLoading(): void {
+    this.loading.isLoading.next(true);
+  }
+
+  private stopLoading(): void {
+    this.loading.isLoading.next(false);
   }
 
   private static generateRandFile(): ApiFile {

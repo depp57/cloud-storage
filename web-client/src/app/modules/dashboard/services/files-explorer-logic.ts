@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { Item } from '@modules/dashboard/models/items';
+import { Folder, Item } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DialogService } from '@modules/utils/dialog/service/dialog.service';
 
@@ -23,6 +23,10 @@ export class FilesExplorerLogic {
 
   moveItemWithoutDialog(item: Item, newPath: string): void {
     this.filesRepo.move(item, newPath).subscribe();
+  }
+
+  listFolder(folder: Folder): void {
+    this.filesRepo.listFolder(folder.name).subscribe();
   }
 
   private downloadItem(item: Item): void {

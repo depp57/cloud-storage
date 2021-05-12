@@ -13,7 +13,7 @@ export interface ResponseList {
 }
 
 export interface RequestList {
-  readonly path: string;
+  readonly fullPath: string;
 }
 
 export interface ResponseUpdate {

@@ -37,13 +37,22 @@ mat-card-footer {
   height: 4px;
 }
 
-::ng-deep #auth-title {
+:host ::ng-deep #auth-title {
   font-size: xx-large;
 }
 
 .center-text {
   display: flex;
   align-items: center;
+}
+
+:host ::ng-deep a {
+  text-decoration: none;
+  color: var(--text-important);
+
+  &:hover {
+    text-decoration: underline var(--text-underline);
+  }
 }
 
 @media #{$MOBILE} {

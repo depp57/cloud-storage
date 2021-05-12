@@ -4,6 +4,7 @@ import { ResponseDelete, ResponseList, ResponseUpdate, ApiFileType } from '@modu
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { FilesApiService } from '@modules/dashboard/services/files-api.service';
+import { PathService } from '@modules/dashboard/services/path.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class FilesRepositoryService {
   private _folders: Folder[] = [];
   private _searchText?: string;
 
-  constructor(private filesApi: FilesApiService) {}
+  constructor(private filesApi: FilesApiService,
+              private path: PathService) {}
 
   get files(): File[] {
     return this._files;
@@ -28,13 +30,16 @@ export class FilesRepositoryService {
     return this._searchText;
   }
 
+  // the path can be relative (myDocuments) or absolute (/myDocuments)
   listFolder(path: string): Observable<ResponseList> {
-    return this.filesApi.listDir({path}).pipe(
+    this.path.updatePath(path);
+
+    return this.filesApi.listDir({fullPath: this.path.currentPath.value}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
-  rename(item: Item, newName: {name: string, extension?: string}): Observable<ResponseUpdate> {
+  rename(item: Item, newName: { name: string, extension?: string }): Observable<ResponseUpdate> {
     return this.filesApi.update({fullPath: item.fullName, newFullPath: newName.name + newName.extension}).pipe(
       tap(response => {
         if (response.changed) {
@@ -69,6 +74,8 @@ export class FilesRepositoryService {
   }
 
   private saveFiles(response: ResponseList): void {
+    this.emptyFolder();
+
     for (const file of response.files) {
       const fileName = FilesRepositoryService.extractFileName(file.fullPath);
 
@@ -112,6 +119,11 @@ export class FilesRepositoryService {
   private moveItem(item: Item): void {
     // because only items in current folder are visible, move an item to another folder is like delete in the front-end
     this.deleteItem(item);
+  }
+
+  private emptyFolder(): void {
+    this._files.length = 0;
+    this._folders.length = 0;
   }
 
   private static findItem<T extends Item>(items: T[], item: T): number {

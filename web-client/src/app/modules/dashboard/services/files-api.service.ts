@@ -13,29 +13,35 @@ export class FilesApiService {
               private fakeApi: FilesFakeApiService) {}
 
   listDir(param: RequestList): Observable<ResponseList> {
-    // return this.http.get<ResponseList>('files/list/', param);
+    // // removes whitespaces
+    // const fullPath = param.fullPath.trim();
+    //
+    // // add URL parameters to the http request
+    // const options = {params: new HttpParams().set('fullPath', fullPath)};
+    //
+    // return this.http.get<ResponseList>('files/list/', options);
 
     console.log('listDir', param);
-    return this.fakeApi.listDir(30, 5, 500);
+    return this.fakeApi.listDir(30, 5, 0);
   }
 
   update(param: RequestUpdate): Observable<ResponseUpdate> {
     // return this.http.post<ResponseUpdate>('files/update/', param);
     console.log('update', param);
-    return this.fakeApi.rename(param, 0);
+    return this.fakeApi.rename(param, 500);
   }
 
   delete(param: RequestDelete): Observable<ResponseDelete> {
     // return this.http.delete<ResponseDelete>('files/update/', param);
 
     console.log('delete', param);
-    return this.fakeApi.delete(param, 0);
+    return this.fakeApi.delete(param, 500);
   }
 
   move(param: RequestUpdate): Observable<ResponseUpdate> {
     // return this.http.post<ResponseUpdate>('files/update/', param);
 
     console.log('move', param);
-    return this.fakeApi.move(param, 0);
+    return this.fakeApi.move(param, 500);
   }
 }

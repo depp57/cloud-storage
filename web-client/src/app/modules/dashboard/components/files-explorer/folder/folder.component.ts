@@ -37,4 +37,8 @@ export class FolderComponent {
       this.folderLogic.moveItemWithoutDialog(File.fromNameWithExtension(sourceName), this.folder.name);
     }
   }
+
+  onClick(): void {
+    this.folderLogic.listFolder(this.folder);
+  }
 }

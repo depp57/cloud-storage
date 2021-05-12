@@ -33,7 +33,7 @@ export class FilesExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fileRepo.listFolder('/').subscribe(
+    this.fileRepo.listFolder('').subscribe(
       _ => this.loading = false,
       error => this.showLoadingError(error.status)
     );

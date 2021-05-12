@@ -14,6 +14,7 @@ import { SharedModule } from '@shared/shared.module';
 import { FilterPipe } from './pipes/filter.pipe';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from '@modules/utils/dialog/dialog.module';
+import { CurrentPathComponent } from './components/files-explorer/current-path/current-path.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { DialogModule } from '@modules/utils/dialog/dialog.module';
     SidenavComponent,
     FileComponent,
     FolderComponent,
-    FilterPipe
+    FilterPipe,
+    CurrentPathComponent
   ],
   imports: [
     CommonModule,

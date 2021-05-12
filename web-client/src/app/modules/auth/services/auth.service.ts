@@ -46,7 +46,9 @@ export class AuthService {
 
   signUp(user: ApiAuthParam): Observable<ApiAuthResponse> {
     return this.http.post<ApiAuthResponse>('subscribe/', user).pipe(
-      tap(response => this.saveUserCredentials(user.username, response.token))
+      tap(response => {
+        this.saveUserCredentials(user.username, response.token);
+      })
     );
   }
 

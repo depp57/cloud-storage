@@ -32,7 +32,7 @@
 
 <div id="main-container" [appContextMenu]="contextMenuButtons">
 
-  <h1>Mes fichiers</h1>
+  <app-current-path></app-current-path>
 
   <div class="files-container">
     <div style="display: contents" *ngIf="!loading else loadingTemplate">
