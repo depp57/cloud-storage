@@ -24,10 +24,14 @@ a {
   text-decoration: none;
   color: inherit;
   user-select: none;
-  padding: 0 8px;
+  padding-right: 0.4rem;
 
   &:hover {
     background-color: var(--color-light-gray);
     cursor: pointer;
   }
+}
+
+.path-item-chevron {
+  padding-right: 0.4rem;
 }
