@@ -5,12 +5,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
-	"github.com/sventhommet/cloud-storage/server/db"
 	yaml "gopkg.in/yaml.v2"
-)
 
-const SERVER_CONF_FILE = "confs/server.conf.yaml"
+	"github.com/sventhommet/cloud-storage/server/common/api"
+	"github.com/sventhommet/cloud-storage/server/common/auth"
+	database "github.com/sventhommet/cloud-storage/server/common/db"
+)
 
 type Server struct {
 	BindTo struct {
@@ -23,18 +25,21 @@ type Server struct {
 	} `yaml:"ssl"`
 }
 
-var sqlAdapt db.DbPort
-var auth Auth
+var db database.DbPort
+var authComp auth.Auth
 
 func init() {
-	sqlAdapt = new(db.SqlDbPort)
-	sqlAdapt.Init()
-	auth = new(AuthStruct)
-	auth.Init(sqlAdapt)
+	db = database.InitSql()
+	authComp = auth.Init(db)
 }
 
 func main() {
-	defer sqlAdapt.Close()
+	defer db.Close()
+
+	var SERVER_CONF_FILE = os.Getenv("SERVER_CONF_PATH")
+	if SERVER_CONF_FILE == "" {
+		panic("Please set SERVER_CONF_PATH env var")
+	}
 
 	var server Server
 	var data, errYamlFile = os.ReadFile(SERVER_CONF_FILE)
@@ -61,7 +66,10 @@ func main() {
 }
 
 func reqHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "OPTIONS" {
+	// delete trailing slash so '/auth/' and '/auth' are treated the same way
+	r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+
+	if r.Method == api.OPTIONS {
 		//Handle CORS preflight here
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
@@ -72,29 +80,18 @@ func reqHandler(w http.ResponseWriter, r *http.Request) {
 		headers.Add("Vary", "Access-Control-Request-Headers")
 		return
 	} else {
-		// //For any other requests use restAPI multiplexer
-		// restAPI := http.NewServeMux()
-		// //First of all : add headers
-		// w.Header().Add("Content-Type", "application/json")
-		// w.Header().Add("Access-Control-Allow-Origin", "*")
-
-		// restAPI.HandleFunc("/files/list/", handleFilesList)
-		// restAPI.HandleFunc("/files/dl/", handleFilesDL)
-		// restAPI.HandleFunc("/auth/", handleAuth)
-
-		// restAPI.ServeHTTP(w, r)
 		//For any other requests use restAPI multiplexer
-		restAPI := NewRestAPIMux(auth)
+		restAPI := api.NewRestAPIMux(authComp)
 		//First of all : add headers
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Access-Control-Allow-Origin", "*")
 
-		//  TODO...
-		// restAPI.Route("/files/list/", handleFilesList)
-		// restAPI.Route("/files/dl/", handleFilesDL)
-		restAPI.HandleFunc("/auth/", handleAuth)
-		restAPI.Route("/auth/disconnect", handleDisconnect)
-		restAPI.HandleFunc("/users/subscribe", handleSubscribe)
+		restAPI.DefaultRoute("/auth", "POST", handleAuth)
+		restAPI.UserRoute("/auth/disconnect", "GET", handleDisconnect)
+		restAPI.DefaultRoute("/subscribe", "POST", handleSubscribe)
+
+		restAPI.UserRoute("/files/list", "POST", handleFilesList)
+		restAPI.UserRoute("/files/dl", "GET", handleFilesDL)
 
 		restAPI.ServeHTTP(w, r)
 	}

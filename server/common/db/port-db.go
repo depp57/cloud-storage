@@ -20,7 +20,6 @@ type User struct {
 }
 
 type DbPort interface {
-	Init()
 	Close()
 
 	//*** Used by disk-manager ***//
@@ -41,6 +40,8 @@ type DbPort interface {
 	WhereToSave(data []byte) (diskName string)
 
 	//*** Used by Auth component ***//
+
+	RegisterUser(username string, password string)
 
 	UserExist(username string) bool
 	//Returns a session token when user could be authentified, returns false otherwise

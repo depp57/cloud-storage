@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/sventhommet/cloud-storage/server/utils"
+	"github.com/sventhommet/cloud-storage/server/common/utils"
 )
 
 type DNSPort interface {

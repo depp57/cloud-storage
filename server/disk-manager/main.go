@@ -1,27 +1,24 @@
 package main
 
-import (
-	. "github.com/sventhommet/cloud-storage/server/db"
-)
+import "github.com/sventhommet/cloud-storage/server/common/db"
 
 //Port interfaces
 var fsAdapt StoragePort
-var sqlAdapt DbPort
+var Db db.DbPort
 var dnsAdapt DNSPort
 
 func init() {
 	fsAdapt = new(FsStoragePort)
 	fsAdapt.init()
 
-	sqlAdapt = new(SqlDbPort)
-	sqlAdapt.Init()
+	Db = db.InitSql()
 
 	dnsAdapt = new(I_DNSPort)
 	dnsAdapt.init()
 }
 
 func main() {
-	defer sqlAdapt.Close()
+	defer Db.Close()
 
 	data, _ := fsAdapt.readFile("test")
 	storeFile("sven", "docs/img/depp.jpg", data)
@@ -35,13 +32,13 @@ func mkdir(userId string, fullpath string) {
 }
 
 func storeFile(userId string, fullpath string, data []byte) {
-	var fileId = sqlAdapt.RegisterFile(userId, fullpath, fsAdapt.getDiskName())
+	var fileId = Db.RegisterFile(userId, fullpath, fsAdapt.getDiskName())
 
 	var err = fsAdapt.writeFile(fileId, data)
 
 	//If file couldn't be wrote on the fs, we need to unregister it from db
 	if err != nil {
-		sqlAdapt.UnRegisterFile(userId, fullpath)
+		Db.UnRegisterFile(userId, fullpath)
 		panic(err.Error())
 	}
 
@@ -49,14 +46,14 @@ func storeFile(userId string, fullpath string, data []byte) {
 }
 
 func deleteFile(userId string, fullpath string) {
-	var err = fsAdapt.removeFile(sqlAdapt.GetFileId(userId, fullpath))
+	var err = fsAdapt.removeFile(Db.GetFileId(userId, fullpath))
 
 	//Handle error if any, then unregister file from db
 	if err != nil {
 		panic(err.Error())
 	}
 
-	sqlAdapt.UnRegisterFile(userId, fullpath)
+	Db.UnRegisterFile(userId, fullpath)
 
 	//TODO disk table in db : diskLeftSpace() ?
 }

@@ -9,12 +9,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v2"
 
-	"github.com/sventhommet/cloud-storage/server/utils"
+	"github.com/sventhommet/cloud-storage/server/common/utils"
 )
 
-const MYSQL_CONF_FILE = "confs/mysql.conf.yaml"
-
-type SqlDbPort struct {
+//TODO /!\ sql injection !!!!
+type SqlAdapter struct {
 	db          *sql.DB
 	DB_USER     string `yaml:"mysql_user"`
 	DB_PASSWORD string `yaml:"mysql_password"`
@@ -23,27 +22,35 @@ type SqlDbPort struct {
 	DB_NAME     string `yaml:"mysql_database_name"`
 }
 
-func (this *SqlDbPort) Init() {
+func InitSql() *SqlAdapter {
+	var db = new(SqlAdapter)
+
+	var MYSQL_CONF_FILE = os.Getenv("MYSQL_CONF_PATH")
+	if MYSQL_CONF_FILE == "" {
+		panic("Please set MYSQL_CONF_PATH env var")
+	}
 	var data, errYamlFile = os.ReadFile(MYSQL_CONF_FILE)
 	if errYamlFile != nil {
 		panic("Could not read " + MYSQL_CONF_FILE)
 	}
-	errYamlParse := yaml.Unmarshal([]byte(data), this)
+	errYamlParse := yaml.Unmarshal([]byte(data), db)
 	if errYamlParse != nil {
 		panic("Could not parse " + MYSQL_CONF_FILE)
 	}
 
-	this.db, _ = sql.Open("mysql", this.DB_USER+":"+this.DB_PASSWORD+"@tcp("+this.DB_IP+":"+this.DB_PORT+")/"+this.DB_NAME)
-	if err := this.db.Ping(); err != nil {
+	db.db, _ = sql.Open("mysql", db.DB_USER+":"+db.DB_PASSWORD+"@tcp("+db.DB_IP+":"+db.DB_PORT+")/"+db.DB_NAME)
+	if err := db.db.Ping(); err != nil {
 		panic(err)
 	}
+
+	return db
 }
 
-func (this *SqlDbPort) Close() {
+func (this *SqlAdapter) Close() {
 	this.db.Close()
 }
 
-func (this *SqlDbPort) GetFileId(userId string, fullpath string) string {
+func (this *SqlAdapter) GetFileId(userId string, fullpath string) string {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")
 	var fileName string = split[len(split)-1]
@@ -70,7 +77,7 @@ func (this *SqlDbPort) GetFileId(userId string, fullpath string) string {
 
 // DOES NOT verify if file already exists for user.
 // Security : set a SQL index on rows (path, file_name, user_id)
-func (this *SqlDbPort) RegisterFile(userId string, fullpath string, diskName string) (fileId string) {
+func (this *SqlAdapter) RegisterFile(userId string, fullpath string, diskName string) (fileId string) {
 	fileId = utils.RandString(FILE_ID_LENGTH)
 
 	//Separates file path and file name from fullpath
@@ -95,7 +102,7 @@ func (this *SqlDbPort) RegisterFile(userId string, fullpath string, diskName str
 	return fileId
 }
 
-func (this *SqlDbPort) UnRegisterFile(userId string, fullpath string) error {
+func (this *SqlAdapter) UnRegisterFile(userId string, fullpath string) error {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")
 	var fileName string = split[len(split)-1]
@@ -118,7 +125,7 @@ func (this *SqlDbPort) UnRegisterFile(userId string, fullpath string) error {
 	return err
 }
 
-func (this *SqlDbPort) GetFilesFromUser(userId string, path string) map[string]File {
+func (this *SqlAdapter) GetFilesFromUser(userId string, path string) map[string]File {
 	if path == "" {
 		//TODO handle the case when ALL files from user are to be returned
 	}
@@ -148,11 +155,18 @@ func (this *SqlDbPort) GetFilesFromUser(userId string, path string) map[string]F
 	return results
 }
 
-func (this *SqlDbPort) WhereToSave(data []byte) (diskName string) {
+func (this *SqlAdapter) WhereToSave(data []byte) (diskName string) {
 	return ""
 }
 
-func (this *SqlDbPort) UserExist(username string) bool {
+//TODO verifications
+func (this *SqlAdapter) RegisterUser(username string, password string) {
+	password_sha256 := utils.Sha256(password)
+	this.db.Query("INSERT INTO users(username, password_sha256) VALUES ('" + username + "', '" + password_sha256 + "');")
+
+}
+
+func (this *SqlAdapter) UserExist(username string) bool {
 	var rows, err = this.db.Query("SELECT username FROM users WHERE username='" + username + "';")
 	//TODO remove panic and implement : log errors
 	if err != nil {
@@ -162,7 +176,7 @@ func (this *SqlDbPort) UserExist(username string) bool {
 	return rows.Next()
 }
 
-func (this *SqlDbPort) ChallengeUserPassword(username string, password_hash string, token_expiration_t time.Time) (User, bool) {
+func (this *SqlAdapter) ChallengeUserPassword(username string, password_hash string, token_expiration_t time.Time) (User, bool) {
 	var rows, err = this.db.Query("SELECT id FROM users WHERE username='" + username + "' AND password_sha256 = '" + password_hash + "';")
 	//TODO remove panic and implement : log errors
 	if err != nil {
@@ -192,7 +206,7 @@ func (this *SqlDbPort) ChallengeUserPassword(username string, password_hash stri
 	}, true
 }
 
-func (this *SqlDbPort) ChallengeUserToken(token string) (User, bool) {
+func (this *SqlAdapter) ChallengeUserToken(token string) (User, bool) {
 	var rows, err = this.db.Query("SELECT id, username, session_token_expiration FROM users WHERE session_token='" + token + "' AND session_token_expiration > NOW();")
 	//TODO remove panic and implement : log errors
 	if err != nil {
@@ -218,10 +232,10 @@ func (this *SqlDbPort) ChallengeUserToken(token string) (User, bool) {
 	return User{Id: id, Name: name, Token: token, Token_expiration: token_exp_t}, true
 }
 
-func (this *SqlDbPort) ReloadToken(token string, expiration time.Time) bool {
+func (this *SqlAdapter) ReloadToken(token string, expiration time.Time) bool {
 	return false
 }
 
-func (this *SqlDbPort) UnsetUserToken(token string) bool {
+func (this *SqlAdapter) UnsetUserToken(token string) bool {
 	return false
 }
