@@ -4,13 +4,14 @@
 /******************* T H E M E   C O L O R S *******************/
 /***************************************************************/
 
+@use '~@angular/material' as mat;
 @import '../../node_modules/@angular/material/theming';
-@include mat-core();
+@include mat.core();
 
-$light-app-primary: mat-palette($mat-blue, 700, 300, 900);
-$light-app-accent: mat-palette($mat-pink, 300, 100, 700);
+$light-app-primary: mat.define-palette(mat.$blue-palette, 700, 300, 900);
+$light-app-accent: mat.define-palette(mat.$pink-palette, 300, 100, 700);
 
-$light-app-theme: mat-light-theme((
+$light-app-theme: mat.define-light-theme((
   color: (
     primary: $light-app-primary,
     accent: $light-app-accent
@@ -26,14 +27,14 @@ $light-app-theme: mat-light-theme((
 }
 
 // Light theme is the default theme
-@include angular-material-theme($light-app-theme);
+@include mat.all-component-themes($light-app-theme);
 
 
 // Define an alternate dark theme
-$dark-app-primary: mat-palette($mat-orange, 300, 100, 500);
-$dark-app-accent: mat-palette($mat-pink);
+$dark-app-primary: mat.define-palette(mat.$orange-palette, 300, 100, 500);
+$dark-app-accent: mat.define-palette(mat.$pink-palette);
 
-$dark-app-theme: mat-dark-theme((
+$dark-app-theme: mat.define-dark-theme((
   color: (
     primary: $dark-app-primary,
     accent: $dark-app-accent
@@ -42,7 +43,7 @@ $dark-app-theme: mat-dark-theme((
 
 // Any component with this CSS class will be affected by this dark theme instead of the default theme
 .dark-theme {
-  @include angular-material-color($dark-app-theme);
+  @include mat.all-component-colors($dark-app-theme);
   --text-important: #ffb74d;
   --text-underline: #ff9800;
   --background-gradient: #4b134f, #c94b4b;
