@@ -40,7 +40,9 @@ export class FilesRepositoryService {
   }
 
   rename(item: Item, newName: { name: string, extension?: string }): Observable<ResponseUpdate> {
-    return this.filesApi.update({fullPath: item.fullName, newFullPath: newName.name + newName.extension}).pipe(
+    const currentPath = this.path.currentPath.value;
+
+    return this.filesApi.update({fullPath: currentPath + item.fullName, newFullPath: currentPath + newName.name + newName.extension}).pipe(
       tap(response => {
         if (response.changed) {
           this.renameItem(item, newName);
@@ -50,7 +52,9 @@ export class FilesRepositoryService {
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    return this.filesApi.delete({fullPath: item.fullName}).pipe(
+    const currentPath = this.path.currentPath.value;
+
+    return this.filesApi.delete({fullPath: currentPath + item.fullName}).pipe(
       tap(response => {
         if (response.deleted) {
           this.deleteItem(item);
@@ -60,7 +64,9 @@ export class FilesRepositoryService {
   }
 
   move(item: Item, newPath: string): Observable<ResponseUpdate> {
-    return this.filesApi.move({fullPath: item.fullName, newFullPath: `${newPath}/${item.fullName}`}).pipe(
+    const currentPath = this.path.currentPath.value;
+
+    return this.filesApi.move({fullPath: currentPath + item.fullName, newFullPath: `${currentPath + newPath}/${item.fullName}`}).pipe(
       tap(response => {
         if (response.changed) {
           this.moveItem(item);

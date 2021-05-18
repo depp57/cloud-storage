@@ -11,7 +11,7 @@ export abstract class Item {
 
   get fullName(): string {
     if (this.isFile()) {
-      return this.name + this._extension ?? '';
+      return this.name + this.extension;
     }
 
     // else it's a directory which doesn't have an extension

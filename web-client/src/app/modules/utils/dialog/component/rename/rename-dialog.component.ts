@@ -17,7 +17,8 @@ export class RenameDialogComponent extends DialogComponent<InputRenameData, Outp
   }
 
   get extension(): string {
-    return this.renameForm.get('extension')?.value;
+    const extension = this.renameForm.get('extension')?.value;
+    return extension !== '' ? `.${extension}` : '';
   }
 
   ngOnInit(): void {
@@ -32,7 +33,7 @@ export class RenameDialogComponent extends DialogComponent<InputRenameData, Outp
   onSubmit(): void {
     this.submit.next({
       name: this.name,
-      extension: '.' + this.extension
+      extension: this.extension
     });
     this.closeDialog.next();
   }
