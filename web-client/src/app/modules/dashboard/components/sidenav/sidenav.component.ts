@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./sidenav.component.scss']
 })
 export class SidenavComponent {
+
   @Input() username!: string;
   diskQuota = 150; // TODO FETCH FROM THE API USING A SERVICE
 

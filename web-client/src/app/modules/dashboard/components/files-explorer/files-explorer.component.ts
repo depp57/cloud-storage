@@ -12,8 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class FilesExplorerComponent implements OnInit {
 
-  loading = true;
-  files: File[] = this.fileRepo.files;
+  loading           = true;
+  files: File[]     = this.fileRepo.files;
   folders: Folder[] = this.fileRepo.folders;
 
   constructor(private fileRepo: FilesRepositoryService,

@@ -7,6 +7,7 @@ import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
   styleUrls: ['./context-menu.component.scss']
 })
 export class ContextMenuComponent {
+
   positionX!: number;
   positionY!: number;
   buttons!: MenuButton[];

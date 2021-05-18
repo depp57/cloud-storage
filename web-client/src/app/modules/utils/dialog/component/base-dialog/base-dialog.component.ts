@@ -6,6 +6,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./base-dialog.component.scss']
 })
 export class BaseDialogComponent {
+
   @Input() title!: string;
   @Output() closeDialog = new EventEmitter<void>();
 

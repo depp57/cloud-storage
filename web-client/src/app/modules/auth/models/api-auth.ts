@@ -14,7 +14,7 @@ export class UserCredentials {
 
   constructor(username: string, token: string) {
     this.username = username;
-    this.token = token;
+    this.token    = token;
   }
 
   get asJson(): string {

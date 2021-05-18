@@ -13,12 +13,12 @@ export class ContextMenuService {
     // prevent from opening two context menues
     if (this.openedMenu) { this.deleteMenu(); }
 
-    const factory = this.resolver.resolveComponentFactory(ContextMenuComponent);
+    const factory      = this.resolver.resolveComponentFactory(ContextMenuComponent);
     const componentRef = anchor.createComponent(factory);
 
     componentRef.instance.positionX = posX;
     componentRef.instance.positionY = posY;
-    componentRef.instance.buttons = buttons;
+    componentRef.instance.buttons   = buttons;
 
     this.openedMenu = componentRef;
   }

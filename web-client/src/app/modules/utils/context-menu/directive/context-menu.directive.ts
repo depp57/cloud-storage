@@ -6,6 +6,7 @@ import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
   selector: '[appContextMenu]'
 })
 export class ContextMenuDirective {
+
   @Input() appContextMenu!: MenuButton[];
 
   constructor(private elementRef: ViewContainerRef,

@@ -11,6 +11,7 @@ import { LoaderService } from '@shared/services/loader.service';
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit {
+
   private redirectCause: string | undefined;
 
   constructor(private router: Router,

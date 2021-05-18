@@ -1,9 +1,10 @@
 export abstract class Item {
+
   name: string;
   protected _extension?: string;
 
   constructor(name: string, extension?: string) {
-    this.name = name;
+    this.name       = name;
     this._extension = extension;
   }
 
@@ -21,7 +22,7 @@ export abstract class Item {
   abstract isFile(): boolean;
 
   rename(newName: string, newExtension?: string): void {
-    this.name = newName;
+    this.name       = newName;
     this._extension = newExtension;
   }
 
@@ -48,7 +49,7 @@ export class File extends Item {
       return this.name > file.name ? 1 : -1;
     }
 
-    const extension = this._extension ?? '';
+    const extension     = this._extension ?? '';
     const fileExtension = file._extension ?? '';
 
     return extension > fileExtension ? 1 : extension === fileExtension ? 0 : -1;

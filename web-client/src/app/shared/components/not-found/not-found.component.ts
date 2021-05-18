@@ -7,6 +7,7 @@ import { AuthService } from '@modules/auth/services/auth.service';
   styleUrls: ['./not-found.component.scss']
 })
 export class NotFoundComponent {
+
   readonly isAuth: boolean;
 
   constructor(private auth: AuthService) {

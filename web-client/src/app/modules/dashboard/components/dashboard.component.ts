@@ -11,6 +11,7 @@ import { ContextMenuService } from '@modules/utils/context-menu/service/context-
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements AfterContentInit, AfterViewInit {
+
   @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
   isMobile!: boolean;
 
