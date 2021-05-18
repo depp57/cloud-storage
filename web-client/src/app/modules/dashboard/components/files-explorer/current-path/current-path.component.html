@@ -6,7 +6,7 @@
           Mes fichiers
         </a>
       </li>
-      <li *ngFor="let folder of separatedFolders; let i = index" class="path-item">
+      <li *ngFor="let folder of separatedFolders | async; let i = index" class="path-item">
         <mat-icon color="primary" inline="true" aria-hidden="true" class="path-item-chevron">chevron_right</mat-icon>
         <a (click)="onClick(i)">{{folder}}</a>
       </li>

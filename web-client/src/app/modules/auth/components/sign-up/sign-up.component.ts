@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { Router } from '@angular/router';
@@ -8,7 +8,8 @@ import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators }
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.scss']
+  styleUrls: ['./sign-up.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignUpComponent implements OnInit {
 

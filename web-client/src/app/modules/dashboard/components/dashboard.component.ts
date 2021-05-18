@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { LoaderService } from '@shared/services/loader.service';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '@modules/auth/services/auth.service';
@@ -8,7 +8,8 @@ import { ContextMenuService } from '@modules/utils/context-menu/service/context-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements AfterContentInit, AfterViewInit {
 

@@ -1,15 +1,17 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PathService } from '@modules/dashboard/services/path.service';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-current-path',
   templateUrl: './current-path.component.html',
-  styleUrls: ['./current-path.component.scss']
+  styleUrls: ['./current-path.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CurrentPathComponent {
 
-  separatedFolders!: string[];
+  separatedFolders = new BehaviorSubject<string[]>([])
 
   constructor(private path: PathService,
               private filesRepo: FilesRepositoryService) {
@@ -19,7 +21,7 @@ export class CurrentPathComponent {
   }
 
   onClick(pathDepth: number): void {
-    const newPath = this.separatedFolders
+    const newPath = this.separatedFolders.value
       .slice(0, pathDepth + 1)
       .reduce((previousValue, currentValue) => previousValue + currentValue + '/', '/');
 
@@ -28,6 +30,6 @@ export class CurrentPathComponent {
 
   private savePath(): void {
     const [, ...separatedFolders] = this.path.getSeparatedFolders();
-    this.separatedFolders = separatedFolders;
+    this.separatedFolders.next(separatedFolders);
   }
 }

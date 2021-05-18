@@ -22,7 +22,7 @@ export class FilesApiService {
     // return this.http.get<ResponseList>('files/list/', options);
 
     console.log('listDir', param);
-    return this.fakeApi.listDir(30, 5, 0);
+    return this.fakeApi.listDir(30, 5, 500);
   }
 
   update(param: RequestUpdate): Observable<ResponseUpdate> {

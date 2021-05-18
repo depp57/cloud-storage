@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,7 +8,8 @@ import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/fo
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss']
+  styleUrls: ['./sign-in.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignInComponent implements OnInit {
 

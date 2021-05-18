@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 
 @Component({
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.scss']
+  styleUrls: ['./context-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContextMenuComponent {
 

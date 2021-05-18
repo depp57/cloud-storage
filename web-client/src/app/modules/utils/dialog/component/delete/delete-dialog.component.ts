@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { InputDeleteData } from '@modules/utils/dialog/model/dialog-data';
 
 @Component({
   selector: 'app-delete',
   templateUrl: './delete-dialog.component.html',
-  styleUrls: ['./delete-dialog.component.scss']
+  styleUrls: ['./delete-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteDialogComponent extends DialogComponent<InputDeleteData, boolean> {
 

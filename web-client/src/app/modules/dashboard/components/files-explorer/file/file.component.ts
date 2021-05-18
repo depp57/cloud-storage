@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { File } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
@@ -7,7 +7,8 @@ import { FilesExplorerLogic } from '@modules/dashboard/services/files-explorer-l
 @Component({
   selector: 'app-file',
   templateUrl: './file.component.html',
-  styleUrls: ['./file.component.scss']
+  styleUrls: ['./file.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileComponent {
 

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { HTTP_ERROR_CODES, RedirectReasons } from '@shared/constants';
@@ -9,7 +9,8 @@ import { FilesRepositoryService } from '@modules/dashboard/services/files-reposi
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent {
 

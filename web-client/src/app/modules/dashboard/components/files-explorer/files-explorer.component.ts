@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
 import { File, Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-files-explorer',
   templateUrl: './files-explorer.component.html',
-  styleUrls: ['./files-explorer.component.scss']
+  styleUrls: ['./files-explorer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilesExplorerComponent implements OnInit {
 
-  loading           = true;
+  loading           = new BehaviorSubject(true);
   files: File[]     = this.fileRepo.files;
   folders: Folder[] = this.fileRepo.folders;
 
@@ -34,7 +36,7 @@ export class FilesExplorerComponent implements OnInit {
 
   ngOnInit(): void {
     this.fileRepo.listFolder('').subscribe(
-      _ => this.loading = false,
+      _ => this.loading.next(false),
       error => this.showLoadingError(error.status)
     );
   }

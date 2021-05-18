@@ -1,9 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-base-dialog',
   templateUrl: './base-dialog.component.html',
-  styleUrls: ['./base-dialog.component.scss']
+  styleUrls: ['./base-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaseDialogComponent {
 
