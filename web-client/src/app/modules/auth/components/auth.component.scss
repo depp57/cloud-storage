@@ -46,12 +46,27 @@ mat-card-footer {
   align-items: center;
 }
 
-:host ::ng-deep a {
-  text-decoration: none;
-  color: var(--text-important);
+:host ::ng-deep {
 
-  &:hover {
-    text-decoration: underline var(--text-underline);
+  a {
+    text-decoration: none;
+    color: var(--text-important);
+
+    &:hover {
+      text-decoration: underline var(--text-underline);
+    }
+  }
+
+  .username-input-container {
+    margin-bottom: 3%;
+  }
+
+  .submit-button {
+    float: right;
+  }
+
+  .fit-width {
+    width: 100%;
   }
 }
 

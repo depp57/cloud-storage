@@ -5,6 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './recent-files.component.html',
   styleUrls: ['./recent-files.component.scss']
 })
-export class RecentFilesComponent {
-
-}
+export class RecentFilesComponent {}

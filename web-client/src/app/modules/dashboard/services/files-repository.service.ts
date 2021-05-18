@@ -11,7 +11,7 @@ import { PathService } from '@modules/dashboard/services/path.service';
 })
 export class FilesRepositoryService {
 
-  private _files: File[] = [];
+  private _files: File[]     = [];
   private _folders: Folder[] = [];
   private _searchText?: string;
 
@@ -42,7 +42,10 @@ export class FilesRepositoryService {
   rename(item: Item, newName: { name: string, extension?: string }): Observable<ResponseUpdate> {
     const currentPath = this.path.currentPath.value;
 
-    return this.filesApi.update({fullPath: currentPath + item.fullName, newFullPath: currentPath + newName.name + newName.extension}).pipe(
+    return this.filesApi.update({
+      fullPath: currentPath + item.fullName,
+      newFullPath: currentPath + newName.name + newName.extension
+    }).pipe(
       tap(response => {
         if (response.changed) {
           this.renameItem(item, newName);
@@ -66,7 +69,10 @@ export class FilesRepositoryService {
   move(item: Item, newPath: string): Observable<ResponseUpdate> {
     const currentPath = this.path.currentPath.value;
 
-    return this.filesApi.move({fullPath: currentPath + item.fullName, newFullPath: `${currentPath + newPath}/${item.fullName}`}).pipe(
+    return this.filesApi.move({
+      fullPath: currentPath + item.fullName,
+      newFullPath: `${currentPath + newPath}/${item.fullName}`
+    }).pipe(
       tap(response => {
         if (response.changed) {
           this.moveItem(item);
@@ -128,7 +134,7 @@ export class FilesRepositoryService {
   }
 
   private emptyFolder(): void {
-    this._files.length = 0;
+    this._files.length   = 0;
     this._folders.length = 0;
   }
 
