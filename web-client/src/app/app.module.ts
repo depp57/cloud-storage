@@ -8,6 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { HttpLoadingInterceptor } from '@shared/services/http-loading-interceptor.service';
 import { AppMaterialModule } from '@modules/utils/material/app-material.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,13 @@ import { AppMaterialModule } from '@modules/utils/material/app-material.module';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    AppMaterialModule
+    AppMaterialModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
     {
