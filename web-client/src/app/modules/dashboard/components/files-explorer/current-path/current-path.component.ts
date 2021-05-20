@@ -11,11 +11,11 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CurrentPathComponent {
 
-  separatedFolders = new BehaviorSubject<string[]>([])
+  readonly separatedFolders = new BehaviorSubject<string[]>([])
 
   constructor(private path: PathService,
               private filesRepo: FilesRepositoryService) {
-    this.path.currentPath.subscribe(
+    this.path.currentPath$.subscribe(
       _ => this.savePath()
     );
   }

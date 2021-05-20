@@ -20,8 +20,8 @@ export class DashboardComponent implements AfterContentInit, AfterViewInit {
               private loader: LoaderService,
               private contextMenu: ContextMenuService) {}
 
-  get isLoading(): BehaviorSubject<boolean> {
-    return this.loader.isLoading;
+  get isLoading$(): BehaviorSubject<boolean> {
+    return this.loader.isLoading$;
   }
 
   get username(): string {

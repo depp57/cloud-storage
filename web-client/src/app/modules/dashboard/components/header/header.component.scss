@@ -33,6 +33,10 @@ mat-form-field {
   margin-right: 10px;
 }
 
+.highlight:hover {
+  background-color: var(--header-highlight-color);
+}
+
 @media (max-width: 599px) {
   .app-title {
     display: none;

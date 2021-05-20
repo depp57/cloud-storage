@@ -21,9 +21,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.setDynamicPageTitle();
+  }
 
-    // Unnecessary unsubscription because it is needed as long as the app is living
-    this.cssTheme.getTheme().subscribe(theme => this.setTheme(theme));
+  get theme(): string {
+    return this.cssTheme.theme;
   }
 
   private setDynamicPageTitle(): void {
@@ -35,13 +36,6 @@ export class AppComponent implements OnInit {
         this.titleService.setTitle(`${data.title} - ${this.title}`);
       });
     });
-  }
-
-  private setTheme(theme: string): void {
-    const appRoot = document.getElementById('main-container');
-    if (appRoot) {
-      this.cssTheme.applyTheme(appRoot, theme);
-    }
   }
 
   private static getChild(activatedRoute: ActivatedRoute): ActivatedRoute {

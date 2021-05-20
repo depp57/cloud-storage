@@ -23,8 +23,8 @@ export class AuthComponent implements OnInit {
     this.redirectCause = router.getCurrentNavigation()?.extras?.state?.redirect;
   }
 
-  get isLoading(): BehaviorSubject<boolean> {
-    return this.loader.isLoading;
+  get isLoading$(): BehaviorSubject<boolean> {
+    return this.loader.isLoading$;
   }
 
   ngOnInit(): void {

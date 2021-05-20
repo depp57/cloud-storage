@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { File, Folder, Item } from '@modules/dashboard/models/items';
 import { ResponseDelete, ResponseList, ResponseUpdate, ApiFileType } from '@modules/dashboard/models/api-files';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { FilesApiService } from '@modules/dashboard/services/files-api.service';
 import { PathService } from '@modules/dashboard/services/path.service';
@@ -11,36 +11,36 @@ import { PathService } from '@modules/dashboard/services/path.service';
 })
 export class FilesRepositoryService {
 
-  private _files: File[]     = [];
-  private _folders: Folder[] = [];
-  private _searchText?: string;
+  private readonly _files$     = new BehaviorSubject<File[]>([]);
+  private readonly _folders$    = new BehaviorSubject<Folder[]>([]);
+  private readonly _searchText$ = new Subject<string>();
 
   constructor(private filesApi: FilesApiService,
               private path: PathService) {}
 
-  get files(): File[] {
-    return this._files;
+  get files$(): Observable<File[]> {
+    return this._files$.asObservable();
   }
 
-  get folders(): Folder[] {
-    return this._folders;
+  get folders$(): Observable<Folder[]> {
+    return this._folders$.asObservable();
   }
 
-  get searchText(): string | undefined {
-    return this._searchText;
+  get searchText$(): Subject<string> {
+    return this._searchText$;
   }
 
   // the path can be relative (myDocuments) or absolute (/myDocuments)
   listFolder(path: string): Observable<ResponseList> {
     this.path.updatePath(path);
 
-    return this.filesApi.listDir({fullPath: this.path.currentPath.value}).pipe(
+    return this.filesApi.listDir({fullPath: this.path.currentPath$.value}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
   rename(item: Item, newName: { name: string, extension?: string }): Observable<ResponseUpdate> {
-    const currentPath = this.path.currentPath.value;
+    const currentPath = this.path.currentPath$.value;
 
     return this.filesApi.update({
       fullPath: currentPath + item.fullName,
@@ -55,7 +55,7 @@ export class FilesRepositoryService {
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    const currentPath = this.path.currentPath.value;
+    const currentPath = this.path.currentPath$.value;
 
     return this.filesApi.delete({fullPath: currentPath + item.fullName}).pipe(
       tap(response => {
@@ -67,7 +67,7 @@ export class FilesRepositoryService {
   }
 
   move(item: Item, newPath: string): Observable<ResponseUpdate> {
-    const currentPath = this.path.currentPath.value;
+    const currentPath = this.path.currentPath$.value;
 
     return this.filesApi.move({
       fullPath: currentPath + item.fullName,
@@ -82,50 +82,53 @@ export class FilesRepositoryService {
   }
 
   searchByText(text?: string): void {
-    this._searchText = text;
+    this._searchText$.next(text);
   }
 
   private saveFiles(response: ResponseList): void {
-    this.emptyFolder();
+    const files: File[]     = [];
+    const folders: Folder[] = [];
 
     for (const file of response.files) {
       const fileName = FilesRepositoryService.extractFileName(file.fullPath);
 
       if (file.type === ApiFileType.FILE) {
-        this._files.push(File.fromNameWithExtension(fileName));
+        files.push(File.fromNameWithExtension(fileName));
       }
       else {
-        this._folders.push(new Folder(fileName));
+        folders.push(new Folder(fileName));
       }
     }
+    FilesRepositoryService.sortByName(files, folders);
 
-    this.sortByName();
-  }
-
-  private sortByName(): void {
-    this._files.sort((a, b) => a.compareTo(b));
-    this._folders.sort((a, b) => a.compareTo(b));
+    this._files$.next(files);
+    this._folders$.next(folders);
   }
 
   private deleteItem(item: Item): void {
-    function deleteIn<T extends Item>(items: T[]): void {
-      const index = FilesRepositoryService.findItem(items, item);
+    function deleteIn<T extends Item>(subject: BehaviorSubject<T[]>): void {
+      const items = subject.value;
 
-      // delete the element
+      const index = items.findIndex((value) => value === item);
       if (index !== -1) { items.splice(index, 1); }
+
+      subject.next(items);
     }
 
-    item.isFile() ? deleteIn(this._files) : deleteIn(this._folders);
+    item.isFile() ? deleteIn(this._files$) : deleteIn(this._folders$);
   }
 
   private renameItem(item: Item, newName: { name: string, extension?: string }): void {
-    function renameIn<T extends Item>(items: T[]): void {
-      const index = FilesRepositoryService.findItem(items, item);
+    function renameIn(subject: BehaviorSubject<any[]>): void {
+      const items = subject.value;
 
-      if (index !== -1) { items[index].rename(newName.name, newName.extension); }
+      const index = items.findIndex(value => value === item);
+      if (index !== -1) { items[index] = items[index].rename(newName); }
+
+      subject.next(items);
     }
 
-    item.isFile() ? renameIn(this._files) : renameIn(this._folders);
+    item.isFile() ? renameIn(this._files$) : renameIn(this._folders$);
   }
 
   private moveItem(item: Item): void {
@@ -133,15 +136,9 @@ export class FilesRepositoryService {
     this.deleteItem(item);
   }
 
-  private emptyFolder(): void {
-    this._files.length   = 0;
-    this._folders.length = 0;
-  }
-
-  private static findItem<T extends Item>(items: T[], item: T): number {
-    // although the array is sorted, it is faster to use Array.findIndex() that
-    // a custom binary search (I tested it with multiple array's sizes)
-    return items.findIndex((value) => value.equals(item));
+  private static sortByName(files: File[], folders: Folder[]): void {
+    files.sort((a, b) => a.compareTo(b));
+    folders.sort((a, b) => a.compareTo(b));
   }
 
   private static extractFileName(fullPath: string): string {

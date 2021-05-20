@@ -6,7 +6,10 @@ import { Item } from '@modules/dashboard/models/items';
 })
 export class FilterPipe implements PipeTransform {
 
-  transform<T extends Item>(items: T[], searchText?: string): T[] {
+  transform<T extends Item>(items: T[] | null, searchText: string | null): T[] {
+    if (items === null) {
+      return [];
+    }
     if (!searchText) {
       return items;
     }

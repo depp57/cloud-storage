@@ -22,7 +22,7 @@ export class DialogService {
     const componentRef = this.openDialog<RenameDialogComponent, InputRenameData, OutputRenameData>
     (RenameDialogComponent, {name: item.name, extension: item.extension});
 
-    return componentRef.instance.submit.pipe(
+    return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
     );
   }
@@ -31,7 +31,7 @@ export class DialogService {
     const componentRef = this.openDialog<DeleteDialogComponent, InputDeleteData, boolean>
     (DeleteDialogComponent, {name: item.name, extension: item.extension});
 
-    return componentRef.instance.submit.pipe(
+    return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
     );
   }
@@ -55,7 +55,7 @@ export class DialogService {
     document.body.appendChild(domElem);
 
     // listen if the dialog wants to close itself
-    componentRef.instance.closeDialog.subscribe(() => this.deleteDialog());
+    componentRef.instance.closeDialog$.subscribe(() => this.deleteDialog());
 
     // send data to the component
     componentRef.instance.inputData = inputData;

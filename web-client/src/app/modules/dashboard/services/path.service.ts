@@ -6,10 +6,10 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class PathService {
 
-  private _currentPath = new BehaviorSubject<string>('/');
+  private readonly _currentPath$ = new BehaviorSubject<string>('/');
 
-  get currentPath(): BehaviorSubject<string> {
-    return this._currentPath;
+  get currentPath$(): BehaviorSubject<string> {
+    return this._currentPath$;
   }
 
   updatePath(path: string): void {
@@ -19,16 +19,16 @@ export class PathService {
       newPath = path;
     }
     else {
-      newPath = this._currentPath.value + path;
+      newPath = this._currentPath$.value + path;
     }
 
     newPath = PathService.ensureLastDash(newPath);
 
-    this._currentPath.next(newPath);
+    this._currentPath$.next(newPath);
   }
 
   getSeparatedFolders(): string[] {
-    const separatedFolders = this._currentPath.value.split('/');
+    const separatedFolders = this._currentPath$.value.split('/');
 
     // remove last extra folder, e.g '/test/'.split('/') results in ['', 'test', '']
     separatedFolders.pop();

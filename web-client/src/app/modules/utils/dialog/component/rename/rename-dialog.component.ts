@@ -27,16 +27,16 @@ export class RenameDialogComponent extends DialogComponent<InputRenameData, Outp
   }
 
   onClose(): void {
-    this.submit.next(null);
-    this.closeDialog.next();
+    this.submit$.next(null);
+    this.closeDialog$.next();
   }
 
   onSubmit(): void {
-    this.submit.next({
+    this.submit$.next({
       name: this.name,
       extension: this.extension
     });
-    this.closeDialog.next();
+    this.closeDialog$.next();
   }
 
   private initForm(): void {

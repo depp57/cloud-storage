@@ -1,7 +1,7 @@
 export abstract class Item {
 
-  name: string;
-  protected _extension?: string;
+  readonly name: string;
+  protected readonly _extension?: string;
 
   constructor(name: string, extension?: string) {
     this.name       = name;
@@ -21,15 +21,13 @@ export abstract class Item {
 
   abstract isFile(): boolean;
 
-  rename(newName: string, newExtension?: string): void {
-    this.name       = newName;
-    this._extension = newExtension;
-  }
-
-  equals(item: Item): boolean {
-    return item.name === this.name && this._extension === item._extension;
-  }
+  /**
+   * returns a new Item with the new name, because I keep the Item immutable (for angular change detection)
+   * @param newName The new name of the item.
+   */
+  abstract rename(newName: { name: string, extension?: string }): Item;
 }
+
 
 export class File extends Item {
 
@@ -59,6 +57,10 @@ export class File extends Item {
     return true;
   }
 
+  rename(newName: { name: string, extension?: string }): Item {
+    return new File(newName.name, newName.extension);
+  }
+
   static fromNameWithExtension(nameWithExtension: string): File {
     const index = nameWithExtension.lastIndexOf('.');
     if (index === -1) {
@@ -83,6 +85,10 @@ export class Folder extends Item {
 
   isFile(): boolean {
     return false;
+  }
+
+  rename(newName: { name: string, extension?: string }): Item {
+    return new Folder(newName.name);
   }
 }
 

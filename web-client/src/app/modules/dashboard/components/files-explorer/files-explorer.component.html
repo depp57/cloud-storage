@@ -36,11 +36,11 @@
 
   <div class="files-container">
     <div style="display: contents" *ngIf="!(loading | async) else loadingTemplate">
-      <app-folder *ngFor="let folder of folders | filter: searchText"
+      <app-folder *ngFor="let folder of (folders$ | async) | filter: (searchText$ | async)"
                   [folder]="folder" class="file-item folder">
       </app-folder>
 
-      <app-file *ngFor="let file of files | filter: searchText"
+      <app-file *ngFor="let file of (files$ | async) | filter: (searchText$ | async)"
                 [file]="file" class="file-item file">
       </app-file>
     </div>

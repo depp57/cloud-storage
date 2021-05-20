@@ -23,11 +23,7 @@ export class HeaderComponent {
               private filesRepo: FilesRepositoryService) {}
 
   get isLightMode(): boolean {
-    return this.cssTheme.getTheme().value === 'light-theme';
-  }
-
-  get highlightColor(): string {
-    return this.isLightMode ? '#004d88' : '#ff9800';
+    return this.cssTheme.theme === 'light-theme';
   }
 
   toggleSideBar(): void {

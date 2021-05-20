@@ -24,6 +24,8 @@ $light-app-theme: mat.define-light-theme((
   --text-underline: #6f81e5;
   --background-gradient: #0c3483, #a2b6df;
   --background-color: #fafafa;
+  --highlight-color: #e1dfdd;
+  --header-highlight-color: #004d88;
 }
 
 // Light theme is the default theme
@@ -48,6 +50,8 @@ $dark-app-theme: mat.define-dark-theme((
   --text-underline: #ff9800;
   --background-gradient: #4b134f, #c94b4b;
   --background-color: #303030;
+  --highlight-color: #424242;
+  --header-highlight-color: #ff9800;
 }
 
 /***************************************************************/
@@ -61,4 +65,8 @@ html, body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.highlight:hover {
+  background-color: var(--highlight-color);
 }

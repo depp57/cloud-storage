@@ -1,45 +1,26 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { OverlayContainer } from '@angular/cdk/overlay';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CssThemeService {
 
-  private readonly _theme: BehaviorSubject<string> = new BehaviorSubject<string>(CssThemeService.defaultTheme);
+  private _theme = CssThemeService.defaultTheme;
 
-  constructor(private overlayContainer: OverlayContainer) {}
-
-  getTheme(): BehaviorSubject<string> {
+  get theme(): string {
     return this._theme;
   }
 
   setTheme(theme: string): void {
-    this._theme.next(theme);
-    localStorage.setItem('theme', theme);
-  }
+    const appRoot = document.getElementById('main-container');
 
-  applyTheme(appRoot: HTMLElement, theme: string): void {
-    appRoot.className = theme;
-
-    // explanation https://material.angular.io/guide/theming#multiple-themes-and-overlay-based-components
-    const overlayContainerCss = this.overlayContainer.getContainerElement().classList;
-    CssThemeService.removeCssTheme(overlayContainerCss);
-
-    overlayContainerCss.add(theme);
+    if (appRoot) {
+      this._theme = theme;
+      localStorage.setItem('theme', theme);
+    }
   }
 
   private static get defaultTheme(): string {
     return localStorage.getItem('theme') || 'light-theme';
-  }
-
-  private static removeCssTheme(element: DOMTokenList): void {
-    element.forEach((value) => {
-      if (value.endsWith('-theme')) {
-        element.remove(value);
-        return;
-      }
-    });
   }
 }

@@ -53,11 +53,11 @@ export class FilesFakeApiService {
   }
 
   private startLoading(): void {
-    this.loading.isLoading.next(true);
+    this.loading.isLoading$.next(true);
   }
 
   private stopLoading(): void {
-    this.loading.isLoading.next(false);
+    this.loading.isLoading$.next(false);
   }
 
   private static generateRandFile(): ApiFile {

@@ -20,12 +20,12 @@ export class DeleteDialogComponent extends DialogComponent<InputDeleteData, bool
   }
 
   onClose(): void {
-    this.submit.next(false);
-    this.closeDialog.next();
+    this.submit$.next(false);
+    this.closeDialog$.next();
   }
 
   onDelete(): void {
-    this.submit.next(true);
-    this.closeDialog.next();
+    this.submit$.next(true);
+    this.closeDialog$.next();
   }
 }

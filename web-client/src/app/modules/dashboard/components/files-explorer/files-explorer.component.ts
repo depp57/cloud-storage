@@ -4,7 +4,7 @@ import { File, Folder } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-files-explorer',
@@ -14,9 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class FilesExplorerComponent implements OnInit {
 
-  loading           = new BehaviorSubject(true);
-  files: File[]     = this.fileRepo.files;
-  folders: Folder[] = this.fileRepo.folders;
+  loading = new BehaviorSubject(true);
 
   constructor(private fileRepo: FilesRepositoryService,
               private snackBar: MatSnackBar) {}
@@ -30,8 +28,16 @@ export class FilesExplorerComponent implements OnInit {
     ];
   }
 
-  get searchText(): string | undefined {
-    return this.fileRepo.searchText;
+  get searchText$(): Subject<string> {
+    return this.fileRepo.searchText$;
+  }
+
+  get files$(): Observable<File[]> {
+    return this.fileRepo.files$;
+  }
+
+  get folders$(): Observable<Folder[]> {
+    return this.fileRepo.folders$;
   }
 
   ngOnInit(): void {
