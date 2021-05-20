@@ -8,8 +8,6 @@ export abstract class Item {
     this._extension = extension;
   }
 
-  abstract get extension(): string | undefined;
-
   get fullName(): string {
     if (this.isFile()) {
       return this.name + this.extension;
@@ -18,6 +16,12 @@ export abstract class Item {
     // else it's a directory which doesn't have an extension
     return this.name;
   }
+
+  equals(item: Item): boolean {
+    return this.name === item.name && this.extension === item.extension;
+  }
+
+  abstract get extension(): string | undefined;
 
   abstract isFile(): boolean;
 

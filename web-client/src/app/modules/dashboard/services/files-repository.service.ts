@@ -109,7 +109,7 @@ export class FilesRepositoryService {
     function deleteIn<T extends Item>(subject: BehaviorSubject<T[]>): void {
       const items = subject.value;
 
-      const index = items.findIndex((value) => value === item);
+      const index = items.findIndex(current => current.equals(item));
       if (index !== -1) { items.splice(index, 1); }
 
       subject.next(items);
@@ -122,7 +122,7 @@ export class FilesRepositoryService {
     function renameIn(subject: BehaviorSubject<any[]>): void {
       const items = subject.value;
 
-      const index = items.findIndex(value => value === item);
+      const index = items.findIndex(current => current.equals(item));
       if (index !== -1) { items[index] = items[index].rename(newName); }
 
       subject.next(items);
