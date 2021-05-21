@@ -1,4 +1,5 @@
 export const API_ENDPOINT         = 'https://iofactory.fr:8008/'; // https://sachathommet.fr/api/
+export const API_FILES_CACHE_TIME = 1000 * 60 * 2; // 2 minutes
 export const AUTH_COOKIE_LIFETIME = 1000 * 60 * 15; // 15 minutes
 export const AUTH_COOKIE_NAME     = 'user_credentials';
 
