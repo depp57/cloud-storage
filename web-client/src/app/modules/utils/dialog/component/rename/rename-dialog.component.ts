@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { InputRenameData, OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
+import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
+import { Item } from '@modules/dashboard/models/items';
 
 @Component({
   selector: 'app-rename',
@@ -9,7 +10,7 @@ import { InputRenameData, OutputRenameData } from '@modules/utils/dialog/model/d
   styleUrls: ['./rename-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RenameDialogComponent extends DialogComponent<InputRenameData, OutputRenameData> implements OnInit {
+export class RenameDialogComponent extends DialogComponent<Item, OutputRenameData> implements OnInit {
 
   renameForm!: FormGroup;
 

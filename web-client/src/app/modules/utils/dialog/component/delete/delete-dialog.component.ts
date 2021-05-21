@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
-import { InputDeleteData } from '@modules/utils/dialog/model/dialog-data';
+import { Item } from '@modules/dashboard/models/items';
 
 @Component({
   selector: 'app-delete',
@@ -8,15 +8,12 @@ import { InputDeleteData } from '@modules/utils/dialog/model/dialog-data';
   styleUrls: ['./delete-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DeleteDialogComponent extends DialogComponent<InputDeleteData, boolean> {
+export class DeleteDialogComponent extends DialogComponent<Item, boolean> {
 
   get title(): string {
-    if (!this.inputData.extension) {
-      return `Supprimer le dossier ${this.inputData.name} ?`;
-    }
-
-    const extension = this.inputData.extension !== '.' ? this.inputData.extension : '';
-    return `Supprimer le fichier ${this.inputData.name}${extension} ?`;
+    return this.inputData.isFile() ?
+      `Supprimer le fichier ${this.inputData.fullName} ?` :
+      `Supprimer le dossier ${this.inputData.name} ?`;
   }
 
   onClose(): void {

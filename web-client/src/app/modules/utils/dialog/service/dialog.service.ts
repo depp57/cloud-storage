@@ -1,8 +1,16 @@
-import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector, Type } from '@angular/core';
+import {
+  ApplicationRef,
+  ComponentFactoryResolver,
+  ComponentRef,
+  EmbeddedViewRef,
+  Injectable,
+  Injector,
+  Type
+} from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { RenameDialogComponent } from '@modules/utils/dialog/component/rename/rename-dialog.component';
 import { Observable } from 'rxjs';
-import { InputDeleteData, InputRenameData, OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
+import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
 import { take } from 'rxjs/operators';
 import { Item } from '@modules/dashboard/models/items';
 import { DeleteDialogComponent } from '@modules/utils/dialog/component/delete/delete-dialog.component';
@@ -19,8 +27,8 @@ export class DialogService {
               private injector: Injector) {}
 
   openRenameDialog(item: Item): Observable<OutputRenameData> {
-    const componentRef = this.openDialog<RenameDialogComponent, InputRenameData, OutputRenameData>
-    (RenameDialogComponent, {name: item.name, extension: item.extension});
+    const componentRef = this.openDialog<RenameDialogComponent, Item, OutputRenameData>
+    (RenameDialogComponent, item);
 
     return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
@@ -28,8 +36,8 @@ export class DialogService {
   }
 
   openDeleteDialog(item: Item): Observable<boolean> {
-    const componentRef = this.openDialog<DeleteDialogComponent, InputDeleteData, boolean>
-    (DeleteDialogComponent, {name: item.name, extension: item.extension});
+    const componentRef = this.openDialog<DeleteDialogComponent, Item, boolean>
+    (DeleteDialogComponent, item);
 
     return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
@@ -45,7 +53,7 @@ export class DialogService {
     // prevent from opening two dialogs
     if (this.openedDialog) { this.deleteDialog(); }
 
-    const factory = this.resolver.resolveComponentFactory(component);
+    const factory                                           = this.resolver.resolveComponentFactory(component);
     const componentRef: ComponentRef<DialogComponent<I, O>> = factory.create(this.injector);
 
     const hostView = componentRef.hostView;
