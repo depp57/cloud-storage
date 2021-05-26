@@ -21,9 +21,19 @@ export class ContextMenuService {
     componentRef.instance.buttons   = buttons;
 
     this.openedMenu = componentRef;
+
+    this.addLoseFocusListener();
   }
 
   deleteMenu(): void {
     this.openedMenu?.destroy();
+  }
+
+  private addLoseFocusListener() {
+    const onClickOutside = () => {
+      document.removeEventListener('click', onClickOutside);
+      this.deleteMenu();
+    };
+    document.addEventListener('click', onClickOutside);
   }
 }

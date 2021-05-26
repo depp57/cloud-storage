@@ -19,9 +19,4 @@ export class ContextMenuDirective {
     event.preventDefault();
     event.stopPropagation();
   }
-
-  @HostListener('window:click') onLeftClick(): void {
-    // remove the old menu
-    this.factory.deleteMenu();
-  }
 }
