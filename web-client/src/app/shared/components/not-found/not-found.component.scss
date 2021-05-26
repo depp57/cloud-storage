@@ -27,11 +27,8 @@ $delayCoeff: 0.04s;
   fill: $firstColor;
 
   @for $i from 1 through 58 {
-
     path:nth-child(#{$i}) {
-      -webkit-animation: pweek 5s linear infinite;
       animation: keyframes 5s linear infinite;
-      -webkit-animation-delay: $i*$delayCoeff;
       animation-delay: $i*$delayCoeff;
     }
   }
