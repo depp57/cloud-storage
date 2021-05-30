@@ -28,7 +28,7 @@ export class DialogService {
 
   openRenameDialog(item: Item): Observable<OutputRenameData> {
     const componentRef = this.openDialog<RenameDialogComponent, Item, OutputRenameData>
-    (RenameDialogComponent, item);
+                             (RenameDialogComponent, item);
 
     return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
@@ -37,7 +37,7 @@ export class DialogService {
 
   openDeleteDialog(item: Item): Observable<boolean> {
     const componentRef = this.openDialog<DeleteDialogComponent, Item, boolean>
-    (DeleteDialogComponent, item);
+                             (DeleteDialogComponent, item);
 
     return componentRef.instance.submit$.pipe(
       take(1) // observe only one value, then auto unsubscribe
