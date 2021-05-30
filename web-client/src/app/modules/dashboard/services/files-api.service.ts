@@ -18,13 +18,13 @@ import { API_FILES_CACHE_TIME } from '@shared/constants';
 })
 export class FilesApiService {
 
-  private foldersCache = new Map<string, Observable<ResponseList>>();
+  private _foldersCache = new Map<string, Observable<ResponseList>>();
 
   constructor(private http: HttpClient,
               private fakeApi: FilesFakeApiService) {}
 
   listDir(param: RequestList): Observable<ResponseList> {
-    const cache = this.foldersCache.get(param.fullPath);
+    const cache = this._foldersCache.get(param.fullPath);
 
     if (cache) {
       console.log('listDir | cached', param);
@@ -50,7 +50,7 @@ export class FilesApiService {
         refCount(),
         take(1)
       );
-      this.foldersCache.set(param.fullPath, observable);
+      this._foldersCache.set(param.fullPath, observable);
       return observable;
     }
   }
@@ -83,7 +83,7 @@ export class FilesApiService {
         const index               = fullPath.lastIndexOf('/');
         const fullPathWithoutFile = fullPath.substring(0, index + 1);
 
-        this.foldersCache.delete(fullPathWithoutFile);
+        this._foldersCache.delete(fullPathWithoutFile);
       }
     );
   }

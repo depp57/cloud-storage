@@ -10,17 +10,17 @@ import {
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { RenameDialogComponent } from '@modules/utils/dialog/component/rename/rename-dialog.component';
 import { Observable } from 'rxjs';
-import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
 import { take } from 'rxjs/operators';
 import { Item } from '@modules/dashboard/models/items';
 import { DeleteDialogComponent } from '@modules/utils/dialog/component/delete/delete-dialog.component';
+import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DialogService {
 
-  private openedDialog!: ComponentRef<DialogComponent<any, any>>;
+  private _openedDialog!: ComponentRef<DialogComponent<unknown, any>>;
 
   constructor(private resolver: ComponentFactoryResolver,
               private appRef: ApplicationRef,
@@ -45,13 +45,13 @@ export class DialogService {
   }
 
   private deleteDialog(): void {
-    this.appRef.detachView(this.openedDialog.hostView);
-    this.openedDialog.destroy();
+    this.appRef.detachView(this._openedDialog.hostView);
+    this._openedDialog.destroy();
   }
 
   private openDialog<C extends DialogComponent<I, O>, I, O>(component: Type<C>, inputData: I): ComponentRef<DialogComponent<I, O>> {
     // prevent from opening two dialogs
-    if (this.openedDialog) { this.deleteDialog(); }
+    if (this._openedDialog) { this.deleteDialog(); }
 
     const factory                                           = this.resolver.resolveComponentFactory(component);
     const componentRef: ComponentRef<DialogComponent<I, O>> = factory.create(this.injector);
@@ -59,7 +59,7 @@ export class DialogService {
     const hostView = componentRef.hostView;
     this.appRef.attachView(hostView);
 
-    const domElem = (hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
+    const domElem = (hostView as EmbeddedViewRef<unknown>).rootNodes[0] as HTMLElement;
     document.body.appendChild(domElem);
 
     // listen if the dialog wants to close itself
@@ -68,7 +68,7 @@ export class DialogService {
     // send data to the component
     componentRef.instance.inputData = inputData;
 
-    this.openedDialog = componentRef;
+    this._openedDialog = componentRef;
 
     return componentRef;
   }

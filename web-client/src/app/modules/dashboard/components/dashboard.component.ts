@@ -1,9 +1,11 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  Component
+} from '@angular/core';
 import { LoaderService } from '@shared/services/loader.service';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from '@modules/auth/services/auth.service';
-import { MatSidenavContainer } from '@angular/material/sidenav';
-import { ContextMenuService } from '@modules/utils/context-menu/service/context-menu.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,33 +13,23 @@ import { ContextMenuService } from '@modules/utils/context-menu/service/context-
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements AfterContentInit, AfterViewInit {
+export class DashboardComponent implements AfterContentInit {
 
-  @ViewChild(MatSidenavContainer) sidenavContainer!: MatSidenavContainer;
   isMobile!: boolean;
+  readonly username: string;
 
   constructor(private auth: AuthService,
-              private loader: LoaderService,
-              private contextMenu: ContextMenuService) {}
-
-  get isLoading$(): BehaviorSubject<boolean> {
-    return this.loader.isLoading$;
+              private loader: LoaderService) {
+    this.username = this.auth.userCredentials?.username ?? '';
   }
 
-  get username(): string {
-    const username = this.auth.userCredentials?.username;
-    return username ? username : '';
+  get isLoading$(): Observable<boolean> {
+    return this.loader.isLoading$;
   }
 
   ngAfterContentInit(): void {
     // not responsive if the user resize the window, but avoid listening to
     // window's resizing event => more performance
     this.isMobile = window.innerWidth < 599;
-  }
-
-  ngAfterViewInit(): void {
-    this.sidenavContainer.scrollable.elementScrolled().subscribe(
-      () => this.contextMenu.deleteMenu()
-    );
   }
 }

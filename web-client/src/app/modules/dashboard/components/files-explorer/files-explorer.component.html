@@ -35,7 +35,7 @@
   <app-current-path></app-current-path>
 
   <div class="files-container">
-    <div style="display: contents" *ngIf="!(loading | async) else loadingTemplate">
+    <div style="display: contents" *ngIf="(loading | async) === false else loadingTemplate">
       <app-folder *ngFor="let folder of (folders$ | async) | filter: (searchText$ | async)"
                   [folder]="folder" class="file-item folder">
       </app-folder>
@@ -63,3 +63,6 @@
   </ng-template>
 
 </div>
+
+<app-move-item *ngIf="onMoveItem$ | async as item" [item]="item" [@inOutRightAnimation]>
+</app-move-item>

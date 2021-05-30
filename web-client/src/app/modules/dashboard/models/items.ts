@@ -1,105 +1,104 @@
 export abstract class Item {
 
-  readonly name: string;
-  protected readonly _extension?: string;
+  fullPath: string;
+  readonly fullName: string;
 
-  constructor(name: string, extension?: string) {
-    this.name       = name;
-    this._extension = extension;
+  constructor(fullPath: string) {
+    this.fullPath = fullPath;
+    this.fullName = Item.extractName(fullPath);
   }
 
-  get fullName(): string {
-    if (this.isFile()) {
-      return this.name + this.extension;
-    }
+  static fromJson(json: string): Item {
+    const parsedItem = JSON.parse(json);
+    return parsedItem.isFile ?
+      new File(parsedItem.fullPath) :
+      new Folder(parsedItem.fullPath);
+  }
 
-    // else it's a directory which doesn't have an extension
-    return this.name;
+  get name(): string {
+    return this.fullName.replace(/\.[^/.]+$/, '');
+  }
+
+  get extension(): string | null {
+    // https://stackoverflow.com/a/12900504/11798458
+    return this.fullName.slice((this.fullName.lastIndexOf('.') - 1 >>> 0) + 2);
+  }
+
+  get parentFolderPath(): string {
+    const index = this.fullPath.lastIndexOf('/');
+    return this.fullPath.substring(0, index + 1);
   }
 
   equals(item: Item): boolean {
-    return this.name === item.name && this.extension === item.extension;
+    return this.fullPath === item.fullPath && this.isFile() === item.isFile();
   }
 
-  abstract get extension(): string | undefined;
+  toJson(): string {
+    return JSON.stringify({
+      fullPath: this.fullPath,
+      isFile: this.isFile()
+    });
+  }
+
+  compareTo(item: Item): number {
+    return this.fullName > item.fullName ? 1 : -1;
+  }
 
   abstract isFile(): boolean;
 
-  /**
-   * returns a new Item with the new name, because I keep the Item immutable (for angular change detection)
-   * @param newName The new name of the item.
-   */
-  abstract rename(newName: { name: string, extension?: string }): Item;
+  abstract rename(name: string, extension?: string): Item;
+
+  private static extractName(fullPath: string): string {
+    const split = fullPath.split('/');
+    return split[split.length - 1];
+  }
 }
 
 
 export class File extends Item {
 
   get iconAsset(): string {
-    const asset = mapExtensionToIconAsset[this._extension ?? ''];
+    const asset = mapExtensionToIconAsset[this.extension ?? ''];
 
     // use the file.png icon as default
     return asset !== undefined ? asset : 'file.png';
-  }
-
-  get extension(): string | undefined {
-    return this._extension ?? '';
-  }
-
-  compareTo(file: File): number {
-    if (this.name !== file.name) {
-      return this.name > file.name ? 1 : -1;
-    }
-
-    const extension     = this._extension ?? '';
-    const fileExtension = file._extension ?? '';
-
-    return extension > fileExtension ? 1 : extension === fileExtension ? 0 : -1;
   }
 
   isFile(): boolean {
     return true;
   }
 
-  rename(newName: { name: string, extension?: string }): Item {
-    return new File(newName.name, newName.extension);
-  }
-
-  static fromNameWithExtension(nameWithExtension: string): File {
-    const index = nameWithExtension.lastIndexOf('.');
-    if (index === -1) {
-      return new File(nameWithExtension);
-    }
-
-    const extension = nameWithExtension.substring(index);
-
-    return new File(nameWithExtension.substring(0, index), extension);
+  rename(name: string, extension?: string): Item {
+    return new File(this.parentFolderPath + name + extension ?? '');
   }
 }
 
+
 export class Folder extends Item {
 
-  get extension(): string | undefined {
-    return undefined;
-  }
+  public static readonly ROOT = new Folder('/');
 
-  compareTo(folder: Folder): number {
-    return this.name > folder.name ? 1 : this.name === folder.name ? 0 : -1;
+  constructor(fullPath: string) {
+    super(fullPath);
+    if (!fullPath.endsWith('/')) {
+      this.fullPath += '/';
+    }
   }
 
   isFile(): boolean {
     return false;
   }
 
-  rename(newName: { name: string, extension?: string }): Item {
-    return new Folder(newName.name);
+  rename(name: string): Item {
+    return new Folder(this.parentFolderPath + name);
   }
 }
 
+
 const mapExtensionToIconAsset: Record<string, string> = {
   '': 'file.png',
-  '.txt': 'text.png',
-  '.xlsx': 'excel.png',
-  '.pdf': 'pdf.png',
-  '.docx': 'word.png'
+  txt: 'text.png',
+  xlsx: 'excel.png',
+  pdf: 'pdf.png',
+  docx: 'word.png'
 };

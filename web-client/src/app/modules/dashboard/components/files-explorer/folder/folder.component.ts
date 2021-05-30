@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { File, Folder } from '@modules/dashboard/models/items';
+import { Folder, Item } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
-import { FilesExplorerLogic } from '@modules/dashboard/services/files-explorer-logic';
+import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
 
 @Component({
   selector: 'app-folder',
@@ -14,14 +14,14 @@ export class FolderComponent {
 
   @Input() folder!: Folder;
 
-  constructor(private folderLogic: FilesExplorerLogic) {}
+  constructor(private folderLogic: ItemLogic) {}
 
   get contextMenuButtons(): MenuButton[] {
     return this.folderLogic.getItemsContextMenu(this.folder);
   }
 
   onDragStart(event: DragEvent): void {
-    event.dataTransfer?.setData(DATA_TRANSFER_NAME, this.folder.name);
+    event.dataTransfer?.setData(DATA_TRANSFER_NAME, this.folder.toJson());
   }
 
   onDragOver(event: DragEvent): void {
@@ -33,9 +33,9 @@ export class FolderComponent {
     if (event.dataTransfer?.getData(DATA_TRANSFER_NAME)) {
       event.preventDefault();
 
-      const sourceName = event.dataTransfer.getData(DATA_TRANSFER_NAME);
+      const itemJson = event.dataTransfer.getData(DATA_TRANSFER_NAME);
 
-      this.folderLogic.moveItemWithoutDialog(File.fromNameWithExtension(sourceName), this.folder.name);
+      this.folderLogic.moveItemWithoutDialog(Item.fromJson(itemJson), this.folder.fullName);
     }
   }
 

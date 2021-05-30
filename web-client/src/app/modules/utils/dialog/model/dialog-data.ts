@@ -1,6 +1,1 @@
-interface RenameData {
-  name: string;
-  extension?: string;
-}
-
-export type OutputRenameData = RenameData | null;
+export type OutputRenameData = string | null;

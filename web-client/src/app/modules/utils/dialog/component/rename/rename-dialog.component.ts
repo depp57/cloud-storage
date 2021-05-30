@@ -33,17 +33,16 @@ export class RenameDialogComponent extends DialogComponent<Item, OutputRenameDat
   }
 
   onSubmit(): void {
-    this.submit$.next({
-      name: this.name,
-      extension: this.extension
-    });
+    this.submit$.next(
+      this.inputData.rename(this.name, this.extension).fullPath
+    );
     this.closeDialog$.next();
   }
 
   private initForm(): void {
     this.renameForm = new FormGroup({
       name: new FormControl(this.inputData.name, Validators.required),
-      extension: new FormControl(this.inputData.extension?.substr(1))
+      extension: new FormControl(this.inputData.extension)
     });
   }
 }

@@ -11,12 +11,12 @@ export class HttpAuthInterceptor implements HttpInterceptor {
 
   constructor(private auth: AuthService) { }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const authToken = this.auth.userCredentials?.token;
 
-    const route = req.url;
+    const route   = req.url;
     const request = req.clone({
-      setHeaders: {Authorization: `Bearer ${authToken}`},
+      setHeaders: {authorization: `Bearer ${authToken}`},
       url: API_ENDPOINT + route
     });
 

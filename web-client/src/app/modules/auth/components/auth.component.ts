@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { LoaderService } from '@shared/services/loader.service';
 
@@ -13,17 +13,17 @@ import { LoaderService } from '@shared/services/loader.service';
 })
 export class AuthComponent implements OnInit {
 
-  private redirectCause: string | undefined;
+  private _redirectCause: string | undefined;
 
 
   constructor(private router: Router,
               private snackBar: MatSnackBar,
               private auth: AuthService,
               private loader: LoaderService) {
-    this.redirectCause = router.getCurrentNavigation()?.extras?.state?.redirect;
+    this._redirectCause = router.getCurrentNavigation()?.extras?.state?.redirect;
   }
 
-  get isLoading$(): BehaviorSubject<boolean> {
+  get isLoading$(): Observable<boolean> {
     return this.loader.isLoading$;
   }
 
@@ -37,14 +37,14 @@ export class AuthComponent implements OnInit {
   }
 
   private showRedirectCause(): void {
-    if (this.redirectCause !== undefined) {
-      this.snackBar.open(this.redirectCause, 'Fermer', {duration: 3000});
+    if (this._redirectCause !== undefined) {
+      this.snackBar.open(this._redirectCause, 'Fermer', {duration: 3000});
 
-      this.redirectCause = undefined;
+      this._redirectCause = undefined;
     }
   }
 
   private navigateToDashboard(): void {
-    this.router.navigate(['/fichiers']);
+    this.router.navigateByUrl('/fichiers');
   }
 }

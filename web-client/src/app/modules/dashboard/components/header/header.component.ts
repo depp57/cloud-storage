@@ -32,7 +32,7 @@ export class HeaderComponent {
 
   signOut(): void {
     this.auth.signOut().subscribe(
-      _ => this.navigateToLogin(),
+      () => this.navigateToLogin(),
       err => this.showLogoutError(err.status)
     );
   }
@@ -46,7 +46,7 @@ export class HeaderComponent {
   }
 
   private navigateToLogin(): void {
-    this.router.navigate([''], {state: {redirect: RedirectReasons.SIGNED_OUT}});
+    this.router.navigateByUrl('/', {state: {redirect: RedirectReasons.SIGNED_OUT}});
   }
 
   private showLogoutError(httpErrorCode: number): void {

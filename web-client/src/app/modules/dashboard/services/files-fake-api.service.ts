@@ -1,25 +1,35 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { ApiFile, ApiFileType, RequestDelete, RequestUpdate, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
+import {
+  ApiFile,
+  ApiFileType,
+  RequestDelete,
+  RequestUpdate,
+  ResponseDelete,
+  ResponseList,
+  ResponseUpdate
+} from '@modules/dashboard/models/api-files';
 import { delay, finalize, take, tap } from 'rxjs/operators';
 import { LoaderService } from '@shared/services/loader.service';
+import { PathService } from '@modules/dashboard/services/path.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FilesFakeApiService {
 
-  constructor(private loading: LoaderService) {}
+  constructor(private path: PathService,
+              private loading: LoaderService) {}
 
   listDir(filesNb: number, foldersNumber: number, delayInMs: number = 0): Observable<ResponseList> {
     const files: ApiFile[] = [];
 
     for (let i = 0; i < filesNb; i++) {
-      files.push(FilesFakeApiService.generateRandFile());
+      files.push(this.generateRandFile());
     }
 
     for (let i = 0; i < foldersNumber; i++) {
-      files.push(FilesFakeApiService.generateRandFolder());
+      files.push(this.generateRandFolder());
     }
 
     return this.handleLoading(of({files}), delayInMs);
@@ -60,7 +70,7 @@ export class FilesFakeApiService {
     this.loading.isLoading$.next(false);
   }
 
-  private static generateRandFile(): ApiFile {
+  private generateRandFile(): ApiFile {
     const rand = Math.random();
     let fileType: string;
 
@@ -80,11 +90,14 @@ export class FilesFakeApiService {
       fileType = '.pdf';
     }
 
-    return {fullPath: this.generateRandName() + fileType, type: ApiFileType.FILE};
+    return {
+      fullPath: this.path.currentPath$.value + FilesFakeApiService.generateRandName() + fileType,
+      type: ApiFileType.FILE
+    };
   }
 
-  private static generateRandFolder(): ApiFile {
-    return {fullPath: this.generateRandName(), type: ApiFileType.DIR};
+  private generateRandFolder(): ApiFile {
+    return {fullPath: this.path.currentPath$.value + FilesFakeApiService.generateRandName(), type: ApiFileType.DIR};
   }
 
   private static generateRandName(): string {

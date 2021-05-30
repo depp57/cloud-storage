@@ -21,6 +21,6 @@ export class FilterPipe implements PipeTransform {
   }
 
   private static filterByName<T extends Item>(items: T[], searchText: string): T[] {
-    return items.filter(item => item.name.toLowerCase().includes(searchText));
+    return items.filter(item => item.fullName.toLowerCase().includes(searchText));
   }
 }

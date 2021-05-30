@@ -1,15 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { File, Folder } from '@modules/dashboard/models/items';
+import { File, Folder, Item } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
+import { slideInOutAnimation } from '@shared/animations';
 
 @Component({
   selector: 'app-files-explorer',
   templateUrl: './files-explorer.component.html',
   styleUrls: ['./files-explorer.component.scss'],
+  animations: [slideInOutAnimation],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilesExplorerComponent implements OnInit {
@@ -17,7 +20,8 @@ export class FilesExplorerComponent implements OnInit {
   loading = new BehaviorSubject(true);
 
   constructor(private fileRepo: FilesRepositoryService,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar,
+              private itemLogic: ItemLogic) {}
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -28,7 +32,7 @@ export class FilesExplorerComponent implements OnInit {
     ];
   }
 
-  get searchText$(): Subject<string> {
+  get searchText$(): Observable<string> {
     return this.fileRepo.searchText$;
   }
 
@@ -40,9 +44,13 @@ export class FilesExplorerComponent implements OnInit {
     return this.fileRepo.folders$;
   }
 
+  get onMoveItem$(): Observable<Item | null> {
+    return this.itemLogic.onMove$;
+  }
+
   ngOnInit(): void {
-    this.fileRepo.listFolder('').subscribe(
-      _ => this.loading.next(false),
+    this.fileRepo.listFolder('/').subscribe(
+      () => this.loading.next(false),
       error => this.showLoadingError(error.status)
     );
   }

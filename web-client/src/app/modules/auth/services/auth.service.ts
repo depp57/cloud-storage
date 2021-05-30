@@ -54,7 +54,7 @@ export class AuthService {
 
   signOut(): Observable<ApiAuthResponse> {
     return this.http.get<ApiAuthResponse>('auth/disconnect/').pipe(
-      tap(_ => this.deleteUserCredentials())
+      tap(() => this.deleteUserCredentials())
     );
   }
 

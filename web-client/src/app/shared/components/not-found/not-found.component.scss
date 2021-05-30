@@ -26,10 +26,10 @@ $delayCoeff: 0.04s;
   vertical-align: middle;
   fill: $firstColor;
 
-  @for $i from 1 through 58 {
-    path:nth-child(#{$i}) {
+  @for $i from 0 through 12 {
+    path:nth-child(n+#{$i*5}):nth-child(-n+#{($i+1)*5}) {
       animation: keyframes 5s linear infinite;
-      animation-delay: $i*$delayCoeff;
+      animation-delay: $i*5*$delayCoeff;
     }
   }
 }

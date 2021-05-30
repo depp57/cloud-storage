@@ -11,9 +11,7 @@ import { Item } from '@modules/dashboard/models/items';
 export class DeleteDialogComponent extends DialogComponent<Item, boolean> {
 
   get title(): string {
-    return this.inputData.isFile() ?
-      `Supprimer le fichier ${this.inputData.fullName} ?` :
-      `Supprimer le dossier ${this.inputData.name} ?`;
+    return `Supprimer le ${this.inputData.isFile() ? 'fichier' : 'dossier'} ${this.inputData.fullName} ?`;
   }
 
   onClose(): void {

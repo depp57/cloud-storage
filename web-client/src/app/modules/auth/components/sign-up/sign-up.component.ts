@@ -86,7 +86,7 @@ export class SignUpComponent implements OnInit {
   }
 
   private navigateToDashboard(): void {
-    this.router.navigate(['/fichiers']);
+    this.router.navigateByUrl('/fichiers');
   }
 
   private showSignUpError(httpErrorCode: number): void {

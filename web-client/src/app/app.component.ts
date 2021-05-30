@@ -12,7 +12,7 @@ import { CssThemeService } from '@shared/services/css-theme.service';
 })
 export class AppComponent implements OnInit {
 
-  private readonly title = 'Cloud-Storage';
+  private readonly _title = 'Cloud-Storage';
 
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
     ).subscribe(() => {
       const lastChild = AppComponent.getChild(this.activatedRoute);
       lastChild.data.subscribe(data => {
-        this.titleService.setTitle(`${data.title} - ${this.title}`);
+        this.titleService.setTitle(`${data.title} - ${this._title}`);
       });
     });
   }

@@ -76,6 +76,6 @@ export class SignInComponent implements OnInit {
   }
 
   private navigateToDashboard(): void {
-    this.router.navigate(['/fichiers']);
+    this.router.navigateByUrl('/fichiers');
   }
 }

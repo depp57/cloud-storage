@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { File, Folder, Item } from '@modules/dashboard/models/items';
-import { ResponseDelete, ResponseList, ResponseUpdate, ApiFileType } from '@modules/dashboard/models/api-files';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { ApiFileType, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { FilesApiService } from '@modules/dashboard/services/files-api.service';
 import { PathService } from '@modules/dashboard/services/path.service';
+import { TreeNode } from '@modules/utils/folder-tree/model/tree-node';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FilesRepositoryService {
 
-  private readonly _files$     = new BehaviorSubject<File[]>([]);
+  private readonly _files$      = new BehaviorSubject<File[]>([]);
   private readonly _folders$    = new BehaviorSubject<Folder[]>([]);
   private readonly _searchText$ = new Subject<string>();
 
@@ -19,45 +20,58 @@ export class FilesRepositoryService {
               private path: PathService) {}
 
   get files$(): Observable<File[]> {
-    return this._files$.asObservable();
+    return this._files$;
   }
 
   get folders$(): Observable<Folder[]> {
-    return this._folders$.asObservable();
+    return this._folders$;
   }
 
-  get searchText$(): Subject<string> {
+  get searchText$(): Observable<string> {
     return this._searchText$;
   }
 
   // the path can be relative (myDocuments) or absolute (/myDocuments)
-  listFolder(path: string): Observable<ResponseList> {
-    this.path.updatePath(path);
+  listFolder(fullPath: string): Observable<ResponseList> {
+    this.path.updatePath(fullPath);
 
-    return this.filesApi.listDir({fullPath: this.path.currentPath$.value}).pipe(
+    return this.filesApi.listDir({fullPath}).pipe(
       tap(response => this.saveFiles(response))
     );
   }
 
-  rename(item: Item, newName: { name: string, extension?: string }): Observable<ResponseUpdate> {
-    const currentPath = this.path.currentPath$.value;
+  getSubFolders(folder: Folder): Observable<TreeNode> {
+    return this.filesApi.listDir({fullPath: folder.fullPath}).pipe(
+      map(response => {
+        const responseFolders        = response.files.filter(item => item.type === ApiFileType.DIR);
+        const subFolders: TreeNode[] = responseFolders.map(dir => ({folder: new Folder(dir.fullPath)}));
+        subFolders.sort((a, b) => a.folder.compareTo(b.folder));
+
+        // TODO IT DOESNT WORK NOW WITH FULL PATH BECAUSE OF FAKE-API, BUT IT WILL WITH THE REAL ONE
+        return {folder, subFolders};
+      })
+    );
+  }
+
+  rename(item: Item, newFullPath: string): Observable<ResponseUpdate> {
+    if (item.fullPath === newFullPath) {
+      return of({changed: false});
+    }
 
     return this.filesApi.update({
-      fullPath: currentPath + item.fullName,
-      newFullPath: currentPath + newName.name + newName.extension
+      fullPath: item.fullPath,
+      newFullPath
     }).pipe(
       tap(response => {
         if (response.changed) {
-          this.renameItem(item, newName);
+          this.renameItem(item, newFullPath);
         }
       })
     );
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    const currentPath = this.path.currentPath$.value;
-
-    return this.filesApi.delete({fullPath: currentPath + item.fullName}).pipe(
+    return this.filesApi.delete({fullPath: item.fullPath}).pipe(
       tap(response => {
         if (response.deleted) {
           this.deleteItem(item);
@@ -66,12 +80,14 @@ export class FilesRepositoryService {
     );
   }
 
-  move(item: Item, newPath: string): Observable<ResponseUpdate> {
-    const currentPath = this.path.currentPath$.value;
+  move(item: Item, newFullPath: string): Observable<ResponseUpdate> {
+    if (item.fullPath === newFullPath) {
+      return of({changed: false});
+    }
 
     return this.filesApi.move({
-      fullPath: currentPath + item.fullName,
-      newFullPath: `${currentPath + newPath}/${item.fullName}`
+      fullPath: item.fullPath,
+      newFullPath
     }).pipe(
       tap(response => {
         if (response.changed) {
@@ -90,13 +106,11 @@ export class FilesRepositoryService {
     const folders: Folder[] = [];
 
     for (const file of response.files) {
-      const fileName = FilesRepositoryService.extractFileName(file.fullPath);
-
       if (file.type === ApiFileType.FILE) {
-        files.push(File.fromNameWithExtension(fileName));
+        files.push(new File(file.fullPath));
       }
       else {
-        folders.push(new Folder(fileName));
+        folders.push(new Folder(file.fullPath));
       }
     }
     FilesRepositoryService.sortByName(files, folders);
@@ -118,12 +132,19 @@ export class FilesRepositoryService {
     item.isFile() ? deleteIn(this._files$) : deleteIn(this._folders$);
   }
 
-  private renameItem(item: Item, newName: { name: string, extension?: string }): void {
+  private renameItem(item: Item, newFullPath: string): void {
     function renameIn(subject: BehaviorSubject<any[]>): void {
       const items = subject.value;
 
       const index = items.findIndex(current => current.equals(item));
-      if (index !== -1) { items[index] = items[index].rename(newName); }
+      if (index !== -1) {
+        if (items[index].isFile()) {
+          items[index] = new File(newFullPath);
+        }
+        else {
+          items[index] = new Folder(newFullPath);
+        }
+      }
 
       subject.next(items);
     }
@@ -139,10 +160,5 @@ export class FilesRepositoryService {
   private static sortByName(files: File[], folders: Folder[]): void {
     files.sort((a, b) => a.compareTo(b));
     folders.sort((a, b) => a.compareTo(b));
-  }
-
-  private static extractFileName(fullPath: string): string {
-    const split = fullPath.split('/');
-    return split[split.length - 1];
   }
 }

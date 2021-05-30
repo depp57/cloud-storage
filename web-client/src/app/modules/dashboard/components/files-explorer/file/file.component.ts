@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { File } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
-import { FilesExplorerLogic } from '@modules/dashboard/services/files-explorer-logic';
+import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
 
 @Component({
   selector: 'app-file',
@@ -14,7 +14,7 @@ export class FileComponent {
 
   @Input() file!: File;
 
-  constructor(private fileLogic: FilesExplorerLogic) {}
+  constructor(private fileLogic: ItemLogic) {}
 
   get contextMenuButtons(): MenuButton[] {
     return this.fileLogic.getItemsContextMenu(this.file);
@@ -22,7 +22,7 @@ export class FileComponent {
 
   onDragStart(event: DragEvent): void {
     if (event.dataTransfer) {
-      event.dataTransfer.setData(DATA_TRANSFER_NAME, this.file.fullName);
+      event.dataTransfer.setData(DATA_TRANSFER_NAME, this.file.toJson());
     }
   }
 }

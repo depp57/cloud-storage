@@ -1,0 +1,22 @@
+<div class="overlay" (click)="onClose()"></div>
+
+<div class="folder-container">
+  <div class="folder-heading">
+    <button type="button" mat-raised-button color="primary" (click)="onMove()">Déplacer
+    </button>
+    <button type="button" mat-button>
+      <mat-icon>add</mat-icon>
+      <span>Nouveau dossier</span>
+    </button>
+    <button type="button" mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="folder-tree-container">
+    <h3>Déplacer {{item.fullName}} vers</h3>
+
+    <app-folder-tree (selectedFolder)="onSelectFolder($event)"></app-folder-tree>
+
+  </div>
+</div>

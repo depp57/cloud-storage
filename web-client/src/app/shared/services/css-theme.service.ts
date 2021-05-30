@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class CssThemeService {
 
-  private _theme = CssThemeService.defaultTheme;
+  private _theme = CssThemeService._defaultTheme;
 
   get theme(): string {
     return this._theme;
@@ -20,7 +20,7 @@ export class CssThemeService {
     }
   }
 
-  private static get defaultTheme(): string {
+  private static get _defaultTheme(): string {
     return localStorage.getItem('theme') || 'light-theme';
   }
 }

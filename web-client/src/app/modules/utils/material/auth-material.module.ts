@@ -7,7 +7,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-const MaterialComponents = [
+const materialComponents = [
   MatInputModule,
   MatFormFieldModule,
   MatCardModule,
@@ -18,7 +18,7 @@ const MaterialComponents = [
 ];
 
 @NgModule({
-  imports: [MaterialComponents],
-  exports: [MaterialComponents]
+  imports: [materialComponents],
+  exports: [materialComponents]
 })
 export class AuthMaterialModule {}

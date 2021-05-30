@@ -2,16 +2,18 @@ import { ComponentFactoryResolver, ComponentRef, Injectable, ViewContainerRef } 
 import { ContextMenuComponent } from '@modules/utils/context-menu/component/context-menu.component';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ContextMenuService {
 
-  private openedMenu!: ComponentRef<ContextMenuComponent>;
+  private _openedMenu?: ComponentRef<ContextMenuComponent>;
 
   constructor(private resolver: ComponentFactoryResolver) {}
 
   openMenu(anchor: ViewContainerRef, buttons: MenuButton[], posX: number, posY: number): void {
     // prevent from opening two context menues
-    if (this.openedMenu) { this.deleteMenu(); }
+    if (this._openedMenu) { this.deleteMenu(); }
 
     const factory      = this.resolver.resolveComponentFactory(ContextMenuComponent);
     const componentRef = anchor.createComponent(factory);
@@ -20,20 +22,28 @@ export class ContextMenuService {
     componentRef.instance.positionY = posY;
     componentRef.instance.buttons   = buttons;
 
-    this.openedMenu = componentRef;
+    this._openedMenu = componentRef;
 
     this.addLoseFocusListener();
   }
 
   deleteMenu(): void {
-    this.openedMenu?.destroy();
+    if (this._openedMenu) {
+      this._openedMenu.destroy();
+      this._openedMenu = undefined;
+    }
   }
 
   private addLoseFocusListener() {
-    const onClickOutside = () => {
-      document.removeEventListener('click', onClickOutside);
+    const backgroundElement = document.querySelector('mat-sidenav-content');
+    const events            = ['click', 'scroll'];
+
+    const onLoseFocus = () => {
+      events.forEach(event =>
+        backgroundElement?.removeEventListener(event, onLoseFocus));
       this.deleteMenu();
     };
-    document.addEventListener('click', onClickOutside);
+    events.forEach(event =>
+      backgroundElement?.addEventListener(event, onLoseFocus));
   }
 }

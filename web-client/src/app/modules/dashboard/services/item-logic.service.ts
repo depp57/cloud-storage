@@ -3,14 +3,21 @@ import { FilesRepositoryService } from '@modules/dashboard/services/files-reposi
 import { Folder, Item } from '@modules/dashboard/models/items';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DialogService } from '@modules/utils/dialog/service/dialog.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FilesExplorerLogic {
+export class ItemLogic {
+
+  private _onMove$ = new Subject<Item | null>();
 
   constructor(private filesRepo: FilesRepositoryService,
               private dialog: DialogService) {}
+
+  get onMove$(): Observable<Item | null> {
+    return this._onMove$;
+  }
 
   getItemsContextMenu(item: Item): MenuButton[] {
     return [
@@ -26,11 +33,15 @@ export class FilesExplorerLogic {
   }
 
   listFolder(folder: Folder): void {
-    this.filesRepo.listFolder(folder.name).subscribe();
+    this.filesRepo.listFolder(folder.fullPath).subscribe();
+  }
+
+  dontMoveItem(): void {
+    this._onMove$.next(null);
   }
 
   private downloadItem(item: Item): void {
-    console.log(`Télécharger : ${item.name} (${item.extension})`);
+    console.log(`Télécharger : ${item.fullName} (${item.extension})`);
     return undefined;
   }
 
@@ -45,17 +56,14 @@ export class FilesExplorerLogic {
   }
 
   private moveItem(item: Item): void {
-    console.warn(`Déplacer : ${item.fullName}
-     -- need le back-end pour lister les items dans les dossiers/sous dossiers`);
-
-    // this.filesRepo.move(item).subscribe();
+    this._onMove$.next(item);
   }
 
   private renameItem(item: Item): void {
     this.dialog.openRenameDialog(item).subscribe(
-      newName => {
-        if (newName) {
-          this.filesRepo.rename(item, newName).subscribe();
+      newFullPath => {
+        if (newFullPath) {
+          this.filesRepo.rename(item, newFullPath).subscribe();
         }
       }
     );

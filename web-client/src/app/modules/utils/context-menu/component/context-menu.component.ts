@@ -13,7 +13,7 @@ export class ContextMenuComponent {
   positionY!: number;
   buttons!: MenuButton[];
 
-  get position(): any {
+  get position(): { top: string; left: string } {
     return {
       top: `${this.positionY}px`,
       left: `${this.positionX}px`
