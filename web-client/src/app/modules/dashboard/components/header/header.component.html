@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" role="heading" class="main-container" aria-level="1">
+
+  <div class="flex-center">
+    <button mat-icon-button class="highlight" aria-label="Basculer le menu"
+            (click)="toggleSideBar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <a class="app-title" routerLink="/fichiers">Cloud-Storage</a>
+  </div>
+
+  <form class="search-form">
+    <mat-form-field>
+      <mat-icon matPrefix inline="true" class="search-icon">search</mat-icon>
+      <input type="search" matInput class="search-input" (input)="onSearch($event)">
+      <mat-placeholder>Rechercher</mat-placeholder>
+    </mat-form-field>
+  </form>
+
+  <div>
+    <button mat-icon-button class="highlight" aria-label="Thème sombre"
+            (click)="onChangeTheme('dark-theme')" *ngIf="isLightMode">
+      <mat-icon>dark_mode</mat-icon>
+    </button>
+    <button mat-icon-button class="highlight" aria-label="Thème jour"
+            (click)="onChangeTheme('light-theme')" *ngIf="!isLightMode">
+      <mat-icon>light_mode</mat-icon>
+    </button>
+
+    <button mat-icon-button class="icon-logout highlight" aria-label="Se déconnecter"
+            (click)="signOut()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+
+</mat-toolbar>

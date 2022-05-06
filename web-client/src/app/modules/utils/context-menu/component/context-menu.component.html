@@ -1,0 +1,12 @@
+<mat-action-list role="list" class="main-container" [ngStyle]="position">
+
+  <button mat-list-item *ngFor="let button of buttons" (click)="button.onClick()">
+    <mat-icon>
+      {{button.icon}}
+    </mat-icon>
+    <span>
+        {{button.text}}
+    </span>
+  </button>
+
+</mat-action-list>

@@ -1,4 +1,10 @@
+.idea/
+
 *.ini
 *.conf
+*.conf.*
 
-main
+run
+
+# secret conf files for server deployment
+ops/deploy/.conf/README

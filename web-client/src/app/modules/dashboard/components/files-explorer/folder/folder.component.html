@@ -1,0 +1,7 @@
+<a [appContextMenu]="contextMenuButtons" class="highlight"
+   draggable="true" (dragstart)="onDragStart($event)" (dragover)="onDragOver($event)" (drop)="onDragDrop($event)"
+   (click)="onClick()">
+
+  <img src="assets/icons/folder.png" width="128" height="128" [alt]="folder.fullName">
+  <span>{{folder.fullName}}</span>
+</a>

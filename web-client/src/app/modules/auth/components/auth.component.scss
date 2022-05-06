@@ -1,0 +1,79 @@
+@import '~src/global-style/media-queries';
+
+#main-container {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background-image: linear-gradient(to top, var(--background-gradient));
+}
+
+.card {
+  width: clamp(25rem, 70%, 35rem);
+  height: clamp(20rem, 35%, 80%);
+  padding: 40px;
+}
+
+.header-image {
+  background-image: url(~src/assets/favicon/apple-touch-icon.png);
+  background-size: cover;
+  border-radius: 0;
+}
+
+.app-name {
+  color: gray;
+  font-size: 1.6em;
+  margin-bottom: unset !important;
+}
+
+mat-card {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+mat-card-footer {
+  margin-left: unset;
+  margin-right: unset;
+  height: 4px;
+}
+
+:host ::ng-deep #auth-title {
+  font-size: xx-large;
+}
+
+.center-text {
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep {
+
+  a {
+    text-decoration: none;
+    color: var(--text-important);
+
+    &:hover {
+      text-decoration: underline var(--text-underline);
+    }
+  }
+
+  .username-input-container {
+    margin-bottom: 3%;
+  }
+
+  .submit-button {
+    float: right;
+  }
+
+  .fit-width {
+    width: 100%;
+  }
+}
+
+@media #{$MOBILE} {
+  .card {
+    width: clamp(18rem, 35%, 100%);
+    height: clamp(18rem, 45%, 100%);
+    padding: 20px;
+  }
+}

@@ -1,0 +1,6 @@
+<app-base-dialog [title]="title" (closeDialog)="onClose()">
+  <div class="modal-content">
+    <button mat-raised-button aria-label="Fermer" (click)="onClose()">Annuler</button>
+    <button mat-raised-button aria-label="Supprimer" color="warn" (click)="onDelete()">Supprimer</button>
+  </div>
+</app-base-dialog>

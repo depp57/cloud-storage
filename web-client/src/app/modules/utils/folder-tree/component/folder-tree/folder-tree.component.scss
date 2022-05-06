@@ -1,0 +1,28 @@
+:host ::ng-deep .folder-tree-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  height: 34px;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: var(--color-light-gray);
+  }
+}
+
+:host ::ng-deep .folder-tree-children {
+  margin: 0;
+}
+
+:host ::ng-deep .folder-icon {
+  margin: 0 10px;
+}
+
+:host ::ng-deep li {
+  list-style-type: none;
+}
+
+:host ::ng-deep .selected {
+  background-color: var(--color-light-gray);
+}

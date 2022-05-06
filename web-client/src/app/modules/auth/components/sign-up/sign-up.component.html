@@ -1,0 +1,53 @@
+<h1 id="auth-title">Inscription</h1>
+
+<mat-card-content>
+  <form id="sign-up-form" [formGroup]="signUpForm" (ngSubmit)="onSignUp()">
+
+    <div class="username-input-container">
+      <mat-form-field appearance="fill" class="fit-width">
+        <mat-label>Entrez un nom d'utilisateur</mat-label>
+        <input matInput type="text" autocomplete="username" formControlName="username" required autofocus>
+        <mat-error *ngIf="username?.invalid">{{usernameError}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="password-input-container">
+      <mat-form-field appearance="fill" class="fit-width">
+        <mat-label>Entrez un mot de passe</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'"
+               formControlName="password" required>
+
+        <button type="button" mat-icon-button matSuffix tabindex="-1"
+                [attr.aria-label]="'Masquer le mdp'" [attr.aria-pressed]="hidePassword"
+                (click)="hidePassword = !hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+
+        <mat-error *ngIf="password?.invalid">{{passwordError}}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="fit-width">
+        <mat-label>Entrez le mot de passe à nouveau</mat-label>
+        <input matInput [type]="hideConfirmPassword ? 'password' : 'text'"
+               formControlName="confirmPassword" required>
+
+        <button type="button" mat-icon-button matSuffix tabindex="-1"
+                [attr.aria-label]="'Masquer le mdp'" [attr.aria-pressed]="hideConfirmPassword"
+                (click)="hideConfirmPassword = !hideConfirmPassword">
+          <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+
+        <mat-error *ngIf="confirmPassword?.invalid">{{confirmPasswordError}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <button mat-raised-button color="primary" [disabled]="signUpForm.invalid" type="submit"
+            class="submit-button">S'inscrire
+    </button>
+  </form>
+</mat-card-content>
+
+<div>
+  <span>Vous avez déjà un compte ? </span>
+  <a routerLink="/">Connectez-vous !</a>
+</div>

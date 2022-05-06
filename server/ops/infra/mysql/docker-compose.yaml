@@ -1,0 +1,30 @@
+services:
+  mysql:
+    container_name: mysql
+    restart: always
+    network_mode: bridge
+    ports:
+      - 3306:3306
+      - 33060:33060
+    image: mysql:latest # TODO ajouter conf pour autoriser uniquement connection depuis réseau docker (phpmyadmin + code Go) et non pas 0.0.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 'mysql-encore-depp' # TODO gérer secret
+      MYSQL_USER: 'mysql'
+      MYSQL_PASSWORD: 'mysql-encore-depp'
+      MYSQL_DATABASE: 'cloud_storage'
+    volumes:
+      - mysql-data-volume:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    network_mode: bridge
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    links: 
+      - mysql
+volumes:
+  mysql-data-volume:
+    external: true # volume is created prior using docker-compose, so "down" command don't erase data

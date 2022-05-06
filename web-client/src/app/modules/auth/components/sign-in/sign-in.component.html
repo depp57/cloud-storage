@@ -1,0 +1,37 @@
+<h1 id="auth-title">Connexion</h1>
+
+<mat-card-content>
+  <form id="sign-in-form" [formGroup]="signInForm" (ngSubmit)="onSignIn()">
+
+    <div class="username-input-container">
+      <mat-form-field appearance="fill" class="fit-width">
+        <mat-label>Entrez votre nom d'utilisateur</mat-label>
+        <input matInput type="text" autocomplete="username" formControlName="username" required autofocus>
+        <mat-error *ngIf="username?.invalid">{{usernameErrorMessage}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="password-input-container">
+      <mat-form-field appearance="fill" class="fit-width">
+        <mat-label>Entrez votre mot de passe</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" autocomplete="current-password"
+               formControlName="password" required>
+
+        <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+                [attr.aria-label]="'Masquer le mdp'" [attr.aria-pressed]="hidePassword">
+          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+
+        <mat-error *ngIf="password?.invalid">{{passwordErrorMessage}}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <button mat-raised-button color="primary" [disabled]="signInForm.invalid" type="submit"
+            class="submit-button">Se connecter</button>
+  </form>
+</mat-card-content>
+
+<div>
+  <span>Vous n’avez pas encore de compte ? </span>
+  <a routerLink="/inscription">Créez-en un !</a>
+</div>

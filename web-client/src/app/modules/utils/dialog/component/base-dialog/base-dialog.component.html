@@ -1,0 +1,17 @@
+<div class="fullscreen modal-overlay" (click)="onClose()"></div>
+
+<div class="fullscreen center-content">
+  <div class="modal-dialog">
+
+    <div class="dialog-header">
+      <h2 class="dialog-title">{{title}}</h2>
+
+      <button mat-icon-button aria-label="Fermer le dialogue" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <ng-content></ng-content>
+
+  </div>
+</div>

@@ -1,0 +1,72 @@
+/* global style */
+
+/***************************************************************/
+/******************* T H E M E   C O L O R S *******************/
+/***************************************************************/
+
+@use '~@angular/material' as mat;
+@import '../../node_modules/@angular/material/theming';
+@include mat.core();
+
+$light-app-primary: mat.define-palette(mat.$blue-palette, 700, 300, 900);
+$light-app-accent: mat.define-palette(mat.$pink-palette, 300, 100, 700);
+
+$light-app-theme: mat.define-light-theme((
+  color: (
+    primary: $light-app-primary,
+    accent: $light-app-accent
+  )
+));
+
+.light-theme {
+  --color-light-gray: #f3f2f1;
+  --text-important: #1976d2;
+  --text-underline: #6f81e5;
+  --background-gradient: #0c3483, #a2b6df;
+  --background-color: #fafafa;
+  --highlight-color: #e1dfdd;
+  --header-highlight-color: #004d88;
+}
+
+// Light theme is the default theme
+@include mat.all-component-themes($light-app-theme);
+
+
+// Define an alternate dark theme
+$dark-app-primary: mat.define-palette(mat.$orange-palette, 300, 100, 500);
+$dark-app-accent: mat.define-palette(mat.$pink-palette);
+
+$dark-app-theme: mat.define-dark-theme((
+  color: (
+    primary: $dark-app-primary,
+    accent: $dark-app-accent
+  )
+));
+
+// Any component with this CSS class will be affected by this dark theme instead of the default theme
+.dark-theme {
+  @include mat.all-component-colors($dark-app-theme);
+  --text-important: #ffb74d;
+  --text-underline: #ff9800;
+  --background-gradient: #4b134f, #c94b4b;
+  --background-color: #303030;
+  --highlight-color: #424242;
+  --header-highlight-color: #ff9800;
+}
+
+/***************************************************************/
+/******************* G L O B A L   S T Y L E *******************/
+/***************************************************************/
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.highlight:hover {
+  background-color: var(--highlight-color);
+}

@@ -1,0 +1,52 @@
+.main-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-title {
+  margin-left: 10px;
+  color: unset;
+  text-decoration: none;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+}
+
+.icon-logout {
+  margin-left: 20px
+}
+
+.search-form {
+  margin: 0 5%;
+  width: 100%;
+  max-width: 500px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.search-icon {
+  transform: rotate3d(0, 1, 0, 0.5turn);
+  margin-right: 10px;
+}
+
+.highlight:hover {
+  background-color: var(--header-highlight-color);
+}
+
+@media (max-width: 599px) {
+  .app-title {
+    display: none;
+  }
+
+  mat-toolbar {
+    padding: 4px;
+  }
+
+  .icon-logout {
+    margin-left: 0;
+  }
+}

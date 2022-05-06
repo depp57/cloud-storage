@@ -1,0 +1,68 @@
+<div class="menu">
+  <button mat-button [matMenuTriggerFor]="newFileMenu">
+    <mat-icon>add</mat-icon>
+    <span>Nouveau</span>
+  </button>
+  <mat-menu #newFileMenu="matMenu">
+    <button mat-menu-item (click)="onNewFile()">
+      <mat-icon>note_add</mat-icon>
+      <span>Fichier</span>
+    </button>
+    <button mat-menu-item (click)="onNewFolder()">
+      <mat-icon>create_new_folder</mat-icon>
+      <span>Dossier</span>
+    </button>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="loadFileMenu">
+    <mat-icon>upload</mat-icon>
+    <span>Charger</span>
+  </button>
+  <mat-menu #loadFileMenu="matMenu">
+    <button mat-menu-item (click)="onUploadFile()">
+      <mat-icon>upload_file</mat-icon>
+      <span>Fichiers</span>
+    </button>
+    <button mat-menu-item (click)="onUploadFolder()">
+      <mat-icon>drive_folder_upload</mat-icon>
+      <span>Dossier</span>
+    </button>
+  </mat-menu>
+</div>
+
+<div id="main-container" [appContextMenu]="contextMenuButtons">
+
+  <app-current-path></app-current-path>
+
+  <div class="files-container">
+    <div style="display: contents" *ngIf="(loading | async) === false else loadingTemplate">
+      <app-folder *ngFor="let folder of (folders$ | async) | filter: (searchText$ | async)"
+                  [folder]="folder" class="file-item folder">
+      </app-folder>
+
+      <app-file *ngFor="let file of (files$ | async) | filter: (searchText$ | async)"
+                [file]="file" class="file-item file">
+      </app-file>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="placeholder file-item folder" *ngFor="let _ of createArrayForPlaceholder(3)">
+      <div>
+        <img src="assets/icons/folder.png" width="128" height="128" alt="loading-placeholder">
+        <span>&zwnj;</span>
+      </div>
+    </div>
+
+    <div class="placeholder file-item file" *ngFor="let _ of createArrayForPlaceholder(5)">
+      <div>
+        <img [src]="'assets/icons/file.png'" width="128" height="128" alt="loading-placeholder">
+        <span>&zwnj;</span>
+      </div>
+    </div>
+  </ng-template>
+
+</div>
+
+<app-move-item *ngIf="onMoveItem$ | async as item" [item]="item" [@inOutRightAnimation]>
+</app-move-item>

@@ -1,0 +1,46 @@
+// The color that will be at the beginning and the end of the loop.
+$firstColor: #3f51b5;
+
+// The list of all the used colors. The $first-color must remain at the end of the list.
+$listColors: #ff4081, #f44336, #dcdcdc, #ff4081, #3f51b5, $firstColor;
+
+$delayCoeff: 0.04s;
+
+#main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+  background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+}
+
+.svg-animation {
+  display: inline-block;
+  margin: 1%;
+  text-align: center;
+}
+
+#svg-animation {
+  display: inline-block;
+  vertical-align: middle;
+  fill: $firstColor;
+
+  @for $i from 0 through 12 {
+    path:nth-child(n+#{$i*5}):nth-child(-n+#{($i+1)*5}) {
+      animation: keyframes 5s linear infinite;
+      animation-delay: $i*5*$delayCoeff;
+    }
+  }
+}
+
+@keyframes keyframes {
+  0% {
+    fill: $firstColor;
+  }
+  @for $i from 1 through length($listColors) {
+    #{$i*(100/length($listColors))}% {
+      fill: nth($listColors, $i);
+    }
+  }
+}

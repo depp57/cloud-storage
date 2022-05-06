@@ -1,0 +1,18 @@
+<div id="main-container">
+  <mat-card class="card">
+
+    <mat-card-header class="center-text">
+      <div mat-card-avatar class="header-image"></div>
+      <mat-card-title class="app-name">Cloud-Storage</mat-card-title>
+    </mat-card-header>
+
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+
+    <mat-card-footer>
+      <mat-progress-bar mode="indeterminate" *ngIf="isLoading$ | async"></mat-progress-bar>
+    </mat-card-footer>
+
+  </mat-card>
+</div>
