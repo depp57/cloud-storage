@@ -11,7 +11,6 @@ import (
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/api/handlers"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
-	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileFragment"
 	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileMetadata"
 	logger "github.com/sventhommet/cloud-storage/server/common/log"
 )
@@ -35,8 +34,8 @@ func init() {
 	db = database.NewMysqlDb()
 	auth = services.InitAuth(db)
 	fmSender := fileMetadata.NewTCPFileMetadataSender("", 0) //TODO fileBuffer connection
-	ffSender := fileFragment.NewTCPFileFragmentSender("", 0) //TODO fileBuffer connection
-	filesSvc := services.NewDefaultFiles(db, fmSender, ffSender)
+	//ffSender := fileFragment.NewTCPFileFragmentSender("", 0) //TODO fileBuffer connection
+	filesSvc := services.NewDefaultFiles(db, fmSender)
 	httpHandlers = handlers.InitHttpHandlers(auth, filesSvc)
 }
 

@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileFragment"
 	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileMetadata"
 	"github.com/sventhommet/cloud-storage/server/common/log"
 )
@@ -24,14 +23,12 @@ type Files interface {
 type defaultFiles struct {
 	db                 database.FileDbPort
 	fileMetadataSender fileMetadata.FileMetadataSender
-	fileFragmentSender fileFragment.FileFragmentSender
 }
 
-func NewDefaultFiles(db database.FileDbPort, fbSender fileMetadata.FileMetadataSender, ffSender fileFragment.FileFragmentSender) Files {
+func NewDefaultFiles(db database.FileDbPort, fbSender fileMetadata.FileMetadataSender) Files {
 	return &defaultFiles{
 		db:                 db,
 		fileMetadataSender: fbSender,
-		fileFragmentSender: ffSender,
 	}
 }
 
@@ -58,10 +55,6 @@ func (f *defaultFiles) Download(userID string, filePath string) io.Reader {
 
 func (f *defaultFiles) Update(userID string, filePath string, newFilePath string) error {
 	return f.db.UpdateFilePath(userID, filePath, newFilePath)
-}
-
-func (f *defaultFiles) UploadRequest(userID string, filePath string, size int, fileCheckSum string) (chunckSize int) {
-	return 0
 }
 
 func (f *defaultFiles) CreateDir(userID string, dirName string, dirPath string) error {
@@ -91,19 +84,6 @@ func (f *defaultFiles) CreateFile(userID string, fileName string, path string, f
 	}
 
 	return uploadId, chunkSize, nil
-}
-
-func (f *defaultFiles) UploadFileFragment(uploadID string, data []byte) error {
-	err := f.fileFragmentSender.Send(fileFragment.FileFragment{
-		UploadID: uploadID,
-		Data:     data,
-	})
-	if err != nil {
-		log.Warn(err.Error())
-		return errors.New("failed to send file fragment to fileBuffer")
-	}
-
-	return nil
 }
 
 func (f *defaultFiles) computeChunkSize(fileSize int) int {
