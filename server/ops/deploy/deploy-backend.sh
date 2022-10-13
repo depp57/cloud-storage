@@ -1,5 +1,9 @@
 set -e
 
+#printf "Stop existing backend...\n"
+
+#source stop-backend.sh
+
 printf "Pulling last backend version...\n"
 
 docker pull registry.gitlab.com/sthommet/cloud-storage/client-ep

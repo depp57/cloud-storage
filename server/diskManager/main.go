@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/sventhommet/cloud-storage/server/diskManager/database"
-	"github.com/sventhommet/cloud-storage/server/diskManager/fileBuffer"
 	"github.com/sventhommet/cloud-storage/server/diskManager/storage"
 	"github.com/sventhommet/cloud-storage/server/diskManager/storage/filesystem"
 )
@@ -10,16 +9,10 @@ import (
 //Port interfaces
 var storing storage.StoragePort
 var db database.Database
-var dnsAdapt artifactPuller.DDNSPort
 
 func init() {
 	storing = filesystem.NewFsStorage()
 	db = database.InitMysql()
-
-	_ := fileBuffer.NewDefaultPuller()
-
-	dnsAdapt = new(artifactPuller.I_DNSPort)
-	dnsAdapt.init()
 }
 
 func main() {

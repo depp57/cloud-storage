@@ -1,0 +1,2 @@
+- stock les fragments de fichiers uploadés + metadata (upload_id, user_id, fileName, path, fileSize, status) 
+  pas d'intérêt à stocker les metadata en bdd car ils n'ont aucune valeur si les fragments sont perdus

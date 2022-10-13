@@ -1,0 +1,5 @@
+Front:
+
+nginx ne fonctionne pas en localhost car configuré pour vérifier certificat sur iofactory.fr
+
+faire un script qui run container nginx avec option -p 80:80 -p 443:443

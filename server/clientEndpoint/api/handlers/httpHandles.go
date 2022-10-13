@@ -7,8 +7,14 @@ import (
 	"net/url"
 
 	. "github.com/sventhommet/cloud-storage/server/clientEndpoint/api/common"
+	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
 	"github.com/sventhommet/cloud-storage/server/common/log"
+)
+
+const (
+	FILE_TYPE_DIR  = "dir"
+	FILE_TYPE_FILE = "file"
 )
 
 type HttpHandlers struct {
@@ -48,7 +54,6 @@ func (h HttpHandlers) HandleAuth(response http.ResponseWriter, request *http.Req
 	resp := make(map[string]interface{})
 	resp["token"] = token
 	response.Write(JsonResponse(resp))
-	return
 }
 
 func (h HttpHandlers) HandleDisconnect(response http.ResponseWriter, request *http.Request) {
@@ -57,7 +62,6 @@ func (h HttpHandlers) HandleDisconnect(response http.ResponseWriter, request *ht
 	h.auth.Revoke(token)
 
 	response.WriteHeader(http.StatusCreated)
-	return
 }
 
 func (h HttpHandlers) HandleSubscribe(response http.ResponseWriter, request *http.Request) {
@@ -74,10 +78,8 @@ func (h HttpHandlers) HandleSubscribe(response http.ResponseWriter, request *htt
 	//db.RegisterUser(user.Username, user.Password)
 
 	response.WriteHeader(http.StatusCreated)
-	return
 }
 
-//  TODO
 func (h HttpHandlers) HandleFilesList(resp http.ResponseWriter, req *http.Request) {
 	filePathPercent := req.URL.Query().Get("filePath")
 	userId := req.Header.Get(InternalHeaderAuth)
@@ -98,21 +100,95 @@ func (h HttpHandlers) HandleFilesList(resp http.ResponseWriter, req *http.Reques
 	response["result"] = files
 
 	resp.Write(JsonResponse(response))
-
-	return
 }
 
-//  TODO
-func (h HttpHandlers) HandleFilesDL(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "GET" {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		response.Write([]byte("{error: must be GET method}"))
+func (h HttpHandlers) HandleFileMove(resp http.ResponseWriter, req *http.Request) {
+	userId := req.Header.Get(InternalHeaderAuth)
+
+	input := UpdateFileInput{}
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError("input data: invalid json"))
 		return
 	}
 
-	param := request.URL.Path[len("/files/dl/"):]
+	err = h.filesSvc.Update(userId, input.Filepath, input.NewFilepath)
+	switch err {
+	case database.ErrQueryFailed: //TODO remove dependancy to database !!
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
 
-	response.Write([]byte(param))
+	resp.WriteHeader(201)
+}
 
-	return
+func (h HttpHandlers) HandleFileRename(resp http.ResponseWriter, req *http.Request) {
+	userId := req.Header.Get(InternalHeaderAuth)
+
+	input := UpdateFileInput{}
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError("input data: invalid json"))
+		return
+	}
+
+	err = h.filesSvc.Update(userId, input.Filepath, input.NewFilepath)
+	switch err {
+	case database.ErrQueryFailed: //TODO remove dependancy to database !!
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	resp.WriteHeader(201)
+}
+
+func (h HttpHandlers) HandleFileCreate(resp http.ResponseWriter, req *http.Request) {
+	userId := req.Header.Get(InternalHeaderAuth)
+
+	input := CreateFileInput{}
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError("input data: invalid json"))
+		return
+	}
+
+	switch input.Type {
+	case FILE_TYPE_DIR:
+		h.handleCreateDir(resp, input.Name, input.Path, userId)
+		return
+	case FILE_TYPE_FILE:
+		h.handleCreateFile(resp, req, input, userId)
+		return
+	}
+
+	resp.Write(GenericError("'" + input.Type + "' not accepted as a file type. Accepted values are 'dir', 'file'"))
+}
+
+func (h HttpHandlers) handleCreateDir(resp http.ResponseWriter, dirName string, dirPath string, userId string) {
+	err := h.filesSvc.CreateDir(userId, dirName, dirPath)
+
+	switch err {
+	case database.ErrQueryFailed: //TODO remove dependancy to database !!
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+	}
+}
+
+func (h HttpHandlers) handleCreateFile(resp http.ResponseWriter, req *http.Request, input CreateFileInput, userId string) {
+	uploadID, chunckSize, err := h.filesSvc.CreateFile(userId, input.Name, input.Path, input.Size, input.CRC)
+
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+	}
+
+	response := make(map[string]interface{}, 2)
+	response["uploadID"] = uploadID
+	response["chunkSize"] = chunckSize
+	resp.Write(JsonResponse(response))
 }

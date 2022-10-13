@@ -19,7 +19,3 @@ Permits a disk server to plug-in to the cluster
 
 - fetch files from buffer and write them on *cloud-storage filesystem*
 - write virtual user's filesystem in *database*
-
-# fileBuffer
-
-store file's artifacts while waiting for *diskManager* to retire them and write them to storage

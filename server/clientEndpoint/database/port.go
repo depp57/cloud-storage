@@ -27,6 +27,8 @@ type DbPort interface {
 
 type FileDbPort interface {
 	GetFilesFromUser(userId string, path string) map[string]File // Map index are files id
+	CreateDir(userId, dirName, dirPath string) error
+	UpdateFilePath(userId string, path string, newPath string) error
 
 	WhereToSave(data []byte) (diskName string)
 }

@@ -11,6 +11,8 @@ import (
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/api/handlers"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
+	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileFragment"
+	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileMetadata"
 	logger "github.com/sventhommet/cloud-storage/server/common/log"
 )
 
@@ -32,7 +34,9 @@ var httpHandlers *handlers.HttpHandlers
 func init() {
 	db = database.NewMysqlDb()
 	auth = services.InitAuth(db)
-	filesSvc := services.NewDefaultFiles(db)
+	fmSender := fileMetadata.NewTCPFileMetadataSender("", 0) //TODO fileBuffer connection
+	ffSender := fileFragment.NewTCPFileFragmentSender("", 0) //TODO fileBuffer connection
+	filesSvc := services.NewDefaultFiles(db, fmSender, ffSender)
 	httpHandlers = handlers.InitHttpHandlers(auth, filesSvc)
 }
 
@@ -55,10 +59,15 @@ func main() {
 	}
 
 	router := api.NewRestAPIRouters(auth)
-	router.DefaultRoute("/auth/", api.POST, httpHandlers.HandleAuth)
-	router.AuthentifiedRoute("/files/list/", api.GET, httpHandlers.HandleFilesList)
-	router.AuthentifiedRoute("/files/dl/", api.GET, httpHandlers.HandleFilesDL)
+	router.DefaultRoute("/auth", api.POST, httpHandlers.HandleAuth)
 	router.AuthentifiedRoute("/auth/disconnect/", api.GET, httpHandlers.HandleDisconnect)
+
+	router.AuthentifiedRoute("/files/list", api.GET, httpHandlers.HandleFilesList)
+	router.AuthentifiedRoute("/files/move", api.POST, httpHandlers.HandleFileMove)
+	router.AuthentifiedRoute("/files/rename", api.POST, httpHandlers.HandleFileRename)
+	router.AuthentifiedRoute("/files/create", api.POST, httpHandlers.HandleFileCreate)
+	//router.AuthentifiedRoute("/files/create/upload", api.POST, httpHandlers.HandleFilesUpload)
+	//router.AuthentifiedRoute("/files/dl", api.GET, httpHandlers.HandleFilesDL)
 
 	logger.Info("--- Starting Client-EP component ---")
 

@@ -7,3 +7,5 @@ require (
 	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac
 	gopkg.in/yaml.v2 v2.4.0
 )
+
+require github.com/google/uuid v1.3.0

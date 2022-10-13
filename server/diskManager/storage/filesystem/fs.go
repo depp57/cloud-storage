@@ -1,8 +1,9 @@
 package filesystem
 
 import (
-	"golang.org/x/sys/unix"
 	"os"
+
+	"golang.org/x/sys/unix"
 )
 
 const FS_STORAGE_PATH = "/var/lib/cloud-storage"

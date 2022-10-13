@@ -2,15 +2,23 @@ package database
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 	"gopkg.in/yaml.v2"
 
 	"github.com/sventhommet/cloud-storage/server/common/log"
 	"github.com/sventhommet/cloud-storage/server/common/utils"
+)
+
+var (
+	ErrQueryFailed = errors.New("faild to execute sql query") //TODO must be constant !!
 )
 
 type SqlDb struct {
@@ -74,10 +82,40 @@ func (this *SqlDb) GetFilesFromUser(userId string, path string) map[string]File 
 	var diskName string
 	for rows.Next() {
 		rows.Scan(&id, &fileType, &fileName, &diskName)
-		results[id] = File{path + "/" + fileName, fileType, diskName}
+		if path != "" {
+			path = path + "/" //TODO quick fix, do better
+		}
+		results[id] = File{path + fileName, fileType, diskName}
 	}
 
 	return results
+}
+
+func (d *SqlDb) CreateDir(userId string, dirName string, dirPath string) error {
+	id := uuid.New().String()
+
+	_, err := d.client.Query(fmt.Sprintf("INSERT INTO files (id, type, file_name, path, user_id) VALUES ('%s', '%s', '%s', '%s', '%s');", id, "dir", dirName, dirPath, userId))
+	if err != nil {
+		log.Warn(err.Error())
+		return ErrQueryFailed
+	}
+
+	return nil
+}
+
+func (d *SqlDb) UpdateFilePath(userId string, path string, newPath string) error {
+	newPath = filepath.Dir(newPath)
+	newFilename := filepath.Base(newPath)
+	oldPath := filepath.Dir(path)
+	oldFilename := filepath.Base(path)
+
+	_, err := d.client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s') WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
+	if err != nil {
+		log.Warn(err.Error())
+		return ErrQueryFailed
+	}
+
+	return nil
 }
 
 func (this *SqlDb) WhereToSave(data []byte) (diskName string) {
