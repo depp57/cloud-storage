@@ -1,0 +1,5 @@
+stages: 
+  - code-quality
+  - unit-tests
+  - build
+  - deploy
