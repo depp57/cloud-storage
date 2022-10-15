@@ -7,11 +7,11 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/api"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/api/handlers"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
-	logger "github.com/sventhommet/cloud-storage/server/common/log"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api/handlers"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
+	logger "gitlab.com/sthommet/cloud-storage/server/common/log"
 )
 
 type ServerConf struct {

@@ -1,4 +1,4 @@
-module github.com/sventhommet/cloud-storage/server
+module gitlab.com/sthommet/cloud-storage/server
 
 go 1.17
 

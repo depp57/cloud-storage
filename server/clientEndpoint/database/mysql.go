@@ -13,8 +13,8 @@ import (
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v2"
 
-	"github.com/sventhommet/cloud-storage/server/common/log"
-	"github.com/sventhommet/cloud-storage/server/common/utils"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
+	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
 
 var (

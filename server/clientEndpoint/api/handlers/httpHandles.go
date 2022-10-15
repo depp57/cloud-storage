@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
-	. "github.com/sventhommet/cloud-storage/server/clientEndpoint/api/common"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
-	"github.com/sventhommet/cloud-storage/server/common/log"
+	. "gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api/common"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
 )
 
 const (

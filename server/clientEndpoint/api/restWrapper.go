@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	. "github.com/sventhommet/cloud-storage/server/clientEndpoint/api/common"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
+	. "gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api/common"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
 )
 
 const (

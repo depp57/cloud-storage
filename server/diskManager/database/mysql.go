@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v2"
 
-	"github.com/sventhommet/cloud-storage/server/common/utils"
+	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
 
 const MYSQL_CONF_FILE = "mysql.conf.yaml"

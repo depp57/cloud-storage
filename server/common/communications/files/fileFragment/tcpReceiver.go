@@ -3,7 +3,7 @@ package fileFragment
 import (
 	"bufio"
 	"errors"
-	"github.com/sventhommet/cloud-storage/server/common/communications/files"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
 	"net"
 	"strconv"
 

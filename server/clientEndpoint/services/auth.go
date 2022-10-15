@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/common/utils"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
+	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
 
 const TOKEN_TTL_SECONDS = 60 * 5

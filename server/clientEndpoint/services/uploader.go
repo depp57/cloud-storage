@@ -2,9 +2,9 @@ package services
 
 import (
 	"errors"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/common/communications/files"
-	"github.com/sventhommet/cloud-storage/server/common/log"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
 )
 
 type Uploader interface {

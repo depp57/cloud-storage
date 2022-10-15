@@ -3,7 +3,7 @@ package services
 import (
 	"bytes"
 	"errors"
-	"github.com/sventhommet/cloud-storage/server/common/communications/files"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
 	"hash/crc32"
 	"time"
 )

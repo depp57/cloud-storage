@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
 )
 
 type Files interface {
