@@ -11,7 +11,6 @@ import (
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/api/handlers"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/services"
-	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileMetadata"
 	logger "github.com/sventhommet/cloud-storage/server/common/log"
 )
 
@@ -33,9 +32,8 @@ var httpHandlers *handlers.HttpHandlers
 func init() {
 	db = database.NewMysqlDb()
 	auth = services.InitAuth(db)
-	fmSender := fileMetadata.NewTCPFileMetadataSender("", 0) //TODO fileBuffer connection
 	//ffSender := fileFragment.NewTCPFileFragmentSender("", 0) //TODO fileBuffer connection
-	filesSvc := services.NewDefaultFiles(db, fmSender)
+	filesSvc := services.NewDefaultFiles(db)
 	httpHandlers = handlers.InitHttpHandlers(auth, filesSvc)
 }
 
@@ -59,7 +57,7 @@ func main() {
 
 	router := api.NewRestAPIRouters(auth)
 	router.DefaultRoute("/auth", api.POST, httpHandlers.HandleAuth)
-	router.AuthentifiedRoute("/auth/disconnect/", api.GET, httpHandlers.HandleDisconnect)
+	router.AuthentifiedRoute("/auth/disconnect", api.GET, httpHandlers.HandleDisconnect)
 
 	router.AuthentifiedRoute("/files/list", api.GET, httpHandlers.HandleFilesList)
 	router.AuthentifiedRoute("/files/move", api.POST, httpHandlers.HandleFileMove)

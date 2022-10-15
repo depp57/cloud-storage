@@ -2,13 +2,14 @@ package fileFragment
 
 import (
 	"errors"
+	"github.com/sventhommet/cloud-storage/server/common/communications/files"
 	"net"
 	"strconv"
 
 	"github.com/google/uuid"
 )
 
-func NewTCPFileFragmentSender(hostname string, port int) FileFragmentSender {
+func NewTCPFileFragmentSender(hostname string, port int) files.FileFragmentSender {
 	return &defaultTCPFileFragmentSender{
 		targetHostname: hostname,
 		targetPort:     port,
@@ -20,7 +21,7 @@ type defaultTCPFileFragmentSender struct {
 	targetPort     int
 }
 
-func (s *defaultTCPFileFragmentSender) Send(ff FileFragment) error {
+func (s *defaultTCPFileFragmentSender) Send(ff files.FileFragment) error {
 	uploadID, err := uuid.Parse(ff.UploadID)
 	if err != nil {
 		return errors.New("failed to parse UploadID as UUID")

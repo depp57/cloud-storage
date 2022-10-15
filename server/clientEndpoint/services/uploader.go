@@ -2,7 +2,8 @@ package services
 
 import (
 	"errors"
-	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileFragment"
+	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
+	"github.com/sventhommet/cloud-storage/server/common/communications/files"
 	"github.com/sventhommet/cloud-storage/server/common/log"
 )
 
@@ -13,27 +14,29 @@ type Uploader interface {
 }
 
 type defaultUploader struct {
-	fileFragmentSender fileFragment.FileFragmentSender
+	fileFragmentSender files.FileFragmentSender
+	db                 database.FileDbPort
 }
 
-func NewDefaultUploader(ffSender fileFragment.FileFragmentSender) Uploader {
+func NewDefaultUploader(ffSender files.FileFragmentSender) Uploader {
 	return &defaultUploader{
 		fileFragmentSender: ffSender,
 	}
 }
 
 func (u *defaultUploader) UploadRequest(userID string, filePath string, size int, fileCheckSum string) (chunckSize int) {
+	//targetDisk := u.db.WhereToSave(size)
 	return 0
 }
 
 func (u *defaultUploader) UploadFileFragment(uploadID string, data []byte) error {
-	err := u.fileFragmentSender.Send(fileFragment.FileFragment{
+	err := u.fileFragmentSender.Send(files.FileFragment{
 		UploadID: uploadID,
 		Data:     data,
 	})
 	if err != nil {
 		log.Warn(err.Error())
-		return errors.New("failed to send file fragment to fileBuffer")
+		return errors.New("failed to send file fragment to diskManager")
 	}
 
 	return nil

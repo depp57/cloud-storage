@@ -1,15 +1,12 @@
 package services
 
 import (
-	"errors"
 	"io"
 	"math"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/sventhommet/cloud-storage/server/clientEndpoint/database"
-	"github.com/sventhommet/cloud-storage/server/common/communications/fileBuffer/fileMetadata"
-	"github.com/sventhommet/cloud-storage/server/common/log"
 )
 
 type Files interface {
@@ -22,14 +19,10 @@ type Files interface {
 
 type defaultFiles struct {
 	db                 database.FileDbPort
-	fileMetadataSender fileMetadata.FileMetadataSender
 }
 
-func NewDefaultFiles(db database.FileDbPort, fbSender fileMetadata.FileMetadataSender) Files {
-	return &defaultFiles{
-		db:                 db,
-		fileMetadataSender: fbSender,
-	}
+func NewDefaultFiles(db database.FileDbPort) Files {
+	return &defaultFiles{db: db}
 }
 
 func (f *defaultFiles) List(userID string, filePath string) ([]File, error) {
@@ -69,19 +62,19 @@ func (f *defaultFiles) CreateFile(userID string, fileName string, path string, f
 	uploadId := uuid.New().String()
 	chunkSize := f.computeChunkSize(fileSize)
 
-	err := f.fileMetadataSender.SendFileMetadata(fileMetadata.FileMetadata{
-		UploadID:  uploadId,
-		UserID:    userID,
-		Filename:  fileName,
-		Path:      path,
-		Size:      fileSize,
-		ChunkSize: chunkSize,
-		CRC:       CRC,
-	})
-	if err != nil {
-		log.Warn(err.Error())
-		return "", 0, errors.New("failed to send file metadata to fileBuffer")
-	}
+	//err := f.fileMetadataSender.SendFileMetadata(fileBuffer.FileMetadata{
+	//	UploadID:  uploadId,
+	//	UserID:    userID,
+	//	Filename:  fileName,
+	//	Path:      path,
+	//	Size:      fileSize,
+	//	ChunkSize: chunkSize,
+	//	CRC:       CRC,
+	//})
+	//if err != nil {
+	//	log.Warn(err.Error())
+	//	return "", 0, errors.New("failed to send file metadata to fileBuffer")
+	//}
 
 	return uploadId, chunkSize, nil
 }

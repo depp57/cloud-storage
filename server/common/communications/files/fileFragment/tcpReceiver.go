@@ -3,6 +3,7 @@ package fileFragment
 import (
 	"bufio"
 	"errors"
+	"github.com/sventhommet/cloud-storage/server/common/communications/files"
 	"net"
 	"strconv"
 
@@ -15,14 +16,14 @@ const (
 
 type defaultTCPFileMetadataReceiver struct {
 	listeningPort int
-	fileFragments chan FileFragment
+	fileFragments chan files.FileFragment
 	errChan       chan error
 }
 
-func NewTCPFileFragmentReceiver(port int) FileFragmentReceiver {
+func NewTCPFileFragmentReceiver(port int) files.FileFragmentReceiver {
 	receiver := &defaultTCPFileMetadataReceiver{
 		listeningPort: port,
-		fileFragments: make(chan FileFragment),
+		fileFragments: make(chan files.FileFragment),
 		errChan:       make(chan error),
 	}
 
@@ -46,7 +47,7 @@ func (t *defaultTCPFileMetadataReceiver) listen() {
 
 func (t *defaultTCPFileMetadataReceiver) handleEntrance(conn net.Conn) {
 	defer conn.Close()
-	ff := FileFragment{
+	ff := files.FileFragment{
 		Data: make([]byte, 0, FILE_FRAGMENT_DEFAULT_SIZE),
 	}
 
@@ -74,7 +75,7 @@ func (t *defaultTCPFileMetadataReceiver) handleEntrance(conn net.Conn) {
 	t.fileFragments <- ff
 }
 
-func (t *defaultTCPFileMetadataReceiver) Get() (FileFragment, error) {
+func (t *defaultTCPFileMetadataReceiver) Get() (files.FileFragment, error) {
 	ff := <-t.fileFragments
 
 	var err error = nil

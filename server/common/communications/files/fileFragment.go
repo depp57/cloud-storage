@@ -1,6 +1,6 @@
-package fileFragment
+package files
 
-type FileFragment struct {
+type FileFragment struct { //TODO package "entity" ?
 	UploadID string // must be uuid4
 	Data     []byte
 }

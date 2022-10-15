@@ -1,14 +1,24 @@
 package main
 
 import (
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/sventhommet/cloud-storage/server/common/communications/files"
 	"github.com/sventhommet/cloud-storage/server/diskManager/database"
+	"github.com/sventhommet/cloud-storage/server/diskManager/services"
 	"github.com/sventhommet/cloud-storage/server/diskManager/storage"
 	"github.com/sventhommet/cloud-storage/server/diskManager/storage/filesystem"
+	"io"
+	"log"
+	"net/http"
 )
 
-//Port interfaces
-var storing storage.StoragePort
-var db database.Database
+// Port interfaces
+var (
+	storing    storage.StoragePort
+	db         database.Database
+	fileBuffer services.FileBuffer
+)
 
 func init() {
 	storing = filesystem.NewFsStorage()
@@ -16,42 +26,61 @@ func init() {
 }
 
 func main() {
-	defer db.Close()
+	metadataServer := gin.Default()
 
-	data, _ := fsAdapt.readFile("test")
-	storeFile("sven", "docs/img/depp.jpg", data)
-	//deleteFile("sven", "docs/img/depp.jpg")
+	metadataServer.POST("/files/metadata", handleNewMetadata)
+	metadataServer.POST("/files/fragment", handleNewFragment)
 
-	_ = dnsAdapt.addIpToDNS(fsAdapt.getDiskName())
-}
-
-func mkdir(userId string, fullpath string) {
-
-}
-
-func storeFile(userId string, fullpath string, data []byte) {
-	var fileId = db.RegisterFile(userId, fullpath, fsAdapt.getDiskName())
-
-	var err = storing.WriteFile(fileId, data)
-
-	//If file couldn't be wrote on the fs, we need to unregister it from db
+	err := metadataServer.Run()
 	if err != nil {
-		db.UnRegisterFile(userId, fullpath)
-		panic(err.Error())
+		log.Fatal("unable to start file metadata server: " + err.Error())
+	}
+}
+
+func handleNewMetadata(ctx *gin.Context) {
+	metadata := files.FileMetadata{}
+
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
 	}
 
-	//TODO disk table in db : diskLeftSpace() ?
-}
-
-func deleteFile(userId string, fullpath string) {
-	var err = fsAdapt.removeFile(db.GetFileId(userId, fullpath))
-
-	//Handle error if any, then unregister file from db
+	err = json.Unmarshal(body, &metadata)
 	if err != nil {
-		panic(err.Error())
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
 	}
 
-	db.UnRegisterFile(userId, fullpath)
+	err = fileBuffer.SaveMetadata(metadata)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
 
-	//TODO disk table in db : diskLeftSpace() ?
+	ctx.JSON(http.StatusOK, nil)
+}
+
+func handleNewFragment(ctx *gin.Context) {
+	fragment := files.FileFragment{}
+
+	body, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	err = json.Unmarshal(body, &fragment)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	err = fileBuffer.SaveFragment(fragment)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, nil)
 }
