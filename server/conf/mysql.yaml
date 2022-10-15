@@ -1,0 +1,5 @@
+mysql_user: mysql
+mysql_password: mysql-encore-depp
+mysql_server_ip: 172.28.0.2 #TODO docker-compose DNS ?
+mysql_server_port: 3306
+mysql_database_name: cloud_storage

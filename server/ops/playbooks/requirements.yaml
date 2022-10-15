@@ -1,0 +1,19 @@
+- name: Ensure requirements are installed (ansible needs docker-sdk for python)
+  hosts: iofactory.fr
+  become: true # switch to root user
+  tasks:
+    - name: Python pip
+      package:
+        name: python3-pip
+        state: present
+    - name: Ansible needs docker-sdk for python
+      pip:
+        name:
+          - docker
+          - docker-compose
+        state: present
+    - name: Create /cloud-storage/ops/deploy directory
+      file:
+        path: /cloud-storage/ops/deploy
+        state: directory
+        owner: ubuntu #TODO "{{ ansible_user_id }}" does not work because `become: true`

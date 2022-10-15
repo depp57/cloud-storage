@@ -1,0 +1,18 @@
+networks:
+  cloud-storage:
+    name: cloud-storage
+    driver: bridge
+services:
+  clientEndpoint:
+    image: registry.gitlab.com/sthommet/cloud-storage/client-ep:latest
+    restart: always
+    networks:
+      - cloud-storage
+    ports:
+      - 8008:8008
+    volumes:
+      - /cloud-storage/conf:/cloud-storage/conf
+    environment:
+      - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
+      - SERVER_CONF_PATH=/cloud-storage/conf/server.yaml
+  #TODO add other services

@@ -1,0 +1,23 @@
+# Dependencies on localhost
+# - community.docker.docker_compose
+
+- name: Build and push image of clientEndpoint
+  hosts: localhost
+  tasks:
+    - name: Executing script
+      shell: ../build/build-clientEP.sh
+
+- name: Deploy new images on target server
+  hosts: iofactory.fr
+  tasks:
+    - name: Copy conf files
+      copy:
+        src: ../../conf/
+        dest: /cloud-storage/conf/
+    - name: Copy docker-compose file
+      copy:
+        src: ../deploy/docker-compose.yaml
+        dest: /cloud-storage/ops/deploy/
+    - name: Docker-compose up
+      community.docker.docker_compose:
+        project_src: /cloud-storage/ops/deploy

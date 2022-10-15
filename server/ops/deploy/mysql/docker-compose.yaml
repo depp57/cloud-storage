@@ -2,7 +2,8 @@ services:
   mysql:
     container_name: mysql
     restart: always
-    network_mode: bridge
+    networks:
+      - cloud-storage
     ports:
       - 3306:3306
       - 33060:33060
@@ -17,7 +18,8 @@ services:
   phpmyadmin:
     image: phpmyadmin
     restart: always
-    network_mode: bridge
+    networks:
+      - cloud-storage
     ports:
       - 8080:80
     environment:
@@ -28,3 +30,7 @@ services:
 volumes:
   mysql-data-volume:
     external: true # volume is created prior using docker-compose, so "down" command don't erase data
+networks:
+  cloud-storage:
+    name: cloud-storage
+    external: true
