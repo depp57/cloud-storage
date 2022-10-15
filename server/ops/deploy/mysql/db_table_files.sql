@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `files` (
-  `id` varchar(10) NOT NULL,
+  `id` varchar(36) NOT NULL,
   `type` enum('dir','file') NOT NULL,
   `file_name` varchar(80) NOT NULL,
   `path` varchar(30) NOT NULL,

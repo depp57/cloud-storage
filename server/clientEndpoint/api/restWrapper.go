@@ -1,20 +1,12 @@
 package api
 
 import (
+	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 	"log"
 	"net/http"
 	"strings"
 
-	. "gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api/common"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
-)
-
-const (
-	GET     = "GET"
-	POST    = "POST"
-	PUT     = "PUT"
-	DELETE  = "DELETE"
-	OPTIONS = "OPTIONS"
 )
 
 type RestAPIRouters struct {
@@ -45,7 +37,7 @@ func (m *RestAPIRouters) ListenAndServe(addr string) error {
 
 func (m *RestAPIRouters) rootHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle CORS preflight
-	if r.Method == OPTIONS {
+	if r.Method == http.MethodOptions {
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
 		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token, authorization")

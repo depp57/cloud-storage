@@ -1,86 +1,59 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
+	"gitlab.com/sthommet/cloud-storage/server/diskManager/api"
 	"gitlab.com/sthommet/cloud-storage/server/diskManager/database"
+	"gitlab.com/sthommet/cloud-storage/server/diskManager/disk/filesystem"
+	"gitlab.com/sthommet/cloud-storage/server/diskManager/httpClients"
 	"gitlab.com/sthommet/cloud-storage/server/diskManager/services"
-	"gitlab.com/sthommet/cloud-storage/server/diskManager/storage"
-	"gitlab.com/sthommet/cloud-storage/server/diskManager/storage/filesystem"
-	"io"
 	"log"
-	"net/http"
+	"strconv"
+	"time"
 )
 
-// Port interfaces
+var API_PORT = 8009
+
 var (
-	storing    storage.StoragePort
-	db         database.Database
-	fileBuffer services.FileBuffer
+	storingTimeout = time.Minute * 5
+
+	db           = database.InitMysql()
+	diskStorage  = filesystem.NewFsStorage()
+	diskRegister = services.NewDefaultDiskRegister(db, diskStorage)
+	fileBuffer   = services.NewDefaultFileBuffer(storingTimeout)
+	fragmentReceiver = api.NewFragmentHandler(API_PORT + 1, fileBuffer)
+	CEclient     = httpClients.NewDefaultClientEndpointClient()
+	storage      = services.NewDefaultStorage(fileBuffer, diskStorage, db, CEclient, storingTimeout)
+	httpHandlers = api.NewHandlers(fileBuffer, storage)
 )
 
-func init() {
-	storing = filesystem.NewFsStorage()
-	db = database.InitMysql()
+func registerWorkingDisk() error {
+	err := diskRegister.RegisterWorkingDisk(API_PORT)
+	if err != nil {
+		log.Fatal("unable to register diskManager into database: " + err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func main() {
+	var err error
+
+	err = registerWorkingDisk()
+	if err != nil {
+		return
+	}
+
+	fragmentReceiver.Start()
+
+	gin.SetMode(gin.ReleaseMode)
 	metadataServer := gin.Default()
+	metadataServer.PUT("/files/metadata", httpHandlers.HandleNewFile)
+	//metadataServer.GET("/files/status", httpHandlers.HandleUploadingStatus)
 
-	metadataServer.POST("/files/metadata", handleNewMetadata)
-	metadataServer.POST("/files/fragment", handleNewFragment)
-
-	err := metadataServer.Run()
+	err = metadataServer.Run("0.0.0.0:" + strconv.Itoa(API_PORT))
 	if err != nil {
 		log.Fatal("unable to start file metadata server: " + err.Error())
 	}
-}
-
-func handleNewMetadata(ctx *gin.Context) {
-	metadata := files.FileMetadata{}
-
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	err = json.Unmarshal(body, &metadata)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	err = fileBuffer.SaveMetadata(metadata)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, nil)
-}
-
-func handleNewFragment(ctx *gin.Context) {
-	fragment := files.FileFragment{}
-
-	body, err := io.ReadAll(ctx.Request.Body)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	err = json.Unmarshal(body, &fragment)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	err = fileBuffer.SaveFragment(fragment)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, nil)
 }

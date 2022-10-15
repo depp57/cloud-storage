@@ -1,7 +1,4 @@
-package database
-
-const TOKEN_SIZE = 20
-const FILE_ID_LENGTH = 10
+package ports
 
 type File struct {
 	name     string
@@ -14,9 +11,9 @@ type Database interface {
 
 	// RegisterFile registers a file into database
 	//Must verify that the file isn't already existing
-	RegisterFile(userId string, fullpath string, diskName string) (fileId string)
+	RegisterFile(userId string, fullpath string, diskName string, uploadID string) error
 
 	UnRegisterFile(userId string, fullpath string) error
 
-	RegisterWorkingDisk(diskName string, ip string)
+	RegisterWorkingDisk(diskName string, ip string, spaceLeft uint32) error
 }

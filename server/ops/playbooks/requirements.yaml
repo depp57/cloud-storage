@@ -17,3 +17,8 @@
         path: /cloud-storage/ops/deploy
         state: directory
         owner: ubuntu #TODO "{{ ansible_user_id }}" does not work because `become: true`
+    - name: Create /cloud-storage/disk directory
+      file:
+        path: /cloud-storage/disk
+        state: directory
+        owner: ubuntu #TODO "{{ ansible_user_id }}" does not work because `become: true`

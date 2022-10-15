@@ -1,52 +1,28 @@
 package database
 
 import (
-	"database/sql"
-	"os"
+	"errors"
+	"github.com/go-sql-driver/mysql"
+	"gitlab.com/sthommet/cloud-storage/server/diskManager/services"
+	"strconv"
 	"strings"
 
-	_ "github.com/go-sql-driver/mysql"
-	"gopkg.in/yaml.v2"
-
-	"gitlab.com/sthommet/cloud-storage/server/common/utils"
+	commonDb "gitlab.com/sthommet/cloud-storage/server/common/database"
 )
 
-const MYSQL_CONF_FILE = "mysql.conf.yaml"
-
 type SqlDbAdapter struct {
-	db          *sql.DB
-	DB_USER     string `yaml:"mysql_user"`
-	DB_PASSWORD string `yaml:"mysql_password"`
-	DB_IP       string `yaml:"mysql_server_ip"`
-	DB_PORT     string `yaml:"mysql_server_port"`
-	DB_NAME     string `yaml:"mysql_database_name"`
+	commonDb.SqlDb
 }
 
 func InitMysql() *SqlDbAdapter {
-	this := &SqlDbAdapter{}
-
-	var data, errYamlFile = os.ReadFile(MYSQL_CONF_FILE)
-	if errYamlFile != nil {
-		panic("Could not read " + MYSQL_CONF_FILE)
-	}
-	errYamlParse := yaml.Unmarshal([]byte(data), this)
-	if errYamlParse != nil {
-		panic("Could not parse " + MYSQL_CONF_FILE)
-	}
-
-	this.db, _ = sql.Open("mysql", this.DB_USER+":"+this.DB_PASSWORD+"@tcp("+this.DB_IP+":"+this.DB_PORT+")/"+this.DB_NAME)
-	if err := this.db.Ping(); err != nil {
-		panic(err)
-	}
-
-	return this
+	return &SqlDbAdapter{commonDb.NewMysqlDb()}
 }
 
-func (this *SqlDbAdapter) Close() {
-	this.db.Close()
+func (s *SqlDbAdapter) Close() {
+	s.Close()
 }
 
-func (this *SqlDbAdapter) GetFileId(userId string, fullpath string) string {
+func (s *SqlDbAdapter) GetFileId(userId string, fullpath string) string {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")
 	var fileName string = split[len(split)-1]
@@ -59,7 +35,7 @@ func (this *SqlDbAdapter) GetFileId(userId string, fullpath string) string {
 		}
 	}
 
-	var rows, err = this.db.Query("SELECT file_id FROM files WHERE user_id = '" + userId + "' AND file_name = '" + fileName + "' AND path = '" + path + "';")
+	var rows, err = s.Client.Query("SELECT file_id FROM files WHERE user_id = '" + userId + "' AND file_name = '" + fileName + "' AND path = '" + path + "';")
 	//If file not found, returns an empty string
 	if err != nil {
 		return ""
@@ -73,9 +49,7 @@ func (this *SqlDbAdapter) GetFileId(userId string, fullpath string) string {
 
 // DOES NOT verify if file already exists for user.
 // Security : set a SQL index on rows (path, file_name, user_id)
-func (this *SqlDbAdapter) RegisterFile(userId string, fullpath string, diskName string) (fileId string) {
-	fileId = utils.RandString(FILE_ID_LENGTH)
-
+func (s *SqlDbAdapter) RegisterFile(userId string, fullpath string, diskName string, uploadID string) error {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")
 	var fileName string = split[len(split)-1]
@@ -88,17 +62,17 @@ func (this *SqlDbAdapter) RegisterFile(userId string, fullpath string, diskName 
 		}
 	}
 
-	var _, err = this.db.Query("INSERT INTO files(file_id, file_name, path, user_id, disk_name) VALUES('" + fileId + "', '" + fileName + "', '" + path + "', '" + userId + "', '" + diskName + "');")
+	var _, err = s.Client.Query("INSERT INTO files(id, type, file_name, path, user_id, disk_name) VALUES('" + uploadID + "', 'file', '" + fileName + "', '" + path + "', '" + userId + "', '" + diskName + "');")
 
 	//TODO remove panic and handle error
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return fileId
+	return nil
 }
 
-func (this *SqlDbAdapter) UnRegisterFile(userId string, fullpath string) error {
+func (s *SqlDbAdapter) UnRegisterFile(userId string, fullpath string) error {
 	//Separates file path and file name from fullpath
 	var split = strings.Split(fullpath, "/")
 	var fileName string = split[len(split)-1]
@@ -111,7 +85,7 @@ func (this *SqlDbAdapter) UnRegisterFile(userId string, fullpath string) error {
 		}
 	}
 
-	var _, err = this.db.Query("DELETE FROM files WHERE user_id = '" + userId + "' AND file_name = '" + fileName + "' AND path = '" + path + "';")
+	var _, err = s.Client.Query("DELETE FROM files WHERE user_id = '" + userId + "' AND file_name = '" + fileName + "' AND path = '" + path + "';")
 
 	//TODO remove panic and handle error
 	if err != nil {
@@ -121,6 +95,16 @@ func (this *SqlDbAdapter) UnRegisterFile(userId string, fullpath string) error {
 	return err
 }
 
-func (this *SqlDbAdapter) RegisterWorkingDisk(diskName string, ip string) {
+func (s *SqlDbAdapter) RegisterWorkingDisk(diskName string, ip string, spaceLeft uint32) error {
+	var _, err = s.Client.Query("INSERT INTO disks(disk_name, ip, space_left) VALUES ('" + diskName + "','" + ip + "','" + strconv.Itoa(int(spaceLeft)) + "');")
 
+	var errSQL = &mysql.MySQLError{}
+	if errors.As(err, &errSQL) && errSQL.Number == 1062 {
+		return services.ErrAlreadyRegistered
+	}
+	if err != nil {
+		return err //TODO wrap error
+	}
+
+	return nil
 }

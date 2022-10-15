@@ -3,32 +3,33 @@ package services
 import (
 	"errors"
 	"fmt"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/entities"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/ports"
 	"time"
 
-	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
 	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
 
-const TOKEN_TTL_SECONDS = 60 * 5
+const TOKEN_TTL_SECONDS = 60 * 30
 
 type Auth interface {
 	//Try to connect user and returns a session token if authentication succeed
 	Connect(username string, password string) (string, error)
-	GetUser(token string) (database.User, error)
+	GetUser(token string) (entities.User, error)
 	Revoke(token string) error
 	ReloadTTL(token string, seconds int) error
 }
 
 type defaultAuth struct {
-	db database.AuthDbPort
+	db ports.AuthDbPort
 	//Keep a cached list of connected users, identified by their token
-	users map[string]database.User
+	users map[string]entities.User
 }
 
-func InitAuth(db database.AuthDbPort) Auth { //TODO faire un singleton ?
+func InitAuth(db ports.AuthDbPort) Auth { //TODO faire un singleton ?
 	auth := &defaultAuth{}
 	auth.db = db
-	auth.users = make(map[string]database.User)
+	auth.users = make(map[string]entities.User)
 
 	return auth
 }
@@ -50,12 +51,12 @@ func (a *defaultAuth) Connect(username string, password string) (string, error) 
 	return user.Token, nil
 }
 
-func (a *defaultAuth) GetUser(token string) (database.User, error) {
+func (a *defaultAuth) GetUser(token string) (entities.User, error) {
 	//Lookup for user in auth cached list
 	if user, ok := a.users[token]; ok {
 		//If token has expired in cached list, don't try to lookup in database
 		if user.Token_expiration.Before(time.Now()) {
-			return database.User{}, errors.New("Token de session expiré")
+			return entities.User{}, errors.New("Token de session expiré")
 		}
 
 		return user, nil
@@ -69,7 +70,7 @@ func (a *defaultAuth) GetUser(token string) (database.User, error) {
 		return user, nil
 	}
 
-	return database.User{}, errors.New("Utilisateur déconnecté ou token invalide")
+	return entities.User{}, errors.New("Utilisateur déconnecté ou token invalide")
 }
 
 func (a *defaultAuth) Revoke(token string) error {

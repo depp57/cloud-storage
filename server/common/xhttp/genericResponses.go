@@ -1,8 +1,9 @@
-package common
+package xhttp
 
 import (
 	"encoding/json"
 	"fmt"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
 )
 
 func JsonResponse(doc map[string]interface{}) []byte {
@@ -15,6 +16,8 @@ type genericError struct {
 }
 
 func GenericError(err string) []byte {
+	log.Warn("http generic error: " + err)
+
 	errJson := genericError{Error: err}
 	errStr, _ := json.Marshal(errJson)
 

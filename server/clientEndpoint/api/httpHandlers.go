@@ -1,15 +1,17 @@
-package handlers
+package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
-	. "gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api/common"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
+	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 )
 
 const (
@@ -18,14 +20,16 @@ const (
 )
 
 type HttpHandlers struct {
-	auth     services.Auth
-	filesSvc services.Files
+	auth      services.Auth
+	filesSvc  services.Files
+	uploadSvc services.Uploader
 }
 
-func InitHttpHandlers(auth services.Auth, filesSvc services.Files) *HttpHandlers {
+func InitHttpHandlers(auth services.Auth, filesSvc services.Files, uploader services.Uploader) *HttpHandlers {
 	return &HttpHandlers{
-		auth:     auth,
-		filesSvc: filesSvc,
+		auth:      auth,
+		filesSvc:  filesSvc,
+		uploadSvc: uploader,
 	}
 }
 
@@ -87,12 +91,14 @@ func (h HttpHandlers) HandleFilesList(resp http.ResponseWriter, req *http.Reques
 	filePath, err := url.QueryUnescape(filePathPercent) // filePath was sent by URL in percent encoding
 	if err != nil {
 		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
 		return
 	}
 
 	files, err := h.filesSvc.List(userId, filePath)
 	if err != nil {
 		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
 		return
 	}
 
@@ -132,6 +138,7 @@ func (h HttpHandlers) HandleFileRename(resp http.ResponseWriter, req *http.Reque
 	err := decoder.Decode(&input)
 	if err != nil {
 		resp.Write(GenericError("input data: invalid json"))
+		resp.WriteHeader(500)
 		return
 	}
 
@@ -154,6 +161,7 @@ func (h HttpHandlers) HandleFileCreate(resp http.ResponseWriter, req *http.Reque
 	err := decoder.Decode(&input)
 	if err != nil {
 		resp.Write(GenericError("input data: invalid json"))
+		resp.WriteHeader(500)
 		return
 	}
 
@@ -162,7 +170,7 @@ func (h HttpHandlers) HandleFileCreate(resp http.ResponseWriter, req *http.Reque
 		h.handleCreateDir(resp, input.Name, input.Path, userId)
 		return
 	case FILE_TYPE_FILE:
-		h.handleCreateFile(resp, req, input, userId)
+		h.handleCreateFile(resp, input, userId)
 		return
 	}
 
@@ -176,19 +184,94 @@ func (h HttpHandlers) handleCreateDir(resp http.ResponseWriter, dirName string, 
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
 		resp.Write(GenericError(err.Error()))
 		resp.WriteHeader(500)
+		return
 	}
 }
 
-func (h HttpHandlers) handleCreateFile(resp http.ResponseWriter, req *http.Request, input CreateFileInput, userId string) {
-	uploadID, chunckSize, err := h.filesSvc.CreateFile(userId, input.Name, input.Path, input.Size, input.CRC)
+func (h HttpHandlers) handleCreateFile(resp http.ResponseWriter, input CreateFileInput, userId string) {
+	uploadID, chunckSize, err := h.uploadSvc.UploadRequest(userId, input.Path+"/"+input.Name, input.Size, input.CRC)
 
 	if err != nil {
 		resp.Write(GenericError(err.Error()))
 		resp.WriteHeader(500)
+		return
 	}
 
 	response := make(map[string]interface{}, 2)
 	response["uploadID"] = uploadID
 	response["chunkSize"] = chunckSize
 	resp.Write(JsonResponse(response))
+}
+
+func (h HttpHandlers) HandleUploadFragment(resp http.ResponseWriter, req *http.Request) {
+	input := FileFragmentInput{}
+
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	decodeFragment, err := base64.StdEncoding.DecodeString(input.Fragment)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	err = h.uploadSvc.UploadFileFragment(input.UploadID, decodeFragment)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	resp.WriteHeader(201)
+}
+
+func (h HttpHandlers) HandleUploadStatus(resp http.ResponseWriter, req *http.Request) {
+	userId := req.Header.Get(InternalHeaderAuth)
+	input := UploadFileStatusInput{}
+
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	status, err := h.uploadSvc.GetCurrentStatus(userId, input.Filepath)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	response := map[string]interface{}{"status": status}
+	resp.WriteHeader(200)
+	resp.Write(JsonResponse(response))
+}
+
+func (h HttpHandlers) HandleFileUploadAcknowledge(resp http.ResponseWriter, req *http.Request) {
+	metadata := files.FileMetadata{}
+
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&metadata)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	err = h.uploadSvc.AcknowledgeUploading(metadata)
+	if err != nil {
+		resp.Write(GenericError(err.Error()))
+		resp.WriteHeader(500)
+		return
+	}
+
+	resp.WriteHeader(200)
 }

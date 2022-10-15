@@ -1,81 +1,49 @@
 package database
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
-	"os"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/entities"
+	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/ports"
+	commonDb "gitlab.com/sthommet/cloud-storage/server/common/database"
 	"path/filepath"
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"gopkg.in/yaml.v2"
-
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
 	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
 
 var (
-	ErrQueryFailed = errors.New("faild to execute sql query") //TODO must be constant !!
+	ErrQueryFailed = errors.New("failed to execute sql query") //TODO must be constant !!
 )
 
 type SqlDb struct {
-	client       *sql.DB
-	Username     string `yaml:"mysql_user"`
-	Password     string `yaml:"mysql_password"`
-	ServerIP     string `yaml:"mysql_server_ip"`
-	ServerPort   string `yaml:"mysql_server_port"`
-	DatabaseName string `yaml:"mysql_database_name"`
+	commonDb.SqlDb
 }
 
 func NewMysqlDb() *SqlDb {
-	db := &SqlDb{}
-
-	confPath := os.Getenv("MYSQL_CONF_PATH")
-	if confPath == "" {
-		log.Fatal("Please set MYSQL_CONF_PATH var")
-	}
-
-	var data, errYamlFile = os.ReadFile(confPath)
-	if errYamlFile != nil {
-		log.Fatal("Could not read mysql conf file " + confPath)
-	}
-
-	errYamlParse := yaml.Unmarshal(data, db)
-	if errYamlParse != nil {
-		log.Fatal("Could not parse " + confPath)
-	}
-
-	db.client, _ = sql.Open("mysql", db.Username+":"+db.Password+"@tcp("+db.ServerIP+":"+db.ServerPort+")/"+db.DatabaseName)
-	if err := db.client.Ping(); err != nil {
-		log.Fatal(err.Error())
-	}
-
-	return db
+	return &SqlDb{commonDb.NewMysqlDb()}
 }
 
-func (this *SqlDb) Close() {
-	err := this.client.Close()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+func (d *SqlDb) Close() {
+	d.Close()
 }
 
-func (this *SqlDb) GetFilesFromUser(userId string, path string) map[string]File {
+func (d *SqlDb) GetFilesFromUser(userId string, path string) map[string]entities.File {
 	if path == "" {
 		//TODO handle the case when ALL files from user are to be returned
 	}
 
-	var rows, err = this.client.Query("SELECT id, type, file_name, disk_name FROM files WHERE user_id = '" + userId + "' AND path = '" + path + "';")
+	var rows, err = d.Client.Query("SELECT id, type, file_name, disk_name FROM files WHERE user_id = '" + userId + "' AND path = '" + path + "';")
 	defer rows.Close()
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	var results = make(map[string]File)
+	var results = make(map[string]entities.File)
 	var id string
 	var fileType string
 	var fileName string
@@ -85,7 +53,11 @@ func (this *SqlDb) GetFilesFromUser(userId string, path string) map[string]File 
 		if path != "" {
 			path = path + "/" //TODO quick fix, do better
 		}
-		results[id] = File{path + fileName, fileType, diskName}
+		results[id] = entities.File{
+			Path:   path + fileName,
+			Type:   fileType,
+			DiskID: diskName,
+		}
 	}
 
 	return results
@@ -94,7 +66,7 @@ func (this *SqlDb) GetFilesFromUser(userId string, path string) map[string]File 
 func (d *SqlDb) CreateDir(userId string, dirName string, dirPath string) error {
 	id := uuid.New().String()
 
-	_, err := d.client.Query(fmt.Sprintf("INSERT INTO files (id, type, file_name, path, user_id) VALUES ('%s', '%s', '%s', '%s', '%s');", id, "dir", dirName, dirPath, userId))
+	_, err := d.Client.Query(fmt.Sprintf("INSERT INTO files (id, type, file_name, path, user_id) VALUES ('%s', '%s', '%s', '%s', '%s');", id, "dir", dirName, dirPath, userId))
 	if err != nil {
 		log.Warn(err.Error())
 		return ErrQueryFailed
@@ -109,7 +81,7 @@ func (d *SqlDb) UpdateFilePath(userId string, path string, newPath string) error
 	oldPath := filepath.Dir(path)
 	oldFilename := filepath.Base(path)
 
-	_, err := d.client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s') WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
+	_, err := d.Client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s') WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
 	if err != nil {
 		log.Warn(err.Error())
 		return ErrQueryFailed
@@ -118,12 +90,27 @@ func (d *SqlDb) UpdateFilePath(userId string, path string, newPath string) error
 	return nil
 }
 
-func (this *SqlDb) WhereToSave(data []byte) (diskName string) {
-	return ""
+func (d *SqlDb) GetAllDisks() ([]entities.DiskInfo, error) {
+	var rows, err = d.Client.Query("SELECT disk_name, ip, space_left FROM disks ORDER BY space_left DESC;")
+	if err != nil {
+		return nil, err //TODO wrap error
+	}
+
+	disks := make([]entities.DiskInfo, 0)
+	for rows.Next() {
+		disk := entities.DiskInfo{}
+		err := rows.Scan(&disk.DiskName, &disk.IP, &disk.SpaceLeft)
+		if err != nil {
+			return nil, err //TODO wrap error
+		}
+		disks = append(disks, disk)
+	}
+
+	return disks, nil
 }
 
-func (this *SqlDb) UserExist(username string) bool {
-	var rows, err = this.client.Query("SELECT username FROM users WHERE username='" + username + "';")
+func (d *SqlDb) UserExist(username string) bool {
+	var rows, err = d.Client.Query("SELECT username FROM users WHERE username='" + username + "';")
 	//TODO remove panic and implement : log errors
 	if err != nil {
 		panic(err.Error())
@@ -132,29 +119,29 @@ func (this *SqlDb) UserExist(username string) bool {
 	return rows.Next()
 }
 
-func (this *SqlDb) ChallengeUserPassword(username string, password_hash string, token_expiration_t time.Time) (User, bool) {
-	var rows, err = this.client.Query("SELECT id FROM users WHERE username='" + username + "' AND password_sha256 = '" + password_hash + "';")
+func (d *SqlDb) ChallengeUserPassword(username string, password_hash string, token_expiration_t time.Time) (entities.User, bool) {
+	var rows, err = d.Client.Query("SELECT id FROM users WHERE username='" + username + "' AND password_sha256 = '" + password_hash + "';")
 	//TODO remove panic and implement : log errors
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if !rows.Next() {
-		return User{}, false
+		return entities.User{}, false
 	}
 	var id string
 	rows.Scan(&id)
 
-	token := utils.RandString(TOKEN_SIZE)
+	token := utils.RandString(ports.TOKEN_SIZE)
 	token_expiration := strings.Split(token_expiration_t.String(), ".")[0]
 
-	var _, err2 = this.client.Query("UPDATE users SET session_token='" + token + "', session_token_expiration='" + token_expiration + "' WHERE id='" + id + "';")
+	var _, err2 = d.Client.Query("UPDATE users SET session_token='" + token + "', session_token_expiration='" + token_expiration + "' WHERE id='" + id + "';")
 	//TODO remove panic and implement : log errors
 	if err2 != nil {
 		panic(err.Error())
 	}
 
-	return User{
+	return entities.User{
 		Id:               id,
 		Name:             username,
 		Token:            token,
@@ -162,15 +149,15 @@ func (this *SqlDb) ChallengeUserPassword(username string, password_hash string, 
 	}, true
 }
 
-func (this *SqlDb) ChallengeUserToken(token string) (User, bool) {
-	var rows, err = this.client.Query("SELECT id, username, session_token_expiration FROM users WHERE session_token='" + token + "' AND session_token_expiration > NOW();")
+func (d *SqlDb) ChallengeUserToken(token string) (entities.User, bool) {
+	var rows, err = d.Client.Query("SELECT id, username, session_token_expiration FROM users WHERE session_token='" + token + "' AND session_token_expiration > NOW();")
 	//TODO remove panic and implement : log errors
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if !rows.Next() {
-		return User{}, false
+		return entities.User{}, false
 	}
 
 	var id string
@@ -181,17 +168,17 @@ func (this *SqlDb) ChallengeUserToken(token string) (User, bool) {
 	token_exp_t, _ := time.Parse("", token_expiration)
 
 	// if token_exp_t.Before(time.Now()) {
-	// 	this.client.Query("UPDATE users SET session_token=NULL AND session_token_expiration=NULL WHERE id='" + id + "';")
+	// 	d.Client.Query("UPDATE users SET session_token=NULL AND session_token_expiration=NULL WHERE id='" + id + "';")
 	// 	return User{}, false
 	// }
 
-	return User{Id: id, Name: name, Token: token, Token_expiration: token_exp_t}, true
+	return entities.User{Id: id, Name: name, Token: token, Token_expiration: token_exp_t}, true
 }
 
-func (this *SqlDb) ReloadToken(token string, expiration time.Time) bool {
+func (d *SqlDb) ReloadToken(token string, expiration time.Time) bool {
 	return false
 }
 
-func (this *SqlDb) UnsetUserToken(token string) bool {
+func (d *SqlDb) UnsetUserToken(token string) bool {
 	return false
 }

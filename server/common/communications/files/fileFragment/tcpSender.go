@@ -2,36 +2,32 @@ package fileFragment
 
 import (
 	"errors"
-	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
-	"net"
-	"strconv"
-
 	"github.com/google/uuid"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/dest"
+	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
+	"net"
 )
 
-func NewTCPFileFragmentSender(hostname string, port int) files.FileFragmentSender {
-	return &defaultTCPFileFragmentSender{
-		targetHostname: hostname,
-		targetPort:     port,
-	}
+func NewTCPFileFragmentSender() files.FileFragmentSender {
+	return &defaultTCPFileFragmentSender{}
 }
 
 type defaultTCPFileFragmentSender struct {
-	targetHostname string
-	targetPort     int
 }
 
-func (s *defaultTCPFileFragmentSender) Send(ff files.FileFragment) error {
+func (s *defaultTCPFileFragmentSender) Send(dest dest.Destination, ff files.FileFragment) error {
 	uploadID, err := uuid.Parse(ff.UploadID)
 	if err != nil {
 		return errors.New("failed to parse UploadID as UUID")
 	}
 
-	conn, err := net.Dial("tcp", s.targetHostname+":"+strconv.Itoa(s.targetPort))
+	conn, err := net.Dial("tcp", dest.GetHostAndPort())
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
+	log.Debug("connection with peer established")
 
 	bytes := [16]byte(uploadID)
 	_, err = conn.Write(bytes[:])

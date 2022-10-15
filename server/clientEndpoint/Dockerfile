@@ -6,6 +6,6 @@ RUN go build -o clientEndpoint/clientEP clientEndpoint/main.go
 
 FROM ubuntu:latest
 COPY --from=builder /src/clientEndpoint/clientEP /cloud-storage/bin/
-RUN mkdir /cloud-storage/conf
+RUN mkdir /cloud-disk/conf
 ENTRYPOINT ["/cloud-storage/bin/clientEP"]
 EXPOSE 8008
