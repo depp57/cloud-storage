@@ -1,18 +1,30 @@
 networks:
   cloud-storage:
     name: cloud-storage
-    driver: bridge
+    external: true
 services:
   clientEndpoint:
     image: registry.gitlab.com/sthommet/cloud-storage/client-ep:latest
+    pull_policy: always
     restart: always
     networks:
       - cloud-storage
     ports:
       - 8008:8008
+    hostname: clientEndpoint
     volumes:
       - /cloud-storage/conf:/cloud-storage/conf
     environment:
       - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
       - SERVER_CONF_PATH=/cloud-storage/conf/server.yaml
-  #TODO add other services
+  diskManager:
+    image: registry.gitlab.com/sthommet/cloud-storage/disk-manager:latest
+    pull_policy: always
+    restart: always
+    networks:
+      - cloud-storage
+    hostname: diskManager
+    volumes:
+      - /cloud-storage/conf:/cloud-storage/conf
+    environment:
+      - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml

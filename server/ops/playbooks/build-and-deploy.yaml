@@ -3,9 +3,17 @@
 
 - name: Build and push image of clientEndpoint
   hosts: localhost
+  gather_facts: no
   tasks:
     - name: Executing script
       shell: ../build/build-clientEP.sh
+
+- name: Build and push image of diskManager
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Executing script
+      shell: ../build/build-diskManager.sh
 
 - name: Deploy new images on target server
   hosts: iofactory.fr
@@ -21,3 +29,4 @@
     - name: Docker-compose up
       community.docker.docker_compose:
         project_src: /cloud-storage/ops/deploy
+        pull: yes
