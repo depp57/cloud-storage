@@ -67,9 +67,9 @@ func main() {
 	router.AuthentifiedRoute("/files/list", http.MethodGet, httpHandlers.HandleFilesList)
 	router.AuthentifiedRoute("/files/move", http.MethodPost, httpHandlers.HandleFileMove)
 	router.AuthentifiedRoute("/files/rename", http.MethodPost, httpHandlers.HandleFileRename)
-	router.AuthentifiedRoute("/files/create", http.MethodPost, httpHandlers.HandleFileCreate)
+	router.AuthentifiedRoute("/files/createDir", http.MethodPost, httpHandlers.HandleCreateDir)
 
-	router.AuthentifiedRoute("/files/upload", http.MethodPost, httpHandlers.HandleFileCreate)
+	router.AuthentifiedRoute("/files/upload", http.MethodPost, httpHandlers.HandleUploadFile)
 	router.AuthentifiedRoute("/files/upload/fragment", http.MethodPut, httpHandlers.HandleUploadFragment)
 	router.AuthentifiedRoute("/files/upload/status", http.MethodGet, httpHandlers.HandleUploadStatus)
 

@@ -153,7 +153,7 @@ func (h HttpHandlers) HandleFileRename(resp http.ResponseWriter, req *http.Reque
 	resp.WriteHeader(201)
 }
 
-func (h HttpHandlers) HandleFileCreate(resp http.ResponseWriter, req *http.Request) {
+func (h HttpHandlers) HandleCreateDir(resp http.ResponseWriter, req *http.Request) {
 	userId := req.Header.Get(InternalHeaderAuth)
 
 	input := CreateFileInput{}
@@ -165,20 +165,7 @@ func (h HttpHandlers) HandleFileCreate(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	switch input.Type {
-	case FILE_TYPE_DIR:
-		h.handleCreateDir(resp, input.Name, input.Path, userId)
-		return
-	case FILE_TYPE_FILE:
-		h.handleCreateFile(resp, input, userId)
-		return
-	}
-
-	resp.Write(GenericError("'" + input.Type + "' not accepted as a file type. Accepted values are 'dir', 'file'"))
-}
-
-func (h HttpHandlers) handleCreateDir(resp http.ResponseWriter, dirName string, dirPath string, userId string) {
-	err := h.filesSvc.CreateDir(userId, dirName, dirPath)
+	err = h.filesSvc.CreateDir(userId, input.Name, input.Path)
 
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
@@ -188,7 +175,18 @@ func (h HttpHandlers) handleCreateDir(resp http.ResponseWriter, dirName string, 
 	}
 }
 
-func (h HttpHandlers) handleCreateFile(resp http.ResponseWriter, input CreateFileInput, userId string) {
+func (h HttpHandlers) HandleUploadFile(resp http.ResponseWriter, req *http.Request) {
+	userId := req.Header.Get(InternalHeaderAuth)
+
+	input := CreateFileInput{}
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&input)
+	if err != nil {
+		resp.Write(GenericError("input data: invalid json"))
+		resp.WriteHeader(500)
+		return
+	}
+
 	uploadID, chunckSize, err := h.uploadSvc.UploadRequest(userId, input.Path+"/"+input.Name, input.Size, input.CRC)
 
 	if err != nil {

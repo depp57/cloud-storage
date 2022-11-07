@@ -6,16 +6,15 @@ type Creds struct {
 }
 
 type CreateFileInput struct {
-	Type string `json:"fileType"`
-	Name string `json:"fileName"`
-	Path string `json:"filePath"`
-	Size uint32 `json:"fileSize"`
+	Name string `json:"name"`
+	Path string `json:"path"`
+	Size uint32 `json:"size"`
 	CRC  uint32 `json:"CRC"`
 }
 
 type UpdateFileInput struct {
-	Filepath    string `json:"filePath"`
-	NewFilepath string `json:"newFilePath"`
+	Filepath    string `json:"path"`
+	NewFilepath string `json:"newPath"`
 }
 
 // FileFragmentInput
