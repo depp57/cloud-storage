@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: cloud-storage backend
+  description: |
+    Welcome to cloud-storage api swagger description.
+  version: 1.0.0
+
+paths:
+  /auth:
+    post:
+      summary: Authenticate and ask for a token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: your.mail@gmail.com
+                password:
+                  type: string
+                  example: my-secret-password
+  /auth/disconnect:
+    get:
+      summary: Disconnect the user session
+  /files/list:
+    get:
+      summary: List files
+      description: List user's files in the specified path
+      parameters:
+        - name: filePath
+          in: query
+          required: true
+          schema:
+            type: string
+            example: /foo/bar
+  /files/move:
+    post:
+      summary: Move a file
+      description: Move a file from a location to another
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/moveParams'
+      responses:
+        "201":
+          description: "Moved"
+  /files/rename:
+    post:
+      summary: Rename a file
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/moveParams'
+      responses:
+        "201":
+          description: "Renamed"
+  /files/createDir:
+    post:
+      summary: Create a directory
+      description: Create a new empty directory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createDirParams'
+  /files/upload:
+    post:
+      summary: Start uploading a file
+      description: |
+        Send request to start uploading process.
+        Then you must use /files/upload/fragment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/uploadFileParams'
+      responses:
+        "200":
+          description: "Accepted"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/uploadFileResponse'
+
+  /files/uplod/fragment:
+    put:
+      summary: Send a file fragment
+      description: |
+        Send one fragment of a file beeing uploaded.
+        See /files/upload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/uploadFragmentParams'
+      responses:
+        "201":
+          description: "Accepted"
+
+components:
+  schemas:
+    moveParams:
+      type: object
+      properties:
+        path:
+          type: string
+          example: /actual/path/secret.txt
+        newPath:
+          type: string
+          example: /new/path/secret.txt
+    createDirParams:
+      type: object
+      properties:
+        name:
+          type: string
+          example: README.md
+        path:
+          type: string
+          example: /home/foo/bar
+    uploadFileParams:
+      type: object
+      properties:
+        name:
+          type: string
+          example: README.md
+        path:
+          type: string
+          example: /home/foo
+        size:
+          type: integer
+          example: 20
+          description: expressed in bytes
+        CRC:
+          type: integer
+          example: 2625987452
+          description: calculated CRC-32 of the file to upload
+    uploadFragmentParams:
+      type: object
+      properties:
+        uploadID:
+          type: string
+          example: "10245dd8-b3e1-46f4-a517-975a9a201170"
+        fragment:
+          type: string
+          example: "Yyq8=="
+          description: file fragment base-64 encoded
+
+    uploadFileResponse:
+      type: object
+      properties:
+        uploadID:
+          type: string
+          example: "10245dd8-b3e1-46f4-a517-975a9a201170"
+          description: ID that must be used to send file the fragments
+        chunksize:
+          type: integer
+          description: server's prefered chunk size (in bytes)
