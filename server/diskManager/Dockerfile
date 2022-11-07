@@ -6,5 +6,5 @@ RUN go build -o diskManager/diskManager diskManager/main.go
 
 FROM ubuntu:latest
 COPY --from=builder /src/diskManager/diskManager /cloud-storage/bin/
-RUN mkdir /cloud-disk/conf
+RUN mkdir /cloud-storage/conf
 ENTRYPOINT ["/cloud-storage/bin/diskManager"]

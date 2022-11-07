@@ -4,7 +4,7 @@ networks:
     external: true
 services:
   clientEndpoint:
-    image: registry.gitlab.com/sthommet/cloud-disk/client-ep:latest
+    image: registry.gitlab.com/sthommet/cloud-storage/client-ep:latest
     pull_policy: always
     restart: always
     networks:
@@ -13,20 +13,20 @@ services:
       - 8008:8008
     hostname: clientEndpoint
     volumes:
-      - /cloud-disk/conf:/cloud-disk/conf
+      - /cloud-storage/conf:/cloud-storage/conf
     environment:
       - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
       - SERVER_CONF_PATH=/cloud-storage/conf/server.yaml
   diskManager:
-    image: registry.gitlab.com/sthommet/cloud-disk/disk-manager:latest
+    image: registry.gitlab.com/sthommet/cloud-storage/disk-manager:latest
     pull_policy: always
     restart: always
     networks:
       - cloud-storage
     hostname: diskManager
     volumes:
-      - /cloud-disk/conf:/cloud-disk/conf
-      - /cloud-disk/disk:/cloud-disk/disk
+      - /cloud-storage/conf:/cloud-storage/conf
+      - /cloud-storage/disk:/cloud-storage/disk
     environment:
       - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
       - FS_STORAGE_PATH=/cloud-storage/disk
