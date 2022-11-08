@@ -1,7 +1,8 @@
 FROM golang:1.17 AS builder
 RUN mkdir /src
 WORKDIR /src
-COPY . .
+COPY clientEndpoint clientEndpoint
+COPY common common
 RUN go build -o clientEndpoint/clientEP clientEndpoint/main.go
 
 FROM ubuntu:latest

@@ -1,0 +1,16 @@
+- name: Build clientEndpoint
+  community.docker.docker_image:
+    name: registry.gitlab.com/sthommet/cloud-storage/client-ep
+    source: build
+    build:
+      path: "{{ repo_root_path }}"
+      dockerfile: "{{ repo_root_path }}/clientEndpoint/Dockerfile"
+    push: true
+- name: Build diskManager
+  community.docker.docker_image:
+    name: registry.gitlab.com/sthommet/cloud-storage/disk-manager
+    source: build
+    build:
+      path: "{{ repo_root_path }}"
+      dockerfile: "{{ repo_root_path }}/diskManager/Dockerfile"
+    push: true

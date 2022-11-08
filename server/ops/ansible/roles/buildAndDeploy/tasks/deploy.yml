@@ -1,0 +1,54 @@
+- name: Write clientEndpoint conf files
+  block:
+    - name: Create clientEndpoint directory tree
+      file:
+        path: "/cloud-storage/clientEndpoint/conf"
+        state: directory
+    - name: Write clientEndpoint conf files
+      template:
+        src: '{{ repo_root_path }}/server/clientEndpoint/conf/{{ item }}'
+        dest: '/cloud-storage/clientEndpoint/conf/{{ item }}'
+      loop:
+        - mysql.yaml
+        - server.yaml
+
+- name: Write diskManager conf files
+  block:
+    - name: Create diskManager directory tree
+      file:
+        path: "/cloud-storage/diskManager/conf"
+        state: directory
+    - name: Write diskManager conf files
+      template:
+        src: '{{ repo_root_path }}/server/diskManager/conf/{{ item }}'
+        dest: '/cloud-storage/diskManager/conf/{{ item }}'
+      loop:
+        - mysql.yaml
+
+- name: Write diskManager disk-name file
+  block:
+    - name: Create diskManager directory tree
+      file:
+        path: "/cloud-storage/diskManager/disk"
+        state: directory
+    - name: Write diskManager disk-name file
+      template:
+        src: 'disk-info.conf.j2'
+        dest: '/cloud-storage/diskManager/disk/disk-info.conf'
+
+- name: Copy docker-compose file
+  block:
+    - name: Create deploy directory tree
+      file:
+        path: "/cloud-storage/deploy"
+        state: directory
+    - name: Copy docker-compose file
+      copy:
+        src: "{{ repo_root_path }}/server/ops/deploy/docker-compose.yaml"
+        dest: "/cloud-storage/deploy/"
+
+- name: Docker-compose up
+  community.docker.docker_compose:
+    project_src: "/cloud-storage/deploy"
+    pull: yes
+    restarted: yes

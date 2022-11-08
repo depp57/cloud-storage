@@ -3,47 +3,52 @@
 ### requirements
 
 * docker
-* docker compose extension (v3 or superior)
+* docker compose extension v3 or superior
+* ansible v2.13 or superior
 
-the first time you wish to run services locally, you first need to run 2 scripts once for all:
+```
+cd {cloud-storage-repo}/server/ops/ansible
+ansible-playbook install-requirements.yml -i inventory.yaml
+```
 
-* `{CLOUD-STORAGE-REPO}/server/ops/deploy/create_network.sh`
-* `{CLOUD-STORAGE-REPO}/server/ops/deploy/mysql/create_volume.sh`
+### let's start Cloud-storage
 
-you also need to create database tables using sql files located here `{CLOUD-STORAGE-REPO}/server/ops/deploy/mysql`
+Deploy database
+```
+cd {cloud-storage-repo}/server/ops/ansible
+ansible-playbook init-mysql.yml -i inventory.yaml --extra-vars "repo_root_path={cloud-storage-repo} mysql_username={mysql-username} mysql_password={mysql-password}"
+```
+
+Build and deploy services
+```
+cd {cloud-storage-repo}/server/ops/ansible
+ansible-playbook build-and-deploy.yml -i inventory.yaml --extra-vars "repo_root_path={cloud-storage-repo} mysql_username={mysql-username} mysql_password={mysql-password} disk_name={disk-name}"
+```
 
 ### services configuration
 
-configuration files examples can be found here `{CLOUD-STORAGE-REPO}/server/conf`
-
-by default, you need to have this directory tree :
+directory tree :
 
 ```
-/  
-│
-└───cloud-storage
-│   |
-|   └───conf
-│   |   │   mysql.yaml
-│   |   │   server.yaml
-│   |
-|   └───disk
-|       │   disk-info.conf
+/cloud-storage
+├── clientEndpoint
+│   └── conf
+│       ├── mysql.yaml
+│       └── server.yaml
+└── diskManager
+    ├── conf
+    │   └── mysql.yaml
+    └── disk
+        ├── data
+        ├── disk-info.conf
+        └── files
 ```
 
 disk-info.conf must only contain one string which is the default disk name.
 
-### let's start Cloud-storage
-
-you need to run 2 deployments using docker compose :
-
-* Database `cd {CLOUD-STORAGE-REPO}/server/ops/deploy/mysql && docker compose up -d` 
-* Cloud-storage services `cd {CLOUD-STORAGE-REPO}/server/ops/deploy && docker compose up -d`
-
-
 # Swagger
 
 start it running this command
-`docker run -d -p 7000:8080 -e SWAGGER_JSON=/openapi/swagger.yaml -v {CLOUD-STORAGE-REPO}/server/doc:/openapi swaggerapi/swagger-ui`
+`docker run -d -p 7000:8080 -e SWAGGER_JSON=/openapi/swagger.yaml -v {cloud-storage-repo}/server/doc:/openapi swaggerapi/swagger-ui`
 
 then you can access it on `http://localhost:7000`

@@ -1,0 +1,12 @@
+- name: Build images from local
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - role: buildAndDeploy
+      trigger_action: build
+
+- name: Deploy new images onto iofactory.fr
+  hosts: iofactory.fr
+  roles:
+    - role: buildAndDeploy
+      trigger_action: deploy

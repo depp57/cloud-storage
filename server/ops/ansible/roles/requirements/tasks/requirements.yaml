@@ -1,0 +1,13 @@
+- name: Ensure requirements are installed (ansible needs docker-sdk for python)
+  hosts: localhost
+  tasks:
+    - name: Python pip
+      package:
+        name: python3-pip
+        state: present
+    - name: Ansible needs docker-sdk for python
+      pip:
+        name:
+          - docker
+          - docker-compose
+        state: present

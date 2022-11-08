@@ -1,6 +1,6 @@
 bindTo:
   address: 0.0.0.0
   port: 8008
-ssl:
-  certPath: /cloud-storage/conf/cert.pem
-  keyPath: /cloud-storage/conf/privkey.pem
+#ssl:
+#  certPath: /cloud-storage/clientEndpoint/conf/cert.pem
+#  keyPath: /cloud-storage/clientEndpoint/conf/privkey.pem

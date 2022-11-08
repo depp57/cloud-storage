@@ -1,0 +1,45 @@
+- name: Display message when trigger_action not defined
+  debug:
+    msg: "trigger_action must be defined"
+  when:
+    - trigger_action is not defined
+
+- name: Display message when mysql_username not defined
+  debug:
+    msg: "mysql_username must be defined"
+  when:
+    - mysql_username is not defined
+
+- name: Display message when mysql_password not defined
+  debug:
+    msg: "mysql_password must be defined"
+  when:
+    - mysql_password is not defined
+
+- name: "Routing to {{ trigger_action }}"
+  block:
+    - name: Create docker volumes
+      include_tasks: create_volumes.yml
+      when: trigger_action == "create_volumes" or 
+            trigger_action == "all"
+
+    - name: Deploy services
+      include_tasks: deploy.yml
+      when: trigger_action == "deploy" or 
+            trigger_action == "all"
+
+    - name: Import sql tables
+      include_tasks: import_tables.yml
+      when: trigger_action == "import_tables" or 
+            trigger_action == "all"
+
+  when:
+    - trigger_action is defined
+    - trigger_action in available_actions
+
+- name: Display message when incorrect value for trigger_action
+  debug:
+    msg: "trigger_action must be set in {{ available_actions }}"
+  when:
+    - trigger_action is defined
+    - trigger_action not in available_actions

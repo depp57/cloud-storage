@@ -1,5 +1,0 @@
-mysql_user: root
-mysql_password: mysql-encore-depp
-mysql_server_ip: 127.0.0.1 #172.28.0.2
-mysql_server_port: 3306
-mysql_database_name: cloud_storage

@@ -1,7 +1,8 @@
 FROM golang:1.17 AS builder
 RUN mkdir /src
 WORKDIR /src
-COPY . .
+COPY diskManager diskManager
+COPY common common
 RUN go build -o diskManager/diskManager diskManager/main.go
 
 FROM ubuntu:latest

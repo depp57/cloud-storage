@@ -1,0 +1,14 @@
+- name: Copy docker-compose file
+  copy:
+    src: "{{ repo_root_path }}/server/ops/deploy/mysql/docker-compose.yaml"
+    dest: /cloud-storage/mysql/deploy/
+
+- name: Docker compose up
+  community.docker.docker_compose:
+    project_src: /cloud-storage/mysql/deploy
+    pull: yes
+    remove_orphans: yes
+    restarted: yes
+  environment:
+    - MYSQL_USERNAME: "{{ mysql_username }}"
+    - MYSQL_PASSWORD: "{{ mysql_password }}"

@@ -1,0 +1,7 @@
+- name: Build images
+  include_tasks: buildImages.yml
+  when: trigger_action == "build"
+
+- name: Deploy services
+  include_tasks: deploy.yml
+  when: trigger_action == "deploy"

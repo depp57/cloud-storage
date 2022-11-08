@@ -13,7 +13,7 @@ services:
       - 8008:8008
     hostname: clientEndpoint
     volumes:
-      - /cloud-storage/conf:/cloud-storage/conf
+      - /cloud-storage/clientEndpoint/conf:/cloud-storage/conf
     environment:
       - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
       - SERVER_CONF_PATH=/cloud-storage/conf/server.yaml
@@ -25,8 +25,8 @@ services:
       - cloud-storage
     hostname: diskManager
     volumes:
-      - /cloud-storage/conf:/cloud-storage/conf
-      - /cloud-storage/disk:/cloud-storage/disk
+      - /cloud-storage/diskManager/conf:/cloud-storage/conf
+      - /cloud-storage/diskManager/disk:/cloud-storage/disk
     environment:
       - MYSQL_CONF_PATH=/cloud-storage/conf/mysql.yaml
       - FS_STORAGE_PATH=/cloud-storage/disk

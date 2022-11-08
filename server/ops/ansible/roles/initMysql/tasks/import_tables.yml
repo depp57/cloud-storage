@@ -1,0 +1,21 @@
+- name: Copy table schemas
+  copy:
+    src: "{{ sql_file }}"
+    dest: /cloud-storage/mysql/schemas/
+    force: true
+  with_fileglob:
+    - "{{ repo_root_path }}/server/database/schemas/db_table_*.sql"
+  loop_control:
+    loop_var: sql_file
+    label: "Copy table schema {{ sql_file }}"
+
+- name: Get schemas on remote machine
+  find:
+    paths: /cloud-storage/mysql/schemas
+  register: schemas
+
+- name: Import table schemas
+  shell: 'docker exec deploy_mysql_1 /bin/bash -c "mysql --password={{ mysql_password }} -D cloud_storage -r < {{ item.path }}"'
+  loop: "{{ schemas.files }}"
+  register: mysql_output
+  ignore_errors: yes
