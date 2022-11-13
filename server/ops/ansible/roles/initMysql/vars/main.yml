@@ -3,3 +3,4 @@ available_actions:
   - create_volumes
   - deploy
   - import_tables
+  - clean_data

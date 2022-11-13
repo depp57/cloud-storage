@@ -1,2 +1,28 @@
 ---
-# TODO
+- name: Docker compose down
+  community.docker.docker_compose:
+    project_src: /cloud-storage/mysql/deploy
+    state: absent
+  environment:
+    - MYSQL_USERNAME: "no_need"
+    - MYSQL_PASSWORD: "no_need"
+  ignore_errors: true
+
+- name: Delete mysql cloud-storage volume
+  community.docker.docker_volume:
+    volume_name: cs-mysql-volume
+    state: absent
+  ignore_errors: true
+
+- name: Delete mysql internal volume"
+  community.docker.docker_volume:
+    volume_name: cs-mysql-internal-volume
+    state: absent
+  ignore_errors: true
+
+- name: Delete directory tree on host
+  become: true
+  file:
+    path: /cloud-storage/mysql
+    state: absent
+  ignore_errors: true

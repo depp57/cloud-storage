@@ -5,8 +5,8 @@
     - role: buildAndDeploy
       trigger_action: build
 
-- name: Deploy new images onto iofactory.fr
-  hosts: iofactory.fr
+- name: Deploy new images
+  hosts: all
   roles:
     - role: buildAndDeploy
       trigger_action: deploy

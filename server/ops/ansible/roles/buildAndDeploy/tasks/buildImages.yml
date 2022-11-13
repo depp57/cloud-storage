@@ -2,15 +2,17 @@
   community.docker.docker_image:
     name: registry.gitlab.com/sthommet/cloud-storage/client-ep
     source: build
+    force_source: true
     build:
-      path: "{{ repo_root_path }}"
-      dockerfile: "{{ repo_root_path }}/clientEndpoint/Dockerfile"
+      path: "{{ repo_root_path }}/server"
+      dockerfile: "{{ repo_root_path }}/server/clientEndpoint/Dockerfile"
     push: true
 - name: Build diskManager
   community.docker.docker_image:
     name: registry.gitlab.com/sthommet/cloud-storage/disk-manager
     source: build
+    force_source: true
     build:
-      path: "{{ repo_root_path }}"
-      dockerfile: "{{ repo_root_path }}/diskManager/Dockerfile"
+      path: "{{ repo_root_path }}/server"
+      dockerfile: "{{ repo_root_path }}/server/diskManager/Dockerfile"
     push: true

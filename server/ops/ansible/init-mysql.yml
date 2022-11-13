@@ -1,5 +1,5 @@
-- name: Deploy mysql onto iofactory.fr
-  hosts: iofactory.fr
+- name: Init mysql
+  hosts: all
   roles:
     - role: initMysql
       trigger_action: all

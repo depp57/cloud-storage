@@ -1,10 +1,7 @@
 - name: Create directory tree on host
-  become: true
   file:
     path: /cloud-storage/mysql/internal
     state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
 
 - name: Create mysql cloud-storage volume"
   community.docker.docker_volume:

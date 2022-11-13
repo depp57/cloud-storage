@@ -4,26 +4,30 @@
   when:
     - trigger_action is not defined
 
-- name: Display message when mysql_username not defined
-  debug:
-    msg: "mysql_username must be defined"
-  when:
-    - mysql_username is not defined
+#- name: Display message when mysql_username not defined
+#  debug:
+#    msg: "mysql_username must be defined"
+#  when:
+#    - mysql_username is not defined
 
-- name: Display message when mysql_password not defined
-  debug:
-    msg: "mysql_password must be defined"
-  when:
-    - mysql_password is not defined
+#- name: Display message when mysql_password not defined
+#  debug:
+#    msg: "mysql_password must be defined"
+#  when:
+#    - mysql_password is not defined
 
 - name: "Routing to {{ trigger_action }}"
   block:
+    - name: Delete all related data
+      include_tasks: clean_data.yml
+      when: trigger_action == "clean_data"
+
     - name: Create docker volumes
       include_tasks: create_volumes.yml
       when: trigger_action == "create_volumes" or 
             trigger_action == "all"
 
-    - name: Deploy services
+    - name: Deploy mysql
       include_tasks: deploy.yml
       when: trigger_action == "deploy" or 
             trigger_action == "all"

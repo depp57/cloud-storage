@@ -4,6 +4,8 @@ services:
     networks:
       - cloud-storage
     hostname: mysql
+    ports:
+      - 3306:3306 # we must not expose this port in production
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:?}

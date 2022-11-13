@@ -3,6 +3,8 @@ RUN mkdir /src
 WORKDIR /src
 COPY clientEndpoint clientEndpoint
 COPY common common
+COPY go.mod go.mod
+COPY go.sum go.sum
 RUN go build -o clientEndpoint/clientEP clientEndpoint/main.go
 
 FROM ubuntu:latest

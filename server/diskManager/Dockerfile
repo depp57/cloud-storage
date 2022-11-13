@@ -3,6 +3,8 @@ RUN mkdir /src
 WORKDIR /src
 COPY diskManager diskManager
 COPY common common
+COPY go.mod go.mod
+COPY go.sum go.sum
 RUN go build -o diskManager/diskManager diskManager/main.go
 
 FROM ubuntu:latest
