@@ -81,7 +81,7 @@ func (d *SqlDb) UpdateFilePath(userId string, path string, newPath string) error
 	oldPath := filepath.Dir(path)
 	oldFilename := filepath.Base(path)
 
-	_, err := d.Client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s') WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
+	_, err := d.Client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s' WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
 	if err != nil {
 		log.Warn(err.Error())
 		return ErrQueryFailed

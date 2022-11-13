@@ -4,24 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
+	"net/http"
 )
 
-func JsonResponse(doc map[string]interface{}) []byte {
-	respJson, _ := json.Marshal(doc)
-	return respJson
+func WriteJsonReponse(writer http.ResponseWriter, response map[string]interface{}) {
+	respJson, _ := json.Marshal(response)
+	writer.Header().Set("content-type", "application/json")
+	writer.Write(respJson)
 }
 
-type genericError struct {
-	Error string `json:"error"`
-}
+func WriteGenericError(writer http.ResponseWriter, err error, statusCode int) {
+	log.Warn("http generic error: " + err.Error())
 
-func GenericError(err string) []byte {
-	log.Warn("http generic error: " + err)
+	errResp, _ := json.Marshal(map[string]string{
+		"error": err.Error(),
+	})
 
-	errJson := genericError{Error: err}
-	errStr, _ := json.Marshal(errJson)
-
-	return []byte(errStr)
+	writer.WriteHeader(statusCode)
+	writer.Write(errResp)
 }
 
 type httpMethodError struct {

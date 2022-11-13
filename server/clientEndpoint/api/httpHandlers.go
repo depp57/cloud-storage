@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
 	"io/ioutil"
 	"net/http"
@@ -17,6 +18,10 @@ import (
 const (
 	FILE_TYPE_DIR  = "dir"
 	FILE_TYPE_FILE = "file"
+)
+
+var (
+	ErrInvalidJson = errors.New("input data: invalid json")
 )
 
 type HttpHandlers struct {
@@ -50,14 +55,13 @@ func (h HttpHandlers) HandleAuth(response http.ResponseWriter, request *http.Req
 
 	token, connectionErr := h.auth.Connect(creds.Username, creds.Password)
 	if connectionErr != nil {
-		response.WriteHeader(http.StatusUnauthorized)
-		response.Write(GenericError(connectionErr.Error()))
+		WriteGenericError(response, connectionErr, http.StatusUnauthorized)
 		return
 	}
 
-	resp := make(map[string]interface{})
-	resp["token"] = token
-	response.Write(JsonResponse(resp))
+	WriteJsonReponse(response, map[string]interface{}{
+		"token": token,
+	})
 }
 
 func (h HttpHandlers) HandleDisconnect(response http.ResponseWriter, request *http.Request) {
@@ -90,22 +94,19 @@ func (h HttpHandlers) HandleFilesList(resp http.ResponseWriter, req *http.Reques
 
 	filePath, err := url.QueryUnescape(filePathPercent) // filePath was sent by URL in percent encoding
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
 	files, err := h.filesSvc.List(userId, filePath)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
-	response := make(map[string]interface{})
-	response["result"] = files
-
-	resp.Write(JsonResponse(response))
+	WriteJsonReponse(resp, map[string]interface{}{
+		"result": files,
+	})
 }
 
 func (h HttpHandlers) HandleFileMove(resp http.ResponseWriter, req *http.Request) {
@@ -115,15 +116,14 @@ func (h HttpHandlers) HandleFileMove(resp http.ResponseWriter, req *http.Request
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError("input data: invalid json"))
+		WriteGenericError(resp, ErrInvalidJson, http.StatusInternalServerError)
 		return
 	}
 
 	err = h.filesSvc.Update(userId, input.Filepath, input.NewFilepath)
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -137,16 +137,14 @@ func (h HttpHandlers) HandleFileRename(resp http.ResponseWriter, req *http.Reque
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError("input data: invalid json"))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, ErrInvalidJson, http.StatusInternalServerError)
 		return
 	}
 
 	err = h.filesSvc.Update(userId, input.Filepath, input.NewFilepath)
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -160,8 +158,7 @@ func (h HttpHandlers) HandleCreateDir(resp http.ResponseWriter, req *http.Reques
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError("input data: invalid json"))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, ErrInvalidJson, http.StatusInternalServerError)
 		return
 	}
 
@@ -169,8 +166,7 @@ func (h HttpHandlers) HandleCreateDir(resp http.ResponseWriter, req *http.Reques
 
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 }
@@ -182,23 +178,21 @@ func (h HttpHandlers) HandleUploadFile(resp http.ResponseWriter, req *http.Reque
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError("input data: invalid json"))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, ErrInvalidJson, http.StatusInternalServerError)
 		return
 	}
 
 	uploadID, chunckSize, err := h.uploadSvc.UploadRequest(userId, input.Path+"/"+input.Name, input.Size, input.CRC)
 
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
-	response := make(map[string]interface{}, 2)
-	response["uploadID"] = uploadID
-	response["chunkSize"] = chunckSize
-	resp.Write(JsonResponse(response))
+	WriteJsonReponse(resp, map[string]interface{}{
+		"uploadID":  uploadID,
+		"chunkSize": chunckSize,
+	})
 }
 
 func (h HttpHandlers) HandleUploadFragment(resp http.ResponseWriter, req *http.Request) {
@@ -207,22 +201,19 @@ func (h HttpHandlers) HandleUploadFragment(resp http.ResponseWriter, req *http.R
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
 	decodeFragment, err := base64.StdEncoding.DecodeString(input.Fragment)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
 	err = h.uploadSvc.UploadFileFragment(input.UploadID, decodeFragment)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -236,21 +227,20 @@ func (h HttpHandlers) HandleUploadStatus(resp http.ResponseWriter, req *http.Req
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&input)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
 	status, err := h.uploadSvc.GetCurrentStatus(userId, input.Filepath)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
-	response := map[string]interface{}{"status": status}
 	resp.WriteHeader(200)
-	resp.Write(JsonResponse(response))
+	WriteJsonReponse(resp, map[string]interface{}{
+		"status": status,
+	})
 }
 
 func (h HttpHandlers) HandleFileUploadAcknowledge(resp http.ResponseWriter, req *http.Request) {
@@ -259,15 +249,13 @@ func (h HttpHandlers) HandleFileUploadAcknowledge(resp http.ResponseWriter, req 
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&metadata)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 
 	err = h.uploadSvc.AcknowledgeUploading(metadata)
 	if err != nil {
-		resp.Write(GenericError(err.Error()))
-		resp.WriteHeader(500)
+		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
 

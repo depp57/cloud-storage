@@ -49,8 +49,7 @@ func (m *RestAPIRouters) rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		// For any other requests use restRouter
-		w.Header().Add("Content-Type", "application/json")
-		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Origin", "*") //TODO necessary ?
 
 		m.restRouter.ServeHTTP(w, r)
 		return
