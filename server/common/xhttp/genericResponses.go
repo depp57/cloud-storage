@@ -20,6 +20,7 @@ func WriteGenericError(writer http.ResponseWriter, err error, statusCode int) {
 		"error": err.Error(),
 	})
 
+	writer.Header().Set("content-type", "application/json")
 	writer.WriteHeader(statusCode)
 	writer.Write(errResp)
 }

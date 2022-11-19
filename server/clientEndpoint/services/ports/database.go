@@ -16,8 +16,8 @@ type DbPort interface {
 
 type FileDbPort interface {
 	GetFilesFromUser(userId string, path string) map[string]entities.File // Map index are files id
-	CreateDir(userId, dirName, dirPath string) error
-	UpdateFilePath(userId string, path string, newPath string) error
+	CreateDir(userId, dirId, dirName, dirPath string) error
+	UpdateFilePath(userId string, path string, newFilePath string) error
 
 	GetAllDisks() ([]entities.DiskInfo, error)
 }

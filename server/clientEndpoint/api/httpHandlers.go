@@ -15,11 +15,6 @@ import (
 	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 )
 
-const (
-	FILE_TYPE_DIR  = "dir"
-	FILE_TYPE_FILE = "file"
-)
-
 var (
 	ErrInvalidJson = errors.New("input data: invalid json")
 )
@@ -49,9 +44,7 @@ func (h HttpHandlers) HandleAuth(response http.ResponseWriter, request *http.Req
 		panic(err)
 	}
 
-	log.Debug("trying to authenticate...")
-	log.Debug("user : " + creds.Username)
-	log.Debug("password : " + creds.Password)
+	log.Debug("user : " + creds.Username + " trying to authenticate...")
 
 	token, connectionErr := h.auth.Connect(creds.Username, creds.Password)
 	if connectionErr != nil {
@@ -169,6 +162,8 @@ func (h HttpHandlers) HandleCreateDir(resp http.ResponseWriter, req *http.Reques
 		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
 	}
+
+	resp.WriteHeader(201)
 }
 
 func (h HttpHandlers) HandleUploadFile(resp http.ResponseWriter, req *http.Request) {

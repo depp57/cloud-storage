@@ -1,3 +1,3 @@
 package xhttp
 
-const InternalHeaderAuth = "X-Authentified-User-Id"
+const InternalHeaderAuth = "X-Authenticated-User-Id"

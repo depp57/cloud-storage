@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/entities"
@@ -10,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
 	"gitlab.com/sthommet/cloud-storage/server/common/utils"
 )
@@ -32,29 +32,29 @@ func (d *SqlDb) Close() {
 }
 
 func (d *SqlDb) GetFilesFromUser(userId string, path string) map[string]entities.File {
-	if path == "" {
+	if path == "/" {
 		//TODO handle the case when ALL files from user are to be returned
 	}
 
 	var rows, err = d.Client.Query("SELECT id, type, file_name, disk_name FROM files WHERE user_id = '" + userId + "' AND path = '" + path + "';")
 	defer rows.Close()
-
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	var results = make(map[string]entities.File)
-	var id string
-	var fileType string
-	var fileName string
-	var diskName string
+	var id, fileType, fileName, diskName, resultPath string
 	for rows.Next() {
 		rows.Scan(&id, &fileType, &fileName, &diskName)
-		if path != "" {
-			path = path + "/" //TODO quick fix, do better
+
+		if strings.HasSuffix(path, "/") {
+			resultPath = path + fileName
+		} else {
+			resultPath = path + "/" + fileName
 		}
+
 		results[id] = entities.File{
-			Path:   path + fileName,
+			Path:   resultPath,
 			Type:   fileType,
 			DiskID: diskName,
 		}
@@ -63,10 +63,8 @@ func (d *SqlDb) GetFilesFromUser(userId string, path string) map[string]entities
 	return results
 }
 
-func (d *SqlDb) CreateDir(userId string, dirName string, dirPath string) error {
-	id := uuid.New().String()
-
-	_, err := d.Client.Query(fmt.Sprintf("INSERT INTO files (id, type, file_name, path, user_id) VALUES ('%s', '%s', '%s', '%s', '%s');", id, "dir", dirName, dirPath, userId))
+func (d *SqlDb) CreateDir(userId string, dirId string, dirName string, dirPath string) error {
+	_, err := d.Client.Query(fmt.Sprintf("INSERT INTO files (id, type, file_name, path, user_id) VALUES ('%s', '%s', '%s', '%s', '%s');", dirId, "dir", dirName, dirPath, userId))
 	if err != nil {
 		log.Warn(err.Error())
 		return ErrQueryFailed
@@ -75,13 +73,33 @@ func (d *SqlDb) CreateDir(userId string, dirName string, dirPath string) error {
 	return nil
 }
 
-func (d *SqlDb) UpdateFilePath(userId string, path string, newPath string) error {
-	newPath = filepath.Dir(newPath)
-	newFilename := filepath.Base(newPath)
+func (d *SqlDb) UpdateFilePath(userId string, path string, newFilePath string) error {
+	newPath := filepath.Dir(newFilePath)
+	newFilename := filepath.Base(newFilePath)
 	oldPath := filepath.Dir(path)
 	oldFilename := filepath.Base(path)
 
-	_, err := d.Client.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s' WHERE user_id='%s' AND filename='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
+	transaction, err := d.Client.BeginTx(context.Background(), nil)
+	if err != nil {
+		log.Warn(err.Error())
+		return ErrQueryFailed
+	}
+
+	// change filename and path
+	_, err = transaction.Query(fmt.Sprintf("UPDATE files SET file_name = '%s', path = '%s' WHERE user_id='%s' AND file_name='%s' AND path='%s';", newFilename, newPath, userId, oldFilename, oldPath))
+	if err != nil {
+		log.Warn(err.Error())
+		return ErrQueryFailed
+	}
+
+	// move all files into directory to new directory (if any)
+	_, err = transaction.Query(fmt.Sprintf("UPDATE files SET path = '%s' WHERE user_id='%s' AND path='%s';", newFilePath, userId, path))
+	if err != nil {
+		log.Warn(err.Error())
+		return ErrQueryFailed
+	}
+
+	err = transaction.Commit()
 	if err != nil {
 		log.Warn(err.Error())
 		return ErrQueryFailed

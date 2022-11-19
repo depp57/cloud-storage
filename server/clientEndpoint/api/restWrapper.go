@@ -92,21 +92,20 @@ func (m *RestAPIRouters) AuthentifiedRoute(pattern string, method string, handle
 			return
 		}
 		if strings.Split(authorization_h, " ")[0] != "Bearer" {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		token := strings.Split(authorization_h, " ")[1]
 
 		user, err := m.auth.GetUser(token)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("{\"error\": \"" + err.Error() + "\"}"))
+			WriteGenericError(w, err, http.StatusUnauthorized)
 			return
 		}
 
 		// Add temporar header to the request
 		// identify user for futher use in handlers
-		r.Header.Set(InternalHeaderAuth, user.Id) //TODO FAILLE de sécurité majeure : user peut ajouter lui même un header Authentified
+		r.Header.Set(InternalHeaderAuth, user.Id)
 
 		handlerFunc(w, r)
 	}))
