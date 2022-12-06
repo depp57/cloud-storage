@@ -59,14 +59,14 @@ export class FilesApiService {
 
   update(param: RequestUpdate): Observable<ResponseUpdate> {
     this.invalidateCache(param.filePath, param.newFilePath);
-    // return this.http.post<ResponseUpdate>('files/update/', param);
+    // return this.http.post<ResponseUpdate>('files/update', param);
     console.log('update', param);
     return this.fakeApi.rename(param, 500);
   }
 
   delete(param: RequestDelete): Observable<ResponseDelete> {
     this.invalidateCache(param.filePath);
-    // return this.http.delete<ResponseDelete>('files/update/', param);
+    // return this.http.delete<ResponseDelete>('files/update', param);
 
     console.log('delete', param);
     return this.fakeApi.delete(param, 500);
@@ -74,7 +74,7 @@ export class FilesApiService {
 
   move(param: RequestUpdate): Observable<ResponseUpdate> {
     this.invalidateCache(param.filePath, param.newFilePath);
-    // return this.http.post<ResponseUpdate>('files/update/', param);
+    // return this.http.post<ResponseUpdate>('files/update', param);
 
     console.log('move', param);
     return this.fakeApi.move(param, 500);
