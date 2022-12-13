@@ -36,13 +36,12 @@
 
   <div class="files-container">
     <div style="display: contents" *ngIf="(loading | async) === false else loadingTemplate">
-      <app-folder *ngFor="let folder of (folders$ | async) | filter: (searchText$ | async)"
-                  [folder]="folder" class="file-item folder">
-      </app-folder>
-
-      <app-file *ngFor="let file of (files$ | async) | filter: (searchText$ | async)"
-                [file]="file" class="file-item file">
-      </app-file>
+      <ng-container *ngFor="let item of (items$ | async) | filter: (searchText$ | async)">
+        <app-file *ngIf="!item.accept(canContainVisitator); else folder" [file]="item" class="file-item file"></app-file>
+        <ng-template #folder>
+          <app-folder [folder]="item" (moveFileEvent)="moveFileEvent($event)" class="file-item folder"></app-folder>
+        </ng-template>
+      </ng-container>
     </div>
   </div>
 
@@ -64,5 +63,5 @@
 
 </div>
 
-<app-move-item *ngIf="onMoveItem$ | async as item" [item]="item" [@inOutRightAnimation]>
+<app-move-item *ngIf="onMoveItem" [item]="onMoveItem" (moveFileEvent)="moveFileEvent($event)" [@inOutRightAnimation]>
 </app-move-item>

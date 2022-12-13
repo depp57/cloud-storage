@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { Folder } from '@modules/dashboard/models/items';
+import { Folder } from '@modules/dashboard/models/item';
 
 @Injectable({
   providedIn: 'root'

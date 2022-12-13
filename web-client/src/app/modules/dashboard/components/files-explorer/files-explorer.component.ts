@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { File, Folder, Item } from '@modules/dashboard/models/items';
+import { Item } from '@modules/dashboard/models/item';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { slideInOutAnimation } from '@shared/animations';
+import { CanContainVisitator } from '@modules/dashboard/models/itemVisitator';
 
 @Component({
   selector: 'app-files-explorer',
@@ -19,9 +19,11 @@ export class FilesExplorerComponent implements OnInit {
 
   loading = new BehaviorSubject(true);
 
+  private _onMoveItem: Item | null = null;
+
   constructor(private fileRepo: FilesRepositoryService,
               private snackBar: MatSnackBar,
-              private itemLogic: ItemLogic) {}
+              public canContainVisitator: CanContainVisitator) {}
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -36,16 +38,12 @@ export class FilesExplorerComponent implements OnInit {
     return this.fileRepo.searchText$;
   }
 
-  get files$(): Observable<File[]> {
+  get items$(): Observable<Item[]> {
     return this.fileRepo.files$;
   }
 
-  get folders$(): Observable<Folder[]> {
-    return this.fileRepo.folders$;
-  }
-
-  get onMoveItem$(): Observable<Item | null> {
-    return this.itemLogic.onMove$;
+  get onMoveItem(): Item | null {
+    return this._onMoveItem;
   }
 
   ngOnInit(): void {
@@ -69,6 +67,10 @@ export class FilesExplorerComponent implements OnInit {
 
   onUploadFolder(): void {
     console.log('Charger un dossier');
+  }
+
+  moveFileEvent(moved: Item | null): void {
+    this._onMoveItem = moved;
   }
 
   // workaround for use *ngFor directive with number instead of collection

@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
-import { Item } from '@modules/dashboard/models/items';
+import { Item } from '@modules/dashboard/models/item';
+import { CanContainVisitator, HasFileExtension } from '@modules/dashboard/models/itemVisitator';
 
 @Component({
   selector: 'app-rename',
@@ -13,6 +14,10 @@ import { Item } from '@modules/dashboard/models/items';
 export class RenameDialogComponent extends DialogComponent<Item, OutputRenameData> implements OnInit {
 
   renameForm!: FormGroup;
+
+  constructor(public hasFileExtensionVisitator: HasFileExtension) {
+    super();
+  }
 
   get name(): string {
     return this.renameForm.get('name')?.value;
@@ -34,7 +39,7 @@ export class RenameDialogComponent extends DialogComponent<Item, OutputRenameDat
 
   onSubmit(): void {
     this.submit$.next(
-      this.inputData.rename(this.name, this.extension).filePath
+      this.inputData.rename(this.name + this.extension).path
     );
     this.closeDialog$.next();
   }

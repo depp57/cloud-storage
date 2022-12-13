@@ -1,6 +1,6 @@
 <a class="highlight" [appContextMenu]="contextMenuButtons"
    draggable="true" (dragstart)="onDragStart($event)">
 
-  <img [src]="'assets/icons/' + file.iconAsset" width="128" height="128" [alt]="file.fullName">
-  <span>{{file.fullName}}</span>
+  <img [src]="'assets/icons/' + file.iconAsset" width="128" height="128" [alt]="file.name">
+  <span>{{file.name}}</span>
 </a>

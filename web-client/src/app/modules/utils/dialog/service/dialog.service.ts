@@ -11,7 +11,7 @@ import { DialogComponent } from '@modules/utils/dialog/component/dialog-componen
 import { RenameDialogComponent } from '@modules/utils/dialog/component/rename/rename-dialog.component';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { Item } from '@modules/dashboard/models/items';
+import { Item } from '@modules/dashboard/models/item';
 import { DeleteDialogComponent } from '@modules/utils/dialog/component/delete/delete-dialog.component';
 import { OutputRenameData } from '@modules/utils/dialog/model/dialog-data';
 

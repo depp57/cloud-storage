@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { File, Folder, Item } from '@modules/dashboard/models/items';
+import { Item, File, Folder } from '@modules/dashboard/models/item';
 import { ApiFileType, ResponseDelete, ResponseList, ResponseUpdate } from '@modules/dashboard/models/api-files';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -12,19 +12,14 @@ import { TreeNode } from '@modules/utils/folder-tree/model/tree-node';
 })
 export class FilesRepositoryService {
 
-  private readonly _files$      = new BehaviorSubject<File[]>([]);
-  private readonly _folders$    = new BehaviorSubject<Folder[]>([]);
+  private readonly _items$      = new BehaviorSubject<Item[]>([]);
   private readonly _searchText$ = new Subject<string>();
 
   constructor(private filesApi: FilesApiService,
               private path: PathService) {}
 
-  get files$(): Observable<File[]> {
-    return this._files$;
-  }
-
-  get folders$(): Observable<Folder[]> {
-    return this._folders$;
+  get files$(): Observable<Item[]> {
+    return this._items$;
   }
 
   get searchText$(): Observable<string> {
@@ -40,8 +35,25 @@ export class FilesRepositoryService {
     );
   }
 
+  private saveFiles(response: ResponseList): void {
+    const files: Item[]     = [];
+
+    for (const file of response.result) {
+      if (file.type === ApiFileType.FILE) {
+        files.push(new File(file.filePath));
+      }
+      else {
+        files.push(new Folder(file.filePath));
+      }
+    }
+    
+    this.sortByName(files);
+
+    this._items$.next(files);
+  }
+
   getSubFolders(folder: Folder): Observable<TreeNode> {
-    return this.filesApi.listDir({filePath: folder.filePath}).pipe(
+    return this.filesApi.listDir({filePath: folder.path}).pipe(
       map(response => {
         const responseFolders        = response.result.filter(item => item.type === ApiFileType.DIR);
         const subFolders: TreeNode[] = responseFolders.map(dir => ({folder: new Folder(dir.filePath)}));
@@ -54,13 +66,13 @@ export class FilesRepositoryService {
   }
 
   rename(item: Item, newFilePath: string): Observable<ResponseUpdate> {
-    if (item.filePath === newFilePath) {
+    if (item.path === newFilePath) {
       return of({changed: false});
     }
 
     return this.filesApi.update({
-      filePath: item.filePath,
-      newFilePath
+      path: item.path,
+      newPath: newFilePath
     }).pipe(
       tap(response => {
         if (response.changed) {
@@ -71,7 +83,7 @@ export class FilesRepositoryService {
   }
 
   delete(item: Item): Observable<ResponseDelete> {
-    return this.filesApi.delete({filePath: item.filePath}).pipe(
+    return this.filesApi.delete({filePath: item.path}).pipe(
       tap(response => {
         if (response.deleted) {
           this.deleteItem(item);
@@ -81,13 +93,13 @@ export class FilesRepositoryService {
   }
 
   move(item: Item, newFilePath: string): Observable<ResponseUpdate> {
-    if (item.filePath === newFilePath) {
+    if (item.path === newFilePath) {
       return of({changed: false});
     }
 
     return this.filesApi.move({
-      filePath: item.filePath,
-      newFilePath
+      path: item.path,
+      newPath: newFilePath
     }).pipe(
       tap(response => {
         if (response.changed) {
@@ -101,64 +113,32 @@ export class FilesRepositoryService {
     this._searchText$.next(text);
   }
 
-  private saveFiles(response: ResponseList): void {
-    const files: File[]     = [];
-    const folders: Folder[] = [];
-
-    for (const file of response.result) {
-      if (file.type === ApiFileType.FILE) {
-        files.push(new File(file.filePath));
-      }
-      else {
-        folders.push(new Folder(file.filePath));
-      }
-    }
-    FilesRepositoryService.sortByName(files, folders);
-
-    this._files$.next(files);
-    this._folders$.next(folders);
-  }
-
   private deleteItem(item: Item): void {
-    function deleteIn<T extends Item>(subject: BehaviorSubject<T[]>): void {
-      const items = subject.value;
+    const items = this._items$.value;
 
-      const index = items.findIndex(current => current.equals(item));
-      if (index !== -1) { items.splice(index, 1); }
+     const index = items.findIndex(current => current.equals(item));
+     if (index !== -1) { items.splice(index, 1); }
 
-      subject.next(items);
+     this._items$.next(items);
+  }
+
+  private renameItem(target: Item, newFilePath: string): void {
+    const files = this._items$.value;
+
+    const index = files.findIndex(current => current.equals(target));
+    if (index !== -1) {
+      files[index] = files[index].rename(newFilePath);
     }
 
-    item.isFile() ? deleteIn(this._files$) : deleteIn(this._folders$);
+    this._items$.next(files);
   }
 
-  private renameItem(item: Item, newFilePath: string): void {
-    function renameIn(subject: BehaviorSubject<any[]>): void {
-      const items = subject.value;
-
-      const index = items.findIndex(current => current.equals(item));
-      if (index !== -1) {
-        if (items[index].isFile()) {
-          items[index] = new File(newFilePath);
-        }
-        else {
-          items[index] = new Folder(newFilePath);
-        }
-      }
-
-      subject.next(items);
-    }
-
-    item.isFile() ? renameIn(this._files$) : renameIn(this._folders$);
+  private moveItem(file: Item): void {
+    // because only items in current folder are visible, move a file to another folder is like delete in the front-end
+    this.deleteItem(file);
   }
 
-  private moveItem(item: Item): void {
-    // because only items in current folder are visible, move an item to another folder is like delete in the front-end
-    this.deleteItem(item);
-  }
-
-  private static sortByName(files: File[], folders: Folder[]): void {
+  private sortByName(files: Item[]): void {
     files.sort((a, b) => a.compareTo(b));
-    folders.sort((a, b) => a.compareTo(b));
   }
 }

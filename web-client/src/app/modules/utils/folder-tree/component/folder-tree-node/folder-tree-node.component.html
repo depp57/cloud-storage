@@ -1,7 +1,7 @@
 <div [ngClass]="{'selected': selected}" class="folder-tree-row" (click)="toggleFolder()">
   <mat-icon>{{expanded ? 'expand_more' : 'chevron_right'}}</mat-icon>
-  <img src="assets/icons/folder.png" width="16" height="16" [alt]="node.folder.fullName" class="folder-icon">
-  <span>{{node.folder.fullName}}</span>
+  <img src="assets/icons/folder.png" width="16" height="16" [alt]="node.folder.name" class="folder-icon">
+  <span>{{node.folder.name}}</span>
   <mat-progress-bar mode="indeterminate" *ngIf="isLoading$ | async"></mat-progress-bar>
 </div>
 

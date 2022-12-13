@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Folder, Item } from '@modules/dashboard/models/items';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Item, Folder } from '@modules/dashboard/models/item';
 import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
 import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
-import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
+import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
+import { DialogService } from '@modules/utils/dialog/service/dialog.service';
+import { PATH_SEPARATOR } from '@shared/constants';
 
 @Component({
   selector: 'app-folder',
@@ -12,12 +14,47 @@ import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
 })
 export class FolderComponent {
 
-  @Input() folder!: Folder;
+  @Input() folder!: Item;
+  @Output() moveFileEvent = new EventEmitter<Item | null>();
 
-  constructor(private folderLogic: ItemLogic) {}
+  constructor(private filesRepo: FilesRepositoryService, private dialog: DialogService) {}
 
   get contextMenuButtons(): MenuButton[] {
-    return this.folderLogic.getItemsContextMenu(this.folder);
+    return [
+      {text: 'Télécharger', icon: 'download', onClick: () => this.downloadItem(this.folder)},
+      {text: 'Supprimer', icon: 'delete', onClick: () => this.deleteItem(this.folder)},
+      {text: 'Déplacer', icon: 'open_with', onClick: () => this.moveItem(this.folder)},
+      {text: 'Renommer', icon: 'edit', onClick: () => this.renameItem(this.folder)}
+    ];
+  }
+
+  private moveItem(item: Item): void {
+    this.moveFileEvent.emit(item);
+  }
+
+  private downloadItem(item: Item): void {
+    console.log(`Télécharger : ${item.path} (${item.extension})`);
+    return undefined;
+  }
+
+  private deleteItem(file: Item): void {
+    this.dialog.openDeleteDialog(file).subscribe(
+      needDelete => {
+        if (needDelete) {
+          this.filesRepo.delete(file).subscribe();
+        }
+      }
+    );
+  }
+
+  private renameItem(file: Item): void {
+    this.dialog.openRenameDialog(file).subscribe(
+      newFilePath => {
+        if (newFilePath) {
+          this.filesRepo.rename(file, newFilePath).subscribe();
+        }
+      }
+    );
   }
 
   onDragStart(event: DragEvent): void {
@@ -34,13 +71,13 @@ export class FolderComponent {
       event.preventDefault();
 
       const itemJson  = event.dataTransfer.getData(DATA_TRANSFER_NAME);
-      const movedItem = Item.fromJson(itemJson);
+      const movedItem = Folder.fromJson(itemJson);
 
-      this.folderLogic.moveItemWithoutDialog(movedItem, this.folder.filePath + movedItem.fullName);
+      this.filesRepo.move(movedItem, this.folder.path + PATH_SEPARATOR + movedItem.name).subscribe();
     }
   }
 
   onClick(): void {
-    this.folderLogic.listFolder(this.folder);
+    this.filesRepo.listFolder(this.folder.path).subscribe();
   }
 }

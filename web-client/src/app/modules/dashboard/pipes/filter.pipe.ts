@@ -1,12 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Item } from '@modules/dashboard/models/items';
+import { Item } from '@modules/dashboard/models/item';
 
 @Pipe({
   name: 'filter'
 })
 export class FilterPipe implements PipeTransform {
 
-  transform<T extends Item>(items: T[] | null, searchText: string | null): T[] {
+  transform(items: Item[] | null, searchText: string | null): Item[] {
     if (items === null) {
       return [];
     }
@@ -17,10 +17,10 @@ export class FilterPipe implements PipeTransform {
     // case insensitive
     searchText = searchText.toLowerCase();
 
-    return FilterPipe.filterByName(items, searchText);
+    return this.filterByName(items, searchText);
   }
 
-  private static filterByName<T extends Item>(items: T[], searchText: string): T[] {
-    return items.filter(item => item.fullName.toLowerCase().includes(searchText));
+  private filterByName(items: Item[], searchText: string): Item[] {
+    return items.filter(item => item.name.toLowerCase().includes(searchText));
   }
 }

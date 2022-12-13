@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Folder, Item } from '@modules/dashboard/models/items';
-import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
+import { Item, Folder } from '@modules/dashboard/models/item';
+import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
+import { PATH_SEPARATOR } from '@shared/constants';
 
 @Component({
   selector: 'app-move-item',
@@ -11,9 +12,10 @@ import { ItemLogic } from '@modules/dashboard/services/item-logic.service';
 export class MoveItemComponent implements OnInit, OnDestroy {
 
   @Input() item!: Item;
+  @Output() moveFileEvent = new EventEmitter<Folder | null>();
   private _selectedFolder?: Folder = undefined;
 
-  constructor(private itemLogic: ItemLogic) {}
+  constructor(private filesRepo: FilesRepositoryService) {}
 
   ngOnDestroy(): void {
     MoveItemComponent.enableDashboardScroll();
@@ -24,12 +26,12 @@ export class MoveItemComponent implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    this.itemLogic.dontMoveItem();
+    this.moveFileEvent.emit(null);
   }
 
   onMove(): void {
     if (this._selectedFolder) {
-      this.itemLogic.moveItemWithoutDialog(this.item, this._selectedFolder.filePath + this.item.fullName);
+      this.filesRepo.move(this.item, this._selectedFolder + PATH_SEPARATOR + this.item.path).subscribe();
       this.onClose();
     }
   }

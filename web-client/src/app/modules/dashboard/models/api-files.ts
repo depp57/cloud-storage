@@ -21,8 +21,8 @@ export interface ResponseUpdate {
 }
 
 export interface RequestUpdate {
-  readonly filePath: string;
-  readonly newFilePath: string;
+  readonly path: string;
+  readonly newPath: string;
 }
 
 export interface ResponseDelete {

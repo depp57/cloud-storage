@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, Output, EventEmitter } from '@angular/core';
 import { TreeNode } from '@modules/utils/folder-tree/model/tree-node';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { Folder } from '@modules/dashboard/models/items';
+import { Folder, RootFolder } from '@modules/dashboard/models/item';
 import { FolderTreeService } from '@modules/utils/folder-tree/service/folder-tree.service';
 import { Observable } from 'rxjs';
 
@@ -21,7 +21,7 @@ export class FolderTreeComponent implements OnInit {
               private folderTree: FolderTreeService) {}
 
   ngOnInit(): void {
-    this.rootNode = this.filesRepo.getSubFolders(Folder.ROOT);
+    this.rootNode = this.filesRepo.getSubFolders(new RootFolder);
 
     this.folderTree.selectedFolder.subscribe(
       folder => {
@@ -32,7 +32,7 @@ export class FolderTreeComponent implements OnInit {
   }
 
   toggleRootFolder(): void {
-    this.folderTree.selectFolder(Folder.ROOT);
+    this.folderTree.selectFolder(new RootFolder);
     this.selected = true;
   }
 }

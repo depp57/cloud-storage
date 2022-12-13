@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DialogComponent } from '@modules/utils/dialog/component/dialog-component';
-import { Item } from '@modules/dashboard/models/items';
+import { Item } from '@modules/dashboard/models/item';
 
 @Component({
   selector: 'app-delete',
@@ -11,7 +11,7 @@ import { Item } from '@modules/dashboard/models/items';
 export class DeleteDialogComponent extends DialogComponent<Item, boolean> {
 
   get title(): string {
-    return `Supprimer le ${this.inputData.isFile() ? 'fichier' : 'dossier'} ${this.inputData.fullName} ?`;
+    return `Supprimer le ${this.inputData instanceof File ? 'fichier' : 'dossier'} ${this.inputData.path} ?`; //TODO instanceof ?
   }
 
   onClose(): void {

@@ -15,6 +15,8 @@ export enum RedirectReasons {
   SIGNED_OUT      = 'Vous vous êtes bien déconnecté'
 }
 
+export const PATH_SEPARATOR = "/";
+
 /*
 401 : Quand login/password
 {

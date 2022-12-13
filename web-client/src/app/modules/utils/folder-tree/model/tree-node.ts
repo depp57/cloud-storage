@@ -1,4 +1,4 @@
-import { Folder } from '@modules/dashboard/models/items';
+import { Item, Folder } from '@modules/dashboard/models/item';
 
 export interface TreeNode {
   folder: Folder;

@@ -16,6 +16,7 @@ import { RecentFilesComponent } from './components/recent-files/recent-files.com
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { FolderTreeModule } from '@modules/utils/folder-tree/folder-tree.module';
+import { CanContainVisitator } from './models/itemVisitator';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,9 @@ import { FolderTreeModule } from '@modules/utils/folder-tree/folder-tree.module'
     DialogModule,
     FormsModule,
     FolderTreeModule
+  ],
+  providers: [
+    CanContainVisitator
   ]
 })
 export class DashboardModule {}
