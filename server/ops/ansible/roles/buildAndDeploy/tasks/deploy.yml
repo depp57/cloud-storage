@@ -6,11 +6,10 @@
         state: directory
     - name: Write clientEndpoint conf files
       template:
-        src: '{{ repo_root_path }}/server/clientEndpoint/conf/{{ item }}'
-        dest: '/cloud-storage/clientEndpoint/conf/{{ item }}'
-      loop:
-        - mysql.yaml
-        - server.yaml
+        src: '{{ item }}'
+        dest: '/cloud-storage/clientEndpoint/conf/{{ item | basename }}'
+      with_fileglob:
+        - "{{ repo_root_path }}/server/clientEndpoint/conf/*"
 
 - name: Write diskManager conf files
   block:
@@ -20,10 +19,10 @@
         state: directory
     - name: Write diskManager conf files
       template:
-        src: '{{ repo_root_path }}/server/diskManager/conf/{{ item }}'
-        dest: '/cloud-storage/diskManager/conf/{{ item }}'
-      loop:
-        - mysql.yaml
+        src: '{{ item }}'
+        dest: '/cloud-storage/diskManager/conf/{{ item | basename }}'
+      with_fileglob:
+        - "{{ repo_root_path }}/server/diskManager/conf/*"
 
 - name: Write diskManager disk-name file
   block:
