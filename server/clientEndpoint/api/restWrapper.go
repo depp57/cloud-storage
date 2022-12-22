@@ -1,10 +1,11 @@
 package api
 
 import (
-	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 	"log"
 	"net/http"
 	"strings"
+
+	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
 )
@@ -41,16 +42,13 @@ func (m *RestAPIRouters) rootHandler(w http.ResponseWriter, r *http.Request) {
 		headers := w.Header()
 		headers.Add("Access-Control-Allow-Origin", "*")
 		headers.Add("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token, authorization")
-		headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
 		headers.Add("Vary", "Origin")
 		headers.Add("Vary", "Access-Control-Request-Method")
 		headers.Add("Vary", "Access-Control-Request-Headers")
 
 		return
 	} else {
-		// For any other requests use restRouter
-		w.Header().Add("Access-Control-Allow-Origin", "*") //TODO necessary ?
-
 		m.restRouter.ServeHTTP(w, r)
 		return
 	}
