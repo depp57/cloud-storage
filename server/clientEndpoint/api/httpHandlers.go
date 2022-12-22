@@ -118,6 +118,9 @@ func (h HttpHandlers) HandleFileMove(resp http.ResponseWriter, req *http.Request
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
 		WriteGenericError(resp, err, http.StatusInternalServerError)
 		return
+	case services.ErrInvalidPath:
+		WriteGenericError(resp, err, http.StatusNotAcceptable)
+		return
 	}
 
 	resp.WriteHeader(201)
@@ -138,6 +141,9 @@ func (h HttpHandlers) HandleFileRename(resp http.ResponseWriter, req *http.Reque
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
 		WriteGenericError(resp, err, http.StatusInternalServerError)
+		return
+	case services.ErrInvalidPath:
+		WriteGenericError(resp, err, http.StatusNotAcceptable)
 		return
 	}
 
@@ -160,6 +166,9 @@ func (h HttpHandlers) HandleCreateDir(resp http.ResponseWriter, req *http.Reques
 	switch err {
 	case database.ErrQueryFailed: //TODO remove dependancy to database !!
 		WriteGenericError(resp, err, http.StatusInternalServerError)
+		return
+	case services.ErrInvalidPath:
+		WriteGenericError(resp, err, http.StatusNotAcceptable)
 		return
 	}
 

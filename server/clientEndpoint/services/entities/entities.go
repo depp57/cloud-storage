@@ -7,7 +7,7 @@ import (
 )
 
 type File struct {
-	Path   string `json:"filePath,omitempty"`
+	Path   string `json:"path,omitempty"`
 	Type   string `json:"type,omitempty"`
 	UserID string `json:"userID,omitempty"`
 	DiskID string `json:"diskId,omitempty"`
