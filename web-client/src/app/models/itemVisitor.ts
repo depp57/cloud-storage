@@ -1,13 +1,13 @@
-import { Injectable } from "@angular/core";
-import { File, Folder } from "./item";
+import { Injectable } from '@angular/core';
+import { File, Folder } from './item';
 
-export interface ItemVisitator {
+export interface ItemVisitor {
     visitFile(file: File): boolean;
     visitFolder(file: Folder): boolean;
 }
 
 @Injectable()
-export class CanContainVisitator implements ItemVisitator {
+export class CanContainVisitor implements ItemVisitor {
     visitFile(file: File): boolean {
         return false;
     }
@@ -17,12 +17,12 @@ export class CanContainVisitator implements ItemVisitator {
 }
 
 @Injectable()
-export class HasFileExtension implements ItemVisitator {
+export class HasFileExtension implements ItemVisitor {
     visitFile(file: File): boolean {
         return true;
     }
     visitFolder(file: Folder): boolean {
         return false;
     }
-    
+
 }

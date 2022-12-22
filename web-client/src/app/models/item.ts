@@ -1,4 +1,4 @@
-import { ItemVisitator } from "./itemVisitator";
+import { ItemVisitor } from './itemVisitor';
 
 const mapExtensionToIconAsset: Record<string, string> = {
   '': 'file.png',
@@ -18,7 +18,7 @@ export interface Item {
   toJson(): string;
   equals(item: Item): boolean;
   compareTo(file: Item): number;
-  accept(visitator: ItemVisitator): boolean;
+  accept(visitator: ItemVisitor): boolean;
 }
 
 export class File implements Item {
@@ -31,10 +31,10 @@ export class File implements Item {
     this._name = this.extractName(path);
   }
 
-  private extractName(path: string): string {
-    const split = path.split('/');
-    return split[split.length - 1];
-  }
+  //static fromJson(json: string): File {
+  //  const parsedFile = JSON.parse(json);
+  //  return new File(parsedFile.path)
+  //}
 
   get name(): string {
     return this._name;
@@ -65,11 +65,6 @@ export class File implements Item {
     return new File(this.parentFolderPath + name);
   }
 
-  //static fromJson(json: string): File {
-  //  const parsedFile = JSON.parse(json);
-  //  return new File(parsedFile.path)
-  //}
-
   toJson(): string {
     return JSON.stringify({
       path: this.path,
@@ -85,21 +80,25 @@ export class File implements Item {
     return this._name > file.name ? 1 : -1;
   }
 
-  accept(visitator: ItemVisitator): boolean {
-    return visitator.visitFile(this);
+  accept(visitor: ItemVisitor): boolean {
+    return visitor.visitFile(this);
+  }
+
+  private extractName(path: string): string {
+    const split = path.split('/');
+    return split[split.length - 1];
   }
 }
 
 
 export class Folder extends File {
 
-  rename(name: string): File {
-    return new Folder(this.parentFolderPath + name);
-  }
-
   static fromJson(json: string): File {
     const parsedFile = JSON.parse(json);
-    return new Folder(parsedFile.path)
+    return new Folder(parsedFile.path);
+  }
+  rename(name: string): File {
+    return new Folder(this.parentFolderPath + name);
   }
 
   toJson(): string {
@@ -109,8 +108,8 @@ export class Folder extends File {
     });
   }
 
-  accept(visitator: ItemVisitator): boolean {
-    return visitator.visitFolder(this);
+  accept(visitor: ItemVisitor): boolean {
+    return visitor.visitFolder(this);
   }
 }
 
@@ -118,6 +117,6 @@ export class Folder extends File {
 export class RootFolder extends Folder {
 
   constructor() {
-    super("/");
+    super('/');
   }
 }
