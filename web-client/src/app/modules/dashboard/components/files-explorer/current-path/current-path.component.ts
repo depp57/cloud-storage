@@ -11,25 +11,21 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CurrentPathComponent {
 
-  readonly separatedFolders = new BehaviorSubject<string[]>([]);
+  readonly separatedFolders$ = new BehaviorSubject<string[]>([]);
 
-  constructor(private path: PathService,
-              private filesRepo: FilesRepositoryService) {
-    this.path.currentPath$.subscribe(
-      () => this.savePath()
-    );
+  constructor(private path: PathService, private filesRepo: FilesRepositoryService) {
+    this.separatedFolders$ = this.path.separatedFolder$;
   }
 
   onClick(pathDepth: number): void {
-    const newPath = this.separatedFolders.value
-      .slice(0, pathDepth + 1)
-      .reduce((previousValue, currentValue) => previousValue + currentValue + '/', '/');
+    let newPath = this.separatedFolders$.value
+      .slice(1, pathDepth + 1)
+      .reduce((previousValue, currentValue) => previousValue + '/' + currentValue, '');
 
-    this.filesRepo.listFolder(newPath).subscribe();
-  }
+    if (newPath === '') {
+      newPath = '/';
+    }
 
-  private savePath(): void {
-    const [, ...separatedFolders] = this.path.getSeparatedFolders();
-    this.separatedFolders.next(separatedFolders);
+    this.filesRepo.checkDirectory(newPath).subscribe();
   }
 }

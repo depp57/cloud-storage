@@ -1,19 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { Item } from '@modules/dashboard/models/item';
-import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
+import { Item } from '@models/item';
+import { MenuButton } from '@modules/shared/context-menu/model/menu-button';
 import { HTTP_ERROR_CODES } from '@shared/constants';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { slideInOutAnimation } from '@shared/animations';
-import { CanContainVisitator } from '@modules/dashboard/models/itemVisitator';
+import { CanContainVisitor } from '@models/itemVisitor';
+import { DialogService } from '@modules/shared/dialog/service/dialog.service';
 
 @Component({
   selector: 'app-files-explorer',
   templateUrl: './files-explorer.component.html',
   styleUrls: ['./files-explorer.component.scss'],
   animations: [slideInOutAnimation],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class FilesExplorerComponent implements OnInit {
 
@@ -23,7 +24,8 @@ export class FilesExplorerComponent implements OnInit {
 
   constructor(private fileRepo: FilesRepositoryService,
               private snackBar: MatSnackBar,
-              public canContainVisitator: CanContainVisitator) {}
+              private dialog: DialogService,
+              public canContainVisitor: CanContainVisitor) {}
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -47,7 +49,7 @@ export class FilesExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fileRepo.listFolder('/').subscribe(
+    this.fileRepo.checkDirectory('/').subscribe(
       () => this.loading.next(false),
       error => this.showLoadingError(error.status)
     );
@@ -58,7 +60,13 @@ export class FilesExplorerComponent implements OnInit {
   }
 
   onNewFolder(): void {
-    console.log('Nouveau dossier');
+    this.dialog.openCreateFolderDialog().subscribe(
+      newFilePath => {
+        if (newFilePath) {
+          this.fileRepo.createDirectory(newFilePath);
+        }
+      }
+    );
   }
 
   onUploadFile(): void {

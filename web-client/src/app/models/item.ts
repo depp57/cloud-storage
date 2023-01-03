@@ -1,6 +1,7 @@
 import { ItemVisitor } from './itemVisitor';
 
 const mapExtensionToIconAsset: Record<string, string> = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   '': 'file.png',
   txt: 'text.png',
   xlsx: 'excel.png',
@@ -18,7 +19,7 @@ export interface Item {
   toJson(): string;
   equals(item: Item): boolean;
   compareTo(file: Item): number;
-  accept(visitator: ItemVisitor): boolean;
+  accept(visitor: ItemVisitor): boolean;
 }
 
 export class File implements Item {

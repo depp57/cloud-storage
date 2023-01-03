@@ -2,13 +2,13 @@
   <nav>
     <ul>
       <li class="path-root">
-        <a (click)="onClick(-1)">
+        <a (click)="onClick(0)">
           Mes fichiers
         </a>
       </li>
-      <li *ngFor="let folder of separatedFolders | async; let i = index" class="path-item">
+      <li *ngFor="let folder of separatedFolders$ | async | slice:1; let i = index" class="path-item">
         <mat-icon color="primary" inline="true" aria-hidden="true" class="path-item-chevron">chevron_right</mat-icon>
-        <a (click)="onClick(i)">{{folder}}</a>
+        <a (click)="onClick(i+1)">{{folder}}</a>
       </li>
     </ul>
   </nav>

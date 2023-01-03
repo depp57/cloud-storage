@@ -1,27 +1,38 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HttpAuthInterceptor } from '@shared/services/http-auth-interceptor.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NotFoundComponent } from '@shared/components/not-found/not-found.component';
 import { HttpLoadingInterceptor } from '@shared/services/http-loading-interceptor.service';
-import { AppMaterialModule } from '@modules/utils/material/app-material.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatListModule } from '@angular/material/list';
+import { GlobalErrorHandler } from '@shared/services/error-handler.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SharedModule } from '@shared/shared.module';
+
+const materialComponents = [
+  MatButtonModule,
+  MatProgressBarModule,
+  MatListModule,
+  MatSnackBarModule
+];
 
 @NgModule({
   declarations: [
-    AppComponent,
-    NotFoundComponent
+    AppComponent
   ],
   imports: [
+    materialComponents,
+    SharedModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    AppMaterialModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the app is stable
@@ -30,6 +41,7 @@ import { environment } from '../environments/environment';
     })
   ],
   providers: [
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpLoadingInterceptor,

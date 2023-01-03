@@ -1,0 +1,21 @@
+<app-base-dialog title="Renommer" (closeDialog)="onClose()">
+  <form [formGroup]="renameForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-content">
+      <mat-form-field class="input-name">
+        <input matInput type="text" formControlName="name" placeholder="Entrer le nouveau nom" appAutoFocus>
+      </mat-form-field>
+
+      <mat-form-field class="input-extension" *ngIf="inputData.accept(hasFileExtension)">
+        <input matInput type="text" formControlName="extension" placeholder="Extension">
+        <span matPrefix style="font-weight: 500">.</span>
+      </mat-form-field>
+    </div>
+
+    <div class="dialog-footer">
+      <button mat-raised-button aria-label="Renommer" color="primary" type="submit"
+              [disabled]="renameForm.invalid">
+        Enregister
+      </button>
+    </div>
+  </form>
+</app-base-dialog>

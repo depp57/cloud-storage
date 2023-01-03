@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Item, Folder } from '@modules/dashboard/models/item';
-import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
-import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
+import { Item, Folder } from '@models/item';
+import { MenuButton } from '@modules/shared/context-menu/model/menu-button';
+import { DATA_TRANSFER_NAME } from '@models/drag-and-drop';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { DialogService } from '@modules/utils/dialog/service/dialog.service';
+import { DialogService } from '@modules/shared/dialog/service/dialog.service';
 import { PATH_SEPARATOR } from '@shared/constants';
 
 @Component({
@@ -18,6 +18,30 @@ export class FolderComponent {
   @Output() moveFileEvent = new EventEmitter<Item | null>();
 
   constructor(private filesRepo: FilesRepositoryService, private dialog: DialogService) {}
+
+  onDragStart(event: DragEvent): void {
+    event.dataTransfer?.setData(DATA_TRANSFER_NAME, this.folder.toJson());
+  }
+
+  onDragOver(event: DragEvent): void {
+    // Tell the browser to let the user drop here
+    event.preventDefault();
+  }
+
+  onDragDrop(event: DragEvent): void {
+    if (event.dataTransfer?.getData(DATA_TRANSFER_NAME)) {
+      event.preventDefault();
+
+      const itemJson  = event.dataTransfer.getData(DATA_TRANSFER_NAME);
+      const movedItem = Folder.fromJson(itemJson);
+
+      this.filesRepo.move(movedItem, this.folder.path + PATH_SEPARATOR + movedItem.name);
+    }
+  }
+
+  onClick(): void {
+    this.filesRepo.checkDirectory(this.folder.path).subscribe();
+  }
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -41,7 +65,7 @@ export class FolderComponent {
     this.dialog.openDeleteDialog(file).subscribe(
       needDelete => {
         if (needDelete) {
-          this.filesRepo.delete(file).subscribe();
+          this.filesRepo.delete(file);
         }
       }
     );
@@ -51,33 +75,9 @@ export class FolderComponent {
     this.dialog.openRenameDialog(file).subscribe(
       newFilePath => {
         if (newFilePath) {
-          this.filesRepo.rename(file, newFilePath).subscribe();
+          this.filesRepo.rename(file, newFilePath);
         }
       }
     );
-  }
-
-  onDragStart(event: DragEvent): void {
-    event.dataTransfer?.setData(DATA_TRANSFER_NAME, this.folder.toJson());
-  }
-
-  onDragOver(event: DragEvent): void {
-    // Tell the browser to let the user drop here
-    event.preventDefault();
-  }
-
-  onDragDrop(event: DragEvent): void {
-    if (event.dataTransfer?.getData(DATA_TRANSFER_NAME)) {
-      event.preventDefault();
-
-      const itemJson  = event.dataTransfer.getData(DATA_TRANSFER_NAME);
-      const movedItem = Folder.fromJson(itemJson);
-
-      this.filesRepo.move(movedItem, this.folder.path + PATH_SEPARATOR + movedItem.name).subscribe();
-    }
-  }
-
-  onClick(): void {
-    this.filesRepo.listFolder(this.folder.path).subscribe();
   }
 }

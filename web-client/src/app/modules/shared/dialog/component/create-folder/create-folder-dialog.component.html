@@ -1,0 +1,16 @@
+<app-base-dialog title="Créer dossier" (closeDialog)="onClose()">
+  <form [formGroup]="renameForm" (ngSubmit)="onSubmit()">
+    <div class="dialog-content">
+      <mat-form-field class="input-name">
+        <input matInput type="text" formControlName="name" placeholder="Nom du répertoire :" appAutoFocus>
+      </mat-form-field>
+    </div>
+
+    <div class="dialog-footer">
+      <button mat-raised-button aria-label="Creer" color="primary" type="submit"
+              [disabled]="renameForm.invalid">
+        Créer
+      </button>
+    </div>
+  </form>
+</app-base-dialog>

@@ -1,0 +1,20 @@
+.dialog-footer {
+  margin-top: 1rem;
+
+  & > button {
+    float: right;
+  }
+}
+
+.dialog-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-name {
+  width: 70%;
+}
+
+.input-extension {
+  width: 20%;
+}

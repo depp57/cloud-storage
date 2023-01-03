@@ -1,0 +1,13 @@
+<div [ngClass]="{'selected': selected}" class="folder-tree-row" (click)="toggleRootFolder()">
+  <mat-icon>{{'expand_more'}}</mat-icon>
+  <img src="../../../../../../assets/favicon/favicon-16x16.png" width="16" height="16" alt="Mes fichiers" class="folder-icon">
+  <span>Mes fichiers</span>
+</div>
+
+<div>
+  <ul *ngIf="(rootNode | async) as node" class="folder-tree-children">
+    <li *ngFor="let subFolder of node.subFolders">
+      <app-folder-tree-node [node]="subFolder"></app-folder-tree-node>
+    </li>
+  </ul>
+</div>

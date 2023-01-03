@@ -6,7 +6,9 @@ export interface ItemVisitor {
     visitFolder(file: Folder): boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CanContainVisitor implements ItemVisitor {
     visitFile(file: File): boolean {
         return false;
@@ -16,7 +18,9 @@ export class CanContainVisitor implements ItemVisitor {
     }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class HasFileExtension implements ItemVisitor {
     visitFile(file: File): boolean {
         return true;

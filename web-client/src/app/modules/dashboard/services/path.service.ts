@@ -7,25 +7,29 @@ import { BehaviorSubject } from 'rxjs';
 export class PathService {
 
   private readonly _currentPath$ = new BehaviorSubject<string>('/');
+  private readonly _separatedFolder$ = new BehaviorSubject<string[]>(['/']);
 
   get currentPath$(): BehaviorSubject<string> {
     return this._currentPath$;
   }
 
-  updatePath(filePath: string): void {
-    this._currentPath$.next(PathService.ensureLastDash(filePath));
+  get separatedFolder$(): BehaviorSubject<string[]> {
+    return this._separatedFolder$;
   }
 
-  getSeparatedFolders(): string[] {
-    const separatedFolders = this._currentPath$.value.split('/');
+  updatePath(filePath: string): void {
+    this._currentPath$.next(filePath);
+    this._separatedFolder$.next(this.getSeparatedFolders());
+  }
 
-    // remove last extra folder, e.g '/test/'.split('/') results in ['', 'test', '']
-    separatedFolders.pop();
+ private getSeparatedFolders(): string[] {
+    if (this._currentPath$.value === '/') {
+      return ['/'];
+    }
+
+    const separatedFolders = this._currentPath$.value.split('/');
+    separatedFolders[0] = '/';
 
     return separatedFolders;
-  }
-
-  private static ensureLastDash(path: string): string {
-    return path.endsWith('/') ? path : path + '/';
   }
 }

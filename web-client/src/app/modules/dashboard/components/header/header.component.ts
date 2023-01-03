@@ -38,7 +38,7 @@ export class HeaderComponent {
   }
 
   onSearch(event: Event): void {
-    this.filesRepo.searchByText((event.target as HTMLInputElement).value);
+    this.filesRepo.filterByText((event.target as HTMLInputElement).value);
   }
 
   onChangeTheme(theme: string): void {

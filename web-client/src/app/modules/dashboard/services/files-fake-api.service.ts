@@ -8,7 +8,7 @@ import {
   ResponseDelete,
   ResponseList,
   ResponseUpdate
-} from '@modules/dashboard/models/api-files';
+} from '@models/api-files';
 import { delay, finalize, take, tap } from 'rxjs/operators';
 import { LoaderService } from '@shared/services/loader.service';
 import { PathService } from '@modules/dashboard/services/path.service';
@@ -91,13 +91,14 @@ export class FilesFakeApiService {
     }
 
     return {
-      filePath: this.path.currentPath$.value + FilesFakeApiService.generateRandName() + fileType,
+      path: this.path.currentPath$.value,
+      name: FilesFakeApiService.generateRandName() + fileType,
       type: ApiFileType.FILE
     };
   }
 
   private generateRandFolder(): ApiFile {
-    return {filePath: this.path.currentPath$.value + FilesFakeApiService.generateRandName(), type: ApiFileType.DIR};
+    return {path: this.path.currentPath$.value, name: FilesFakeApiService.generateRandName(), type: ApiFileType.DIR};
   }
 
   private static generateRandName(): string {

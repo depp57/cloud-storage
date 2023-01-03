@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AUTH_COOKIE_NAME, AUTH_COOKIE_LIFETIME } from '@shared/constants';
 import { Observable } from 'rxjs';
 import { ApiAuthParam, ApiAuthResponse, UserCredentials } from '@modules/auth/models/api-auth';
-import { deleteCookie, getCookie, setCookie } from '@shared/models/cookies-utils';
+import { deleteCookie, getCookie, setCookie } from '@modules/auth/models/cookies-utils';
 import { tap } from 'rxjs/operators';
 
 @Injectable({

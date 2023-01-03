@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
-import { Item } from '@modules/dashboard/models/item';
-import { MenuButton } from '@modules/utils/context-menu/model/menu-button';
-import { DATA_TRANSFER_NAME } from '@modules/dashboard/models/drag-and-drop';
+import { Item } from '@models/item';
+import { MenuButton } from '@modules/shared/context-menu/model/menu-button';
+import { DATA_TRANSFER_NAME } from '@models/drag-and-drop';
 import { FilesRepositoryService } from '@modules/dashboard/services/files-repository.service';
-import { DialogService } from '@modules/utils/dialog/service/dialog.service';
+import { DialogService } from '@modules/shared/dialog/service/dialog.service';
 
 @Component({
   selector: 'app-file',
@@ -17,6 +17,12 @@ export class FileComponent {
   @Output() moveFileEvent = new EventEmitter<Item | null>();
 
   constructor(private filesRepo: FilesRepositoryService, private dialog: DialogService) {}
+
+  onDragStart(event: DragEvent): void {
+    if (event.dataTransfer) {
+      event.dataTransfer.setData(DATA_TRANSFER_NAME, this.file.toJson());
+    }
+  }
 
   get contextMenuButtons(): MenuButton[] {
     return [
@@ -40,7 +46,7 @@ export class FileComponent {
     this.dialog.openDeleteDialog(item).subscribe(
       needDelete => {
         if (needDelete) {
-          this.filesRepo.delete(item).subscribe();
+          this.filesRepo.delete(item);
         }
       }
     );
@@ -50,15 +56,9 @@ export class FileComponent {
     this.dialog.openRenameDialog(item).subscribe(
       newFilePath => {
         if (newFilePath) {
-          this.filesRepo.rename(item, newFilePath).subscribe();
+          this.filesRepo.rename(item, newFilePath);
         }
       }
     );
-  }
-
-  onDragStart(event: DragEvent): void {
-    if (event.dataTransfer) {
-      event.dataTransfer.setData(DATA_TRANSFER_NAME, this.file.toJson());
-    }
   }
 }
