@@ -19,7 +19,8 @@
     <span>Charger</span>
   </button>
   <mat-menu #loadFileMenu="matMenu">
-    <button mat-menu-item (click)="onUploadFile()">
+    <input type="file" class="file-input" (change)="onUploadFile($event)" #fileUpload>
+    <button mat-menu-item (click)="fileUpload.click()">
       <mat-icon>upload_file</mat-icon>
       <span>Fichiers</span>
     </button>
@@ -28,6 +29,8 @@
       <span>Dossier</span>
     </button>
   </mat-menu>
+
+  <app-uploader *ngIf="onUploadItems | async" [file]="onUploadItems | async"></app-uploader>
 </div>
 
 <div id="main-container" [appContextMenu]="contextMenuButtons">

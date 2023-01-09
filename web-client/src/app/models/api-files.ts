@@ -40,3 +40,21 @@ export interface RequestDelete {
 export interface ResponseDelete {
   readonly deleted: boolean;
 }
+
+
+export interface UploadRequest {
+  readonly name: string;
+  readonly path: string;
+  readonly size: number;
+  readonly CRC: number;
+}
+
+export interface UploadResponse {
+  readonly uploadID: string;
+  readonly chunkSize: number;
+}
+
+export interface UploadFragmentRequest {
+  readonly uploadID: string;
+  readonly fragment: string;
+}

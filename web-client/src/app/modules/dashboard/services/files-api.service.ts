@@ -9,7 +9,7 @@ import {
   ResponseCreate,
   ResponseDelete,
   ResponseList,
-  ResponseUpdate
+  ResponseUpdate, UploadFragmentRequest, UploadRequest, UploadResponse
 } from '@models/api-files';
 import { FilesFakeApiService } from '@modules/dashboard/services/files-fake-api.service';
 import { map, publishReplay, refCount, take, tap } from 'rxjs/operators';
@@ -92,6 +92,14 @@ export class FilesApiService {
 
     //console.log('delete', param);
     //return this.fakeApi.delete(param, 500);
+  }
+
+  upload(param: UploadRequest): Observable<UploadResponse> {
+    return this.http.post<UploadResponse>('files/upload', param);
+  }
+
+  uploadFragment(param: UploadFragmentRequest): void {
+    this.http.put<UploadFragmentRequest>('files/upload/fragment', param).subscribe();
   }
 
   private invalidateCache(...fullPaths: string[]): void {
