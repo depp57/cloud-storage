@@ -17,6 +17,10 @@ func Warn(msg string) {
 	fmt.Println("[Warn] " + msg)
 }
 
+func Error(msg string) {
+	fmt.Println("[Error] " + msg)
+}
+
 func Fatal(msg string) {
 	fmt.Println("[Fatal] " + msg)
 	os.Exit(1)

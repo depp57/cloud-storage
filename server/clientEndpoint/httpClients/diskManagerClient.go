@@ -53,7 +53,8 @@ func (c defaultDMClient) SendUploadingRequest(dest dest.Destination, metadata fi
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("something went wrong")
+		body, _ := io.ReadAll(resp.Body)
+		return errors.New("error from DiskManager : " + string(body))
 	}
 
 	return nil

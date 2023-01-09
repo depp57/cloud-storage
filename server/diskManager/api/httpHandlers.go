@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/diskManager"
+	"gitlab.com/sthommet/cloud-storage/server/common/log"
 	"gitlab.com/sthommet/cloud-storage/server/diskManager/services"
 	"io"
 	"net/http"
@@ -27,24 +28,28 @@ func (h httpHandlers) HandleNewFile(ctx *gin.Context) {
 
 	body, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		log.Error(err.Error())
+		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		log.Error(err.Error())
+		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	err = h.fileBuffer.SaveFileMetadata(data.Metadata)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		log.Error(err.Error())
+		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	err = h.StorageSvc.LaunchStoring(data.DiskManagerTarget, data.Metadata)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		log.Error(err.Error())
+		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
