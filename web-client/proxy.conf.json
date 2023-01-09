@@ -1,0 +1,9 @@
+{
+  "/api/*": {
+    "target": "https://iofactory.fr:8008",
+    "pathRewrite": {"^/api" : ""},
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
