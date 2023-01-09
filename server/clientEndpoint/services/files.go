@@ -16,7 +16,7 @@ type Files interface {
 }
 
 const (
-	VALID_PATH = `^/?(/[\w\d.-]+)*$`
+	VALID_PATH = `^(/|(/[\w\d.-]+)*)$`
 )
 
 type defaultFiles struct {
