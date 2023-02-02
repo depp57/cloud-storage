@@ -1,5 +1,110 @@
-stages: 
-  - code-quality
+stages:
   - unit-tests
   - build
   - deploy
+
+variables:
+  REPO_PATH: $CI_PROJECT_DIR
+  SERVER_ID_RSA: $SERVER_ID_RSA
+  IMAGE_REGISTRY_USERNAME: $IMAGE_REGISTRY_USERNAME
+  IMAGE_REGISTRY_PASSWORD: $IMAGE_REGISTRY_PASSWORD
+  MYSQL_USERNAME: $MYSQL_USERNAME
+  MYSQL_PASSWORD: $MYSQL_PASSWORD
+  #IOFACTORY_CERT_PATH: $IOFACTORY_CERT_PATH          file variable
+  #IOFACTORY_PRIV_KEY_PATH: $IOFACTORY_PRIV_KEY_PATH  file variable
+
+.shell-executor:
+  tags:
+    - cloud-storage-runner-shell
+
+.docker-executor:
+  tags:
+    - cloud-storage-runner
+  image:
+    name: registry.gitlab.com/sthommet/cloud-storage/ci-builder
+    pull_policy: if-not-present
+  services:
+    - name: docker:20.10.16-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375 # 2375 no TLS
+    DOCKER_TLS_CERTDIR: "" # dind service won't start over TLS
+
+
+build-web-client:
+  extends: .shell-executor
+  stage: build
+  only:
+    changes:
+      - web-client/**/*
+  script:
+    - docker login --username $IMAGE_REGISTRY_USERNAME --password $IMAGE_REGISTRY_PASSWORD registry.gitlab.com
+    - ci/build/web-client-image.sh
+  variables:
+    REPO_PATH: $CI_PROJECT_DIR
+
+build-nginx:
+  extends: .shell-executor
+  stage: build
+  needs:
+    - job: build-web-client
+      optional: true
+  only:
+    changes:
+      - nginx/**/*
+      - web-client/**/*
+  script:
+    - cat $IOFACTORY_CERT_PATH > nginx/certs/cert1.pem
+    - cat $IOFACTORY_PRIV_KEY_PATH > nginx/certs/privkey1.pem
+    - docker login --username $IMAGE_REGISTRY_USERNAME --password $IMAGE_REGISTRY_PASSWORD registry.gitlab.com
+    - ci/build/nginx-image.sh
+  variables:
+    REPO_PATH: $CI_PROJECT_DIR
+
+build-backend:
+  extends: .shell-executor
+  stage: build
+  only:
+    changes:
+      - server/**/*
+  script:
+    - docker login --username $IMAGE_REGISTRY_USERNAME --password $IMAGE_REGISTRY_PASSWORD registry.gitlab.com
+    - ci/build/backend-images.sh
+  variables:
+    REPO_PATH: $CI_PROJECT_DIR
+    MYSQL_USERNAME: $MYSQL_USERNAME
+    MYSQL_PASSWORD: $MYSQL_PASSWORD
+
+
+deploy-frontend:
+  extends: .shell-executor
+  stage: deploy
+  only:
+    changes:
+      - nginx/**/*
+      - web-client/**/*
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[DEPLOY\]/
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SERVER_ID_RSA" > ~/.ssh/server_id_rsa
+    - chmod 600 ~/.ssh/server_id_rsa
+    - ssh -i ~/.ssh/server_id_rsa ubuntu@iofactory.fr 'sudo bash -s' < ci/deploy/frontend.sh
+
+deploy-backend:
+  extends: .shell-executor
+  stage: deploy
+  only:
+    changes:
+      - server/**/*
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[DEPLOY\]/
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SERVER_ID_RSA" > ~/.ssh/server_id_rsa
+    - chmod 600 ~/.ssh/server_id_rsa
+    - export ANSIBLE_HOST_KEY_CHECKING=False
+    - ci/deploy/backend.sh
+  variables:
+    REPO_PATH: $CI_PROJECT_DIR
+    MYSQL_USERNAME: $MYSQL_USERNAME
+    MYSQL_PASSWORD: $MYSQL_PASSWORD
