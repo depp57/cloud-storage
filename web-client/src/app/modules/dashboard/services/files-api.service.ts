@@ -98,10 +98,6 @@ export class FilesApiService {
     return this.http.post<UploadResponse>('files/upload', param);
   }
 
-  uploadFragment(param: UploadFragmentRequest): void {
-    this.http.put<UploadFragmentRequest>('files/upload/fragment', param).subscribe();
-  }
-
   private invalidateCache(...fullPaths: string[]): void {
     fullPaths.forEach(filePath => {
         const index               = filePath.lastIndexOf('/');
