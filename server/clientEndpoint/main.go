@@ -5,11 +5,11 @@ import (
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/httpClients"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services/ports"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/files/fileFragment"
+	yaml "gopkg.in/yaml.v2"
 	"log"
 	"net/http"
 	"os"
-
-	yaml "gopkg.in/yaml.v2"
+	"time"
 
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/api"
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/database"
@@ -31,6 +31,7 @@ type ServerConf struct {
 var db ports.DbPort
 var auth services.Auth
 var httpHandlers *api.HttpHandlers
+var websocketHandler *api.WebsocketHandler
 
 func init() {
 	db = database.NewMysqlDb()
@@ -40,6 +41,7 @@ func init() {
 	fragmentSender := fileFragment.NewTCPFileFragmentSender()
 	uploadSvc := services.NewDefaultUploader(db, diskClient, fragmentSender)
 	httpHandlers = api.InitHttpHandlers(auth, filesSvc, uploadSvc)
+	websocketHandler = api.InitWebsocketHandler(auth, filesSvc, uploadSvc, 1*time.Minute)
 }
 
 func main() {
@@ -70,8 +72,9 @@ func main() {
 	router.AuthentifiedRoute("/files/createDir", http.MethodPost, httpHandlers.HandleCreateDir)
 
 	router.AuthentifiedRoute("/files/upload", http.MethodPost, httpHandlers.HandleUploadFile)
-	router.AuthentifiedRoute("/files/upload/fragment", http.MethodPut, httpHandlers.HandleUploadFragment)
 	router.AuthentifiedRoute("/files/upload/status", http.MethodGet, httpHandlers.HandleUploadStatus)
+
+	router.DefaultRoute("/files/upload/fragment", http.MethodGet, websocketHandler.InitWebsocketFromHttpRequest)
 
 	router.DefaultRoute("/files/upload/acknowledge", http.MethodPost, httpHandlers.HandleFileUploadAcknowledge) //TODO rendre cette route "interne" pour que seul DiskManager ait accès
 

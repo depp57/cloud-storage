@@ -14,7 +14,7 @@ func WriteJsonReponse(writer http.ResponseWriter, response map[string]interface{
 }
 
 func WriteGenericError(writer http.ResponseWriter, err error, statusCode int) {
-	log.Warn("http generic error: " + err.Error())
+	log.Error("http generic error: " + err.Error())
 
 	errResp, _ := json.Marshal(map[string]string{
 		"error": err.Error(),

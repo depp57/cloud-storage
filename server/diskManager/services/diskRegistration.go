@@ -34,7 +34,8 @@ func (d *defaultRegister) RegisterWorkingDisk(port int) error {
 		return err //TODO wrap error
 	}
 
-	err = d.db.RegisterWorkingDisk(d.storage.GetDiskName(), ip+":"+strconv.Itoa(port), d.storage.GetDiskLeftSpace())
+	// spaceLeft is saved as MB. So as we manipulate uint32, storage capability is up to 4 TB
+	err = d.db.RegisterWorkingDisk(d.storage.GetDiskName(), ip+":"+strconv.Itoa(port), d.storage.GetDiskLeftSpace()/1024/1024)
 	if err == ErrAlreadyRegistered {
 		log.Info(err.Error())
 		return nil

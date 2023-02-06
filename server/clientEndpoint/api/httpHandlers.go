@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
@@ -16,7 +15,8 @@ import (
 )
 
 var (
-	ErrInvalidJson = errors.New("input data: invalid json")
+	ErrInvalidJson   = errors.New("input data: invalid json")
+	ErrWebSocketInit = errors.New("failed to initiate Websocket connection")
 )
 
 type HttpHandlers struct {
@@ -197,31 +197,6 @@ func (h HttpHandlers) HandleUploadFile(resp http.ResponseWriter, req *http.Reque
 		"uploadID":  uploadID,
 		"chunkSize": chunckSize,
 	})
-}
-
-func (h HttpHandlers) HandleUploadFragment(resp http.ResponseWriter, req *http.Request) {
-	input := FileFragmentInput{}
-
-	decoder := json.NewDecoder(req.Body)
-	err := decoder.Decode(&input)
-	if err != nil {
-		WriteGenericError(resp, err, http.StatusInternalServerError)
-		return
-	}
-
-	decodeFragment, err := base64.StdEncoding.DecodeString(input.Fragment)
-	if err != nil {
-		WriteGenericError(resp, err, http.StatusInternalServerError)
-		return
-	}
-
-	err = h.uploadSvc.UploadFileFragment(input.UploadID, decodeFragment)
-	if err != nil {
-		WriteGenericError(resp, err, http.StatusInternalServerError)
-		return
-	}
-
-	resp.WriteHeader(201)
 }
 
 func (h HttpHandlers) HandleUploadStatus(resp http.ResponseWriter, req *http.Request) {

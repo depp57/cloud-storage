@@ -7,9 +7,14 @@ type FileFragment struct { //TODO package "entity" ?
 	Data     []byte
 }
 
-func (ff *FileFragment) GetUploadID() string {
-	return "" //TODO
-}
+/*
+- Protocol description -
+
+16 bytes : uuid4 of uploadID
+4 bytes : data length
+--- data ---
+
+*/
 
 type FileFragmentSender interface {
 	Send(dest dest.Destination, ff FileFragment) error

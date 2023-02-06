@@ -11,11 +11,13 @@ import (
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
 	"math"
 	"path"
+	"strconv"
 	"strings"
 )
 
 type Uploader interface {
-	UploadRequest(userID string, filePath string, size uint32, fileCheckSum uint32) (uploadIDStr string, chunckSize uint, err error)
+	UploadRequest(userID string, filePath string, size uint32, fileCheckSum uint32) (uploadIDStr string, chunckSize uint32, err error)
+	CancelUploadRequest(uploadID string) error
 	UploadFileFragment(uploadID string, data []byte) error
 	GetCurrentStatus(userId string, filePath string) (string, error) // used by IO-layer to notify client about uploading status
 
@@ -39,7 +41,7 @@ func NewDefaultUploader(db ports.FileDbPort, diskClient httpClient.DiskManagerCl
 	}
 }
 
-func (u *defaultUploader) UploadRequest(userID string, filePath string, size uint32, fileCheckSum uint32) (uploadIDStr string, chunckSize uint, err error) {
+func (u *defaultUploader) UploadRequest(userID string, filePath string, size uint32, fileCheckSum uint32) (uploadIDStr string, chunckSize uint32, err error) {
 	var disks []entities.DiskInfo
 	disks, err = u.db.GetAllDisks()
 	if err != nil {
@@ -47,8 +49,10 @@ func (u *defaultUploader) UploadRequest(userID string, filePath string, size uin
 	}
 
 	// first disk is the one with the most space
-	if size >= disks[0].SpaceLeft {
-		log.Fatal("system full !")
+	// disk spaceLeft is saved as MB in database because we manipulate uint32
+	sizeInMB := size / 1024 / 1024
+	if sizeInMB >= disks[0].SpaceLeft {
+		log.Error("failed to upload file of size " + strconv.Itoa(int(sizeInMB)) + "MB : system full !")
 		return "", 0, errors.New("no space left on device")
 	}
 	targetDisk := disks[0]
@@ -82,21 +86,29 @@ func (u *defaultUploader) UploadRequest(userID string, filePath string, size uin
 		return "", 0, err
 	}
 
-	u.uploadings[uploadID.String()] = entities.Uploading{ //TODO when does it get cleaned ?
+	u.uploadings[uploadID.String()] = entities.Uploading{
 		DiskManager: destination,
 		Metadata:    metadata,
 	}
 	return
 }
 
-func (f *defaultUploader) computeChunkSize(fileSize uint32) uint {
-	return uint(math.Floor(float64(fileSize) / 10.0)) //TODO
+func (u *defaultUploader) computeChunkSize(fileSize uint32) uint32 {
+	return uint32(math.Floor(float64(fileSize) / 3.0)) //TODO
+}
+
+func (u *defaultUploader) CancelUploadRequest(uploadID string) error {
+	//TODO send cancel request to diskManager
+
+	delete(u.uploadings, uploadID)
+
+	return nil
 }
 
 func (u *defaultUploader) UploadFileFragment(uploadID string, data []byte) error {
 	uploading, found := u.uploadings[uploadID]
 	if !found {
-		return errors.New("uploadID not found")
+		return errors.New("uploadID not found in currently handled uploadings")
 	}
 
 	uploading.DiskManager.Port += 1 // fileFragment receiver port is set to API port + 1
@@ -109,6 +121,8 @@ func (u *defaultUploader) UploadFileFragment(uploadID string, data []byte) error
 		log.Warn(err.Error())
 		return errors.New("failed to send file fragment to diskManager")
 	}
+
+	log.Info("sent one file fragment to diskManager <" + uploading.DiskManager.Host + "> for uploadID: " + uploadID)
 
 	return nil
 }

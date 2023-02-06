@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
-
 	"gitlab.com/sthommet/cloud-storage/server/clientEndpoint/services"
+	. "gitlab.com/sthommet/cloud-storage/server/common/xhttp"
 )
 
 type RestAPIRouters struct {

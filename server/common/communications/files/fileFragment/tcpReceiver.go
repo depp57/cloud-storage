@@ -2,31 +2,29 @@ package fileFragment
 
 import (
 	"bufio"
+	"encoding/binary"
 	"errors"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
 	"gitlab.com/sthommet/cloud-storage/server/common/log"
+	"io"
 	"net"
 	"strconv"
 
 	"github.com/google/uuid"
 )
 
-const (
-	FILE_FRAGMENT_DEFAULT_SIZE = 1024
-)
-
 type defaultTCPFileMetadataReceiver struct {
 	listener      net.Listener
 	fragmentsChan chan files.FileFragment
 	errChan       chan error
-	finalChan 	  chan interface{}
+	finalChan     chan interface{}
 }
 
 func NewTCPFileFragmentReceiver(port int) (files.FileFragmentReceiver, error) {
 	receiver := &defaultTCPFileMetadataReceiver{
 		fragmentsChan: make(chan files.FileFragment),
 		errChan:       make(chan error),
-		finalChan :    make(chan interface{}),
+		finalChan:     make(chan interface{}),
 	}
 	receiver.mergeChannels()
 
@@ -56,11 +54,10 @@ func (t *defaultTCPFileMetadataReceiver) accept() {
 
 func (t *defaultTCPFileMetadataReceiver) handleEntrance(conn net.Conn) {
 	defer conn.Close()
-	ff := files.FileFragment{
-		Data: make([]byte, FILE_FRAGMENT_DEFAULT_SIZE),
-	}
-
+	ff := files.FileFragment{}
 	reader := bufio.NewReader(conn)
+
+	// read uploadID
 	uploadID := make([]byte, 16)
 	for i := 0; i < 16; i = i + 1 { //uuid is encoded on 16 bytes
 		b, err := reader.ReadByte()
@@ -77,17 +74,29 @@ func (t *defaultTCPFileMetadataReceiver) handleEntrance(conn net.Conn) {
 	}
 	ff.UploadID = UUID.String()
 
-	n, err := reader.Read(ff.Data)
+	// read dataLength + create data buffer
+	lengthSlice := make([]byte, 4)
+	_, err = io.ReadFull(reader, lengthSlice)
 	if err != nil {
 		t.errChan <- err
 	}
-	ff.Data = ff.Data[0:n] // eliminates unread bytes from slice
 
+	length := binary.LittleEndian.Uint32(lengthSlice)
+	ff.Data = make([]byte, length)
+
+	// read data into buffer
+	n, err := io.ReadFull(reader, ff.Data)
+	if err != nil {
+		t.errChan <- err
+	}
+	ff.Data = ff.Data[0:n]
+
+	// write full result into channel
 	t.fragmentsChan <- ff
 }
 
 func (t *defaultTCPFileMetadataReceiver) Get() (files.FileFragment, error) {
-	data := <- t.finalChan
+	data := <-t.finalChan
 
 	err, isErr := data.(error)
 	if isErr {
@@ -100,12 +109,12 @@ func (t *defaultTCPFileMetadataReceiver) Get() (files.FileFragment, error) {
 func (t *defaultTCPFileMetadataReceiver) mergeChannels() {
 	go func() {
 		for {
-			t.finalChan <- <- t.fragmentsChan
+			t.finalChan <- <-t.fragmentsChan
 		}
 	}()
 	go func() {
 		for {
-			t.finalChan <- <- t.errChan
+			t.finalChan <- <-t.errChan
 		}
 	}()
 }

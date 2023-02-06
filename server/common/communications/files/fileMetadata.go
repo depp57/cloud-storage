@@ -8,6 +8,6 @@ type FileMetadata struct { //TODO package "entity" ?
 	Filename  string `json:"filename"`
 	Path      string `json:"path"`
 	Size      uint32 `json:"size"`
-	ChunkSize uint   `json:"chunkSize"`
+	ChunkSize uint32 `json:"chunkSize"`
 	CRC       uint32 `json:"CRC"`
 }

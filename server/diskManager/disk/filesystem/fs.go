@@ -9,9 +9,11 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+const CONF_FILENAME = "disk-info.conf"
+
 type FsStorage struct {
 	storagePath  string
-	confFileName string
+	confFilename string
 	diskName     string
 }
 
@@ -22,10 +24,7 @@ func NewFsStorage() *FsStorage {
 	if fs.storagePath == "" {
 		log.Fatal("Please set FS_STORAGE_PATH var")
 	}
-	fs.confFileName = os.Getenv("FS_CONF_FILE_NAME")
-	if fs.confFileName == "" {
-		log.Fatal("Please set FS_CONF_FILE_NAME var")
-	}
+	fs.confFilename = CONF_FILENAME
 
 	// ensure the path is a directory itself and not his children
 	fs.storagePath = strings.TrimSuffix(fs.storagePath, "/")
@@ -49,7 +48,7 @@ func NewFsStorage() *FsStorage {
 	}
 
 	// Read filesystem configuration file -> get disk's name
-	var buf, err = os.ReadFile(fs.storagePath + "/" + fs.confFileName)
+	var buf, err = os.ReadFile(fs.storagePath + "/" + fs.confFilename)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -90,12 +89,12 @@ func (fs *FsStorage) GetDiskSize() uint32 {
 	var stat unix.Statfs_t
 	unix.Statfs(fs.storagePath, &stat)
 
-	return uint32(stat.Blocks * uint64(stat.Bsize) / 1024 / 1024)
+	return uint32(stat.Blocks * uint64(stat.Bsize))
 }
 
 func (fs *FsStorage) GetDiskLeftSpace() uint32 {
 	var stat unix.Statfs_t
 	unix.Statfs(fs.storagePath, &stat)
 
-	return uint32(stat.Bavail * uint64(stat.Bsize) / 1024 / 1024)
+	return uint32(stat.Bavail * uint64(stat.Bsize))
 }

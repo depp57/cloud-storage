@@ -1,11 +1,11 @@
 package fileFragment
 
 import (
+	"encoding/binary"
 	"errors"
 	"github.com/google/uuid"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/dest"
 	"gitlab.com/sthommet/cloud-storage/server/common/communications/files"
-	"gitlab.com/sthommet/cloud-storage/server/common/log"
 	"net"
 )
 
@@ -27,17 +27,24 @@ func (s *defaultTCPFileFragmentSender) Send(dest dest.Destination, ff files.File
 		return err
 	}
 	defer conn.Close()
-	log.Debug("connection with peer established")
 
 	bytes := [16]byte(uploadID)
 	_, err = conn.Write(bytes[:])
 	if err != nil {
-		return errors.New("failed to write UploadID")
+		return errors.New("failed to write UploadID: " + err.Error())
+	}
+
+	dataLength := uint32(len(ff.Data))
+	dataLengthBytes := make([]byte, 4)
+	binary.LittleEndian.PutUint32(dataLengthBytes, dataLength)
+	_, err = conn.Write(dataLengthBytes)
+	if err != nil {
+		return errors.New("failed to write dataLength: " + err.Error())
 	}
 
 	_, err = conn.Write(ff.Data)
 	if err != nil {
-		return errors.New("failed to write Data")
+		return errors.New("failed to write Data: " + err.Error())
 	}
 
 	return nil

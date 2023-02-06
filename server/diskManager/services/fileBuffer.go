@@ -16,11 +16,12 @@ type FileBuffer interface {
 }
 
 var (
-	ErrUnknownUpload           = errors.New("no partialFile found for this fragment")
+	ErrUnknownUpload           = errors.New("no upload buffer found for this fragment")
+	ErrBufferClosed            = errors.New("file buffer has been closed for this upload")
 	ErrFileAlreadyBeingWritten = errors.New("this file is already being written for this user")
 )
 
-type partialFile struct {
+type buffer struct {
 	metadata  files.FileMetadata
 	buffer    *bytes.Buffer
 	bufCond   *sync.Cond
@@ -28,12 +29,12 @@ type partialFile struct {
 }
 
 type defaultFileBuffer struct {
-	memory map[string]*partialFile // matches uploadID with partialFile
+	memory map[string]*buffer // matches uploadID with buffer
 }
 
 func NewDefaultFileBuffer(timeout time.Duration) FileBuffer {
 	fb := &defaultFileBuffer{
-		memory: make(map[string]*partialFile),
+		memory: make(map[string]*buffer),
 	}
 	fb.cleanMemory(timeout)
 	return fb
@@ -47,7 +48,7 @@ func (b *defaultFileBuffer) SaveFileMetadata(metadata files.FileMetadata) error 
 	}
 
 	lock := &sync.Mutex{}
-	b.memory[metadata.UploadID] = &partialFile{
+	b.memory[metadata.UploadID] = &buffer{
 		metadata:  metadata,
 		buffer:    &bytes.Buffer{},
 		bufCond:   sync.NewCond(lock),
@@ -63,8 +64,8 @@ func (b *defaultFileBuffer) SaveFragment(fragment files.FileFragment) error {
 	if !found {
 		return ErrUnknownUpload
 	}
-	if partialF.buffer == nil { // when partialFile.Close() has been called
-		return ErrUnknownUpload
+	if partialF.buffer == nil {
+		return ErrBufferClosed
 	}
 
 	_, err := partialF.buffer.Write(fragment.Data)
@@ -87,7 +88,7 @@ func (b *defaultFileBuffer) GetFragmentsReader(uploadID string) (io.ReadCloser, 
 	return partialFile, nil
 }
 
-func (f *partialFile) Read(p []byte) (n int, err error) {
+func (f *buffer) Read(p []byte) (n int, err error) {
 	n, err = f.buffer.Read(p)
 	if err == io.EOF {
 		f.bufCond.L.Lock()
@@ -98,15 +99,15 @@ func (f *partialFile) Read(p []byte) (n int, err error) {
 	return
 }
 
-func (f *partialFile) Close() error {
-	*f = partialFile{}
+func (f *buffer) Close() error {
+	*f = buffer{}
 	return nil
 }
 
 func (b *defaultFileBuffer) cleanMemory(timeout time.Duration) {
 	go func() {
 		for _, pf := range b.memory {
-			if *pf == (partialFile{}) || pf.startTime.Add(timeout).After(time.Now()) {
+			if *pf == (buffer{}) || pf.startTime.Add(timeout).After(time.Now()) {
 				delete(b.memory, pf.metadata.UploadID) //TODO delete in loop ??
 			}
 		}
